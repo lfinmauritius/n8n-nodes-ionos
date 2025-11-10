@@ -1,13 +1,15 @@
 {
   "name": "n8n-nodes-ionos",
   "version": "0.1.0",
-  "description": "n8n nodes for IONOS DNS and Domain management API",
+  "description": "n8n nodes for IONOS DNS, Domain, and SSL management API",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
     "ionos",
     "dns",
-    "domains"
+    "domains",
+    "ssl",
+    "certificates"
   ],
   "license": "MIT",
   "homepage": "https://github.com/lfinmauritius/n8n-nodes-ionos",
@@ -43,7 +45,8 @@
     ],
     "nodes": [
       "dist/nodes/Ionos/IonosDns.node.js",
-      "dist/nodes/Ionos/IonosDomain.node.js"
+      "dist/nodes/Ionos/IonosDomain.node.js",
+      "dist/nodes/Ionos/IonosSsl.node.js"
     ]
   },
   "devDependencies": {

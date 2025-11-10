@@ -3,7 +3,7 @@
 > **⚠️ BETA VERSION - Work in Progress**
 > This node is currently in beta and under active development. Features may change and some functionality may not be fully tested. Use with caution in production environments.
 
-This is an n8n community node for managing DNS records, zones, and domains using the IONOS API.
+This is an n8n community node for managing DNS records, zones, domains, and SSL certificates using the IONOS API.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
@@ -53,6 +53,14 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - Delete a contact
 - List all contacts
 
+### IONOS SSL Node
+
+#### SSL Certificate Management
+- Upload a new SSL certificate (with private key and certificate chain)
+- Get certificate details
+- Delete a certificate
+- List all SSL certificates
+
 ## Credentials
 
 You'll need an IONOS API key or prefix/secret combination. You can generate these in your IONOS account settings.
@@ -70,6 +78,7 @@ This node has been tested with n8n version 1.0.0 and above.
 - [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
 - [IONOS DNS API Documentation](https://api.ionos.com/docs/dns/v1/)
 - [IONOS Domains API Documentation](https://developer.hosting.ionos.com/docs/domains)
+- [IONOS SSL API Documentation](https://developer.hosting.ionos.com/docs/ssl)
 - [IONOS Developer Portal](https://developer.hosting.ionos.com/)
 
 ## License
