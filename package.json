@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-ionos",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "n8n nodes for IONOS DNS, Domain, SSL/Certificate management, Cloud AI, Cloud Infrastructure, Container Registry, Database as a Service, and CDN",
   "keywords": [
     "n8n-community-node-package",
@@ -109,7 +109,8 @@
       "dist/nodes/Ionos/IonosCloudContainerRegistry.node.js",
       "dist/nodes/Ionos/IonosCloudDbaas.node.js",
       "dist/nodes/Ionos/IonosCloudCdn.node.js",
-      "dist/nodes/Ionos/IonosCloudCertificateManager.node.js"
+      "dist/nodes/Ionos/IonosCloudCertificateManager.node.js",
+      "dist/nodes/Ionos/IonosCloudDnsService.node.js"
     ]
   },
   "devDependencies": {
