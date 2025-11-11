@@ -7,7 +7,7 @@ A comprehensive n8n community package providing nodes for **IONOS Cloud** servic
 
 ## Features
 
-This package provides **11 powerful nodes** covering the entire IONOS ecosystem:
+This package provides **22 powerful nodes** covering the entire IONOS ecosystem:
 
 - 🌐 **DNS & Domain Management** - Manage DNS zones, records, domains, and SSL certificates
 - 🤖 **AI/ML Services** - Integrate with IONOS Cloud AI for chat, embeddings, audio processing
@@ -15,9 +15,13 @@ This package provides **11 powerful nodes** covering the entire IONOS ecosystem:
 - 🌐 **Networking** - Manage LANs, NICs, firewalls, NAT gateways, and IP blocks
 - ⚖️ **Load Balancing** - Configure classic, network, and application load balancers
 - ☸️ **Kubernetes** - Create and manage K8s clusters with auto-scaling node pools
-- 💾 **Storage** - S3 object storage keys and backup units management
+- 💾 **Storage & Backup** - S3 object storage, backup units, and container registries
 - 📈 **Auto-scaling** - VM auto-scaling groups with policies and metrics
-- 📊 **Monitoring** - Flow logs, request tracking, and health checks
+- 🗄️ **Database as a Service** - Managed PostgreSQL, MariaDB, MongoDB, and Redis databases
+- 🌍 **CDN & Edge** - Content delivery network with routing rules and certificates
+- 🔐 **Security & Certificates** - SSL/TLS certificate management and VPN gateways
+- 📊 **Monitoring & Logging** - Centralized logging pipelines and metrics collection
+- 💰 **Billing & Activity** - Invoice management, usage tracking, and audit logs
 
 ## Installation
 
@@ -199,6 +203,163 @@ S3-compatible object storage and backup management.
 - Multi-user storage access management
 - SSO URL generation for web access
 
+### 12. IONOS Cloud Container Registry 📦
+Docker and OCI-compatible container image registry.
+
+**Resources:**
+- **Registry** - Create and manage container registries
+- **Token** - Generate access tokens for registry authentication
+- **Repository** - Manage container image repositories
+- **Artifact** - List and manage container artifacts
+- **Vulnerability** - Scan images for security vulnerabilities
+
+**Use Cases:**
+- Private Docker registry hosting
+- Container image lifecycle management
+- CI/CD pipeline integration
+- Security vulnerability scanning
+
+### 13. IONOS Cloud DBaaS 🗄️
+Managed database services (PostgreSQL, MariaDB, MongoDB, Redis).
+
+**Resources:**
+- **Cluster** - Create and manage database clusters
+- **Database** - Database management within clusters
+- **User** - Database user management
+- **Backup** - Automated backup configuration
+- **Log** - Access database logs
+
+**Use Cases:**
+- Managed database provisioning
+- Database scaling automation
+- Backup and restore workflows
+- User and access management
+
+### 14. IONOS Cloud CDN 🌍
+Content Delivery Network for fast global content distribution.
+
+**Resources:**
+- **Distribution** - CDN distribution management
+- **Routing Rule** - Configure routing and caching rules
+
+**Use Cases:**
+- Static asset acceleration
+- Global content distribution
+- Cache invalidation automation
+- Custom routing configuration
+
+### 15. IONOS Cloud Certificate Manager 🔐
+SSL/TLS certificate lifecycle management.
+
+**Resources:**
+- **Certificate** - Import and manage SSL/TLS certificates
+
+**Use Cases:**
+- Certificate lifecycle automation
+- Multi-domain certificate management
+- Certificate renewal workflows
+- Certificate deployment automation
+
+### 16. IONOS Cloud DNS Service 🌐
+Managed DNS service with advanced features.
+
+**Resources:**
+- **Zone** - DNS zone management
+- **Record** - DNS record management (A, AAAA, CNAME, MX, TXT, etc.)
+- **Secondary Zone** - Secondary DNS zone configuration
+
+**Use Cases:**
+- DNS zone provisioning
+- Dynamic DNS updates
+- Secondary DNS configuration
+- DNS failover setup
+
+### 17. IONOS Cloud VPN Gateway 🔒
+Site-to-site VPN with WireGuard and IPsec support.
+
+**Resources:**
+- **WireGuard Gateway** - WireGuard VPN gateway management
+- **WireGuard Peer** - Configure WireGuard peers
+- **IPsec Gateway** - IPsec VPN gateway management
+- **IPsec Tunnel** - IPsec tunnel configuration
+
+**Use Cases:**
+- Site-to-site VPN setup
+- Secure datacenter connectivity
+- Hybrid cloud networking
+- Remote access automation
+
+### 18. IONOS Cloud Activity Log 📋
+Audit logging and activity tracking.
+
+**Resources:**
+- **Activity Log** - Query and filter activity logs
+
+**Use Cases:**
+- Security audit trails
+- Compliance reporting
+- Activity monitoring
+- Resource change tracking
+
+### 19. IONOS Cloud Billing 💰
+Invoice and usage management.
+
+**Resources:**
+- **EVN** (Einzelverbrauchsnachweis) - Itemized usage data
+- **Invoice** - Invoice management
+- **Product** - Product catalog
+- **Profile** - Billing profile information
+- **Traffic** - Network traffic tracking
+- **Usage** - Resource usage by contract or datacenter
+- **Utilization** - Resource utilization metrics
+
+**Use Cases:**
+- Cost monitoring and analysis
+- Invoice automation
+- Usage tracking and reporting
+- Chargeback and billing allocation
+
+### 20. IONOS Cloud Logging 📊
+Centralized log management with Grafana integration.
+
+**Resources:**
+- **Pipeline** - Create and manage logging pipelines
+- **Key** - Pipeline authentication key management
+- **Central Logging** - Enable/disable central logging
+
+**Use Cases:**
+- Centralized log collection
+- Kubernetes log aggregation
+- Docker container logging
+- Grafana Loki integration
+
+### 21. IONOS Cloud Monitoring 📈
+Metrics collection and monitoring pipelines.
+
+**Resources:**
+- **Pipeline** - Create and manage monitoring pipelines
+- **Key** - Pipeline authentication key management
+- **Central Monitoring** - Enable/disable central monitoring
+
+**Use Cases:**
+- Centralized metrics collection
+- Prometheus-compatible monitoring
+- Grafana dashboards integration
+- Performance monitoring automation
+
+### 22. IONOS Cloud Object Storage Management 🗄️
+S3-compatible object storage access key and region management.
+
+**Resources:**
+- **Access Key** - Create, manage, and renew S3 access keys
+- **Region** - Query available S3 regions and capabilities
+
+**Use Cases:**
+- S3 credential generation and rotation
+- Multi-region object storage setup
+- Access key lifecycle management
+- Integration with n8n's native S3 node
+
 ## Authentication
 
 This package uses two credential types:
@@ -297,7 +458,18 @@ Trigger (Schedule - Daily)
 | IONOS Cloud Load Balancing | 5 | CRUD + Config | 28 |
 | IONOS Cloud Kubernetes | 4 | CRUD + Kubeconfig | 17 |
 | IONOS Cloud Storage | 2 | CRUD + SSO | 12 |
-| **TOTAL** | **37** | - | **177** |
+| IONOS Cloud Container Registry | 5 | CRUD + Scan | 23 |
+| IONOS Cloud DBaaS | 5 | CRUD + Multi-DB | 29 |
+| IONOS Cloud CDN | 2 | CRUD + Rules | 9 |
+| IONOS Cloud Certificate Manager | 1 | CRUD | 5 |
+| IONOS Cloud DNS Service | 3 | CRUD + Secondary | 14 |
+| IONOS Cloud VPN Gateway | 4 | CRUD + Multi-Protocol | 20 |
+| IONOS Cloud Activity Log | 1 | Query + Filter | 3 |
+| IONOS Cloud Billing | 7 | Query + Reports | 15 |
+| IONOS Cloud Logging | 3 | CRUD + Pipeline | 11 |
+| IONOS Cloud Monitoring | 3 | CRUD + Pipeline | 11 |
+| IONOS Cloud Object Storage Management | 2 | CRUD + Renew | 11 |
+| **TOTAL** | **73** | - | **308** |
 
 ## API Rate Limits
 
@@ -359,21 +531,33 @@ npm run lintfix
 ```
 n8n-nodes-ionos/
 ├── credentials/
-│   ├── IonosApi.credentials.ts       # DNS/Domain/SSL auth
-│   └── IonosCloud.credentials.ts     # Cloud services auth
+│   ├── IonosApi.credentials.ts              # DNS/Domain/SSL auth
+│   ├── IonosCloud.credentials.ts            # Cloud services auth
+│   └── IonosCloudAiApi.credentials.ts       # AI services auth
 ├── nodes/
 │   └── Ionos/
-│       ├── IonosDns.node.ts
-│       ├── IonosDomain.node.ts
-│       ├── IonosSsl.node.ts
-│       ├── IonosCloudAi.node.ts
-│       ├── IonosCloudVMAutoScaling.node.ts
-│       ├── IonosCloudDatacenter.node.ts
-│       ├── IonosCloudCompute.node.ts
-│       ├── IonosCloudNetwork.node.ts
-│       ├── IonosCloudLoadBalancing.node.ts
-│       ├── IonosCloudKubernetes.node.ts
-│       └── IonosCloudStorage.node.ts
+│       ├── IonosDns.node.ts                 # DNS management
+│       ├── IonosDomain.node.ts              # Domain management
+│       ├── IonosSsl.node.ts                 # SSL certificates
+│       ├── IonosCloudAi.node.ts             # AI/ML services
+│       ├── IonosCloudVMAutoScaling.node.ts  # VM auto-scaling
+│       ├── IonosCloudDatacenter.node.ts     # Datacenter management
+│       ├── IonosCloudCompute.node.ts        # Servers & volumes
+│       ├── IonosCloudNetwork.node.ts        # Networking
+│       ├── IonosCloudLoadBalancing.node.ts  # Load balancers
+│       ├── IonosCloudKubernetes.node.ts     # K8s clusters
+│       ├── IonosCloudStorage.node.ts        # Storage & backup
+│       ├── IonosCloudContainerRegistry.node.ts  # Container registry
+│       ├── IonosCloudDbaas.node.ts          # Database services
+│       ├── IonosCloudCdn.node.ts            # CDN distribution
+│       ├── IonosCloudCertificateManager.node.ts # Certificate manager
+│       ├── IonosCloudDnsService.node.ts     # DNS service
+│       ├── IonosCloudVpnGateway.node.ts     # VPN gateways
+│       ├── IonosCloudActivityLog.node.ts    # Activity logs
+│       ├── IonosCloudBilling.node.ts        # Billing & usage
+│       ├── IonosCloudLogging.node.ts        # Centralized logging
+│       ├── IonosCloudMonitoring.node.ts     # Monitoring pipelines
+│       └── IonosCloudObjectStorageManagement.node.ts  # Object storage
 ├── package.json
 └── README.md
 ```
