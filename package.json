@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-ionos",
-  "version": "1.6.0",
-  "description": "n8n nodes for IONOS DNS, Domain, SSL/Certificate management, Cloud AI, Cloud Infrastructure, Container Registry, Database as a Service, CDN, and VPN Gateway",
+  "version": "1.7.0",
+  "description": "n8n nodes for IONOS DNS, Domain, SSL/Certificate management, Cloud AI, Cloud Infrastructure, Container Registry, Database as a Service, CDN, VPN Gateway, and Activity Log",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
@@ -66,7 +66,13 @@
     "gateway",
     "tunnel",
     "site-to-site",
-    "encryption"
+    "encryption",
+    "activity",
+    "audit",
+    "logs",
+    "monitoring",
+    "compliance",
+    "security"
   ],
   "license": "MIT",
   "homepage": "https://github.com/lfinmauritius/n8n-nodes-ionos",
@@ -118,7 +124,8 @@
       "dist/nodes/Ionos/IonosCloudCdn.node.js",
       "dist/nodes/Ionos/IonosCloudCertificateManager.node.js",
       "dist/nodes/Ionos/IonosCloudDnsService.node.js",
-      "dist/nodes/Ionos/IonosCloudVpnGateway.node.js"
+      "dist/nodes/Ionos/IonosCloudVpnGateway.node.js",
+      "dist/nodes/Ionos/IonosCloudActivityLog.node.js"
     ]
   },
   "devDependencies": {
