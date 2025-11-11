@@ -16,7 +16,7 @@ export class IonosCloudAi implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Interact with IONOS Cloud AI Model Hub API',
+		description: 'Interact with IONOS Cloud AI Model Hub API. Developped with Love and AI by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud AI',
 		},

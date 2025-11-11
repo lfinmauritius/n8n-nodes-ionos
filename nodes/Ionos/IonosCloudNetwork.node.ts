@@ -17,7 +17,7 @@ export class IonosCloudNetwork implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
-		description: 'Manage IONOS Cloud Network resources (LANs, NICs, IP Blocks, NAT Gateways, Firewall Rules, Flow Logs)',
+		description: 'Manage IONOS Cloud Network resources (LANs, NICs, IP Blocks, NAT Gateways, Firewall Rules, Flow Logs). Developped with Love and AI by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Network',
 		},

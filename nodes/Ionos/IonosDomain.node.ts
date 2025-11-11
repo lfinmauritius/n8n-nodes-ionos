@@ -16,7 +16,7 @@ export class IonosDomain implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage domains with IONOS',
+		description: 'Manage domains with IONOS. Developped with Love and AI by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Domain',
 		},

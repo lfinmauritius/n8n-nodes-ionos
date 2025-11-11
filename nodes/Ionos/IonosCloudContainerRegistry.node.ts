@@ -17,7 +17,7 @@ export class IonosCloudContainerRegistry implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"] }}',
-		description: 'Manage IONOS Cloud Container Registry for Docker and OCI artifacts',
+		description: 'Manage IONOS Cloud Container Registry for Docker and OCI artifacts. Developped with Love and AI by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Container Registry',
 		},

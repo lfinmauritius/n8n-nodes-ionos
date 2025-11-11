@@ -17,7 +17,7 @@ export class IonosCloudKubernetes implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
-		description: 'Manage IONOS Cloud Kubernetes clusters, node pools, and nodes',
+		description: 'Manage IONOS Cloud Kubernetes clusters, node pools, and nodes. Developped with Love and AI by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Kubernetes',
 		},

@@ -16,7 +16,7 @@ export class IonosDns implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage DNS zones and records with IONOS',
+		description: 'Manage DNS zones and records with IONOS. Developped with Love and AI by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS DNS',
 		},
