@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-ionos",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "n8n nodes for IONOS DNS, Domain, SSL management, Cloud AI, and Cloud Infrastructure",
   "keywords": [
     "n8n-community-node-package",
