@@ -14,7 +14,7 @@ export class IonosCloudNetworkFileStorage implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["resource"]}} - {{$parameter["operation"]}}',
-		description: 'Manage NFSv4.2 network file storage clusters and shares with IONOS Cloud. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage NFSv4.2 network file storage clusters and shares with IONOS Cloud. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Network File Storage',
 		},

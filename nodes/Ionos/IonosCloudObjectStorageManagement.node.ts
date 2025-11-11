@@ -16,7 +16,7 @@ export class IonosCloudObjectStorageManagement implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["resource"]}} - {{$parameter["operation"]}}',
-		description: 'Manage S3-compatible Object Storage access keys and regions with IONOS Cloud. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage S3-compatible Object Storage access keys and regions with IONOS Cloud. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Object Storage Management',
 		},

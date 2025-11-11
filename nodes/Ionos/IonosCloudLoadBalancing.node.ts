@@ -17,7 +17,7 @@ export class IonosCloudLoadBalancing implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
-		description: 'Manage IONOS Cloud Load Balancers (Classic, Network, Application, Target Groups). Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage IONOS Cloud Load Balancers (Classic, Network, Application, Target Groups). Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Load Balancing',
 		},

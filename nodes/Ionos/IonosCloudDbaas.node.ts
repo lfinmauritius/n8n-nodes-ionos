@@ -15,7 +15,7 @@ export class IonosCloudDbaas implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
-		description: 'Manage IONOS Cloud Database as a Service (PostgreSQL, MongoDB, MariaDB, Redis). Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage IONOS Cloud Database as a Service (PostgreSQL, MongoDB, MariaDB, Redis). Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud DBaaS',
 		},

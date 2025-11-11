@@ -1,0 +1,1343 @@
+openapi: 3.0.3
+info:
+  title: In-Memory DB API
+  description: API description for the IONOS In-Memory DB
+  version: 1.0.0
+  contact:
+    name: IONOS Cloud Support
+    url: https://docs.ionos.com/support/general-information/contact-information
+    email: support@cloud.ionos.com
+externalDocs:
+  url: https://api.ionos.com/docs/cloud/
+  description: IONOS Cloud - API documentation
+servers:
+- url: https://in-memory-db.de-fra.ionos.com
+  description: Production de-fra
+- url: https://in-memory-db.de-txl.ionos.com
+  description: Production de-txl
+- url: https://in-memory-db.es-vit.ionos.com
+  description: Production es-vit
+- url: https://in-memory-db.gb-bhx.ionos.com
+  description: Production gb-bhx
+- url: https://in-memory-db.gb-lhr.ionos.com
+  description: Production gb-lhr
+- url: https://in-memory-db.us-ewr.ionos.com
+  description: Production us-ewr
+- url: https://in-memory-db.us-las.ionos.com
+  description: Production us-las
+- url: https://in-memory-db.us-mci.ionos.com
+  description: Production us-mci
+- url: https://in-memory-db.fr-par.ionos.com
+  description: Production fr-par
+tags:
+- name: ReplicaSet
+  description: |
+    In-Memory DB replica set with support for a single instance
+    or a In-Memory DB replication in **leader follower** mode.
+    The mode is determined by the number of replicas.
+    One replica is **standalone**, everything else an **In-Memory DB replication** as *leader follower* mode with one active and n-1 passive replicas.
+    
+    This tag groups all operations for replicaset.
+- name: Snapshot
+  description: |
+    Operations to create and manage point in time snapshots for your In-Memory DB replica sets.
+    
+    This tag groups all operations for snapshot.
+- name: Restore
+  description: |
+    Status endpoints for requested restores.
+    
+    This tag groups all operations for restore.
+paths:
+  /replicasets:
+    get:
+      operationId: replicasetsGet
+      summary: Retrieve all ReplicaSet
+      security:
+      - tokenAuth: []
+      description: |
+        This endpoint enables retrieving all ReplicaSet using
+        pagination and optional filters.
+      parameters:
+        - $ref: "#/components/parameters/paginationOffset"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/displayNameQuery"
+      tags:
+        - ReplicaSet
+      responses:
+        "200":
+          description: |
+            Returned all requested ReplicaSet successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplicaSetReadList"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    post:
+      operationId: replicasetsPost
+      summary: Create ReplicaSet
+      security:
+      - tokenAuth: []
+      tags:
+        - ReplicaSet
+      description: |
+        Creates a new ReplicaSet.
+        
+        The full ReplicaSet needs to be provided to create the object.
+        Optional data will be filled with defaults or left empty.
+      requestBody:
+        description: ReplicaSet to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplicaSetCreate"
+      responses:
+        "201":
+          description: ReplicaSet successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplicaSetRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /replicasets/{replicasetId}:
+    get:
+      operationId: replicasetsFindById
+      summary: Retrieve ReplicaSet
+      security:
+      - tokenAuth: []
+      tags:
+        - ReplicaSet
+      description: Returns the ReplicaSet by ID.
+      parameters:
+        - name: replicasetId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "1046e9bf-dbc0-5bd3-9291-713d36ab77e9"
+          required: true
+          description: The ID (UUID) of the ReplicaSet.
+      responses:
+        "200":
+          description: Getting ReplicaSet was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplicaSetRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    put:
+      operationId: replicasetsPut
+      summary: Ensure ReplicaSet
+      security:
+      - tokenAuth: []
+      tags:
+        - ReplicaSet
+      description: |
+        Ensures that the ReplicaSet with the provided ID is created or modified.
+        The full ReplicaSet needs to be provided to ensure
+        (either update or create) the ReplicaSet. Non present data will
+        only be filled with defaults or left empty, but not take
+        previous values into consideration.
+      parameters:
+        - name: replicasetId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "1046e9bf-dbc0-5bd3-9291-713d36ab77e9"
+          required: true
+          description: The ID (UUID) of the ReplicaSet.
+      requestBody:
+        description: update ReplicaSet
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplicaSetEnsure"
+      responses:
+        "200":
+          description: ReplicaSet successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplicaSetRead"
+        "201":
+          description: ReplicaSet successfully ensured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplicaSetRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    delete:
+      operationId: replicasetsDelete
+      summary: Delete ReplicaSet
+      security:
+      - tokenAuth: []
+      tags:
+        - ReplicaSet
+      description: Deletes the specified ReplicaSet.
+      parameters:
+        - name: replicasetId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "1046e9bf-dbc0-5bd3-9291-713d36ab77e9"
+          required: true
+          description: The ID (UUID) of the ReplicaSet.
+      responses:
+        "202":
+          description: Deleting ReplicaSet was successful.
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+# Snapshots
+  /snapshots:
+    get:
+      operationId: snapshotsGet
+      summary: Retrieve all Snapshot
+      security:
+      - tokenAuth: []
+      description: |
+        This endpoint enables retrieving all Snapshot using
+        pagination and optional filters.
+      parameters:
+        - $ref: "#/components/parameters/paginationOffset"
+        - $ref: "#/components/parameters/paginationLimit"
+      tags:
+        - Snapshot
+      responses:
+        "200":
+          description: |
+            Returned all requested Snapshot successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SnapshotReadList"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /snapshots/{snapshotId}:
+    get:
+      operationId: snapshotsFindById
+      summary: Retrieve Snapshot
+      security:
+      - tokenAuth: []
+      tags:
+        - Snapshot
+      description: Returns the Snapshot by ID.
+      parameters:
+        - name: snapshotId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "a8784665-3d99-5464-af32-30a2967f58e7"
+          required: true
+          description: The ID (UUID) of the Snapshot.
+      responses:
+        "200":
+          description: Getting Snapshot was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SnapshotRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /snapshots/{snapshotId}/restores:
+    get:
+      operationId: snapshotsRestoresGet
+      summary: Retrieve all Restore
+      security:
+      - tokenAuth: []
+      description: |
+        This endpoint enables retrieving all Restore using
+        pagination and optional filters.
+      parameters:
+        - name: snapshotId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "a8784665-3d99-5464-af32-30a2967f58e7"
+          required: true
+          description: The ID (UUID) of the Snapshot.
+        - $ref: "#/components/parameters/paginationOffset"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/displayNameQuery"
+      tags:
+        - Restore
+      responses:
+        "200":
+          description: |
+            Returned all requested Restore successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestoreReadList"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    post:
+      operationId: snapshotsRestoresPost
+      summary: Create Restore
+      security:
+      - tokenAuth: []
+      tags:
+        - Restore
+      description: |
+        Creates a new Restore.
+        
+        The full Restore needs to be provided to create the object.
+        Optional data will be filled with defaults or left empty.
+      parameters:
+        - name: snapshotId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "a8784665-3d99-5464-af32-30a2967f58e7"
+          required: true
+          description: The ID (UUID) of the Snapshot.
+      requestBody:
+        description: Restore to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestoreCreate"
+      responses:
+        "201":
+          description: Restore successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestoreRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /snapshots/{snapshotId}/restores/{restoreId}:
+    get:
+      operationId: snapshotsRestoresFindById
+      summary: Retrieve Restore
+      security:
+      - tokenAuth: []
+      tags:
+        - Restore
+      description: Returns the Restore by ID.
+      parameters:
+        - name: snapshotId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "a8784665-3d99-5464-af32-30a2967f58e7"
+          required: true
+          description: The ID (UUID) of the Snapshot.
+        - name: restoreId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "39fe1580-552b-5182-8939-a3ac6c38f94c"
+          required: true
+          description: The ID (UUID) of the Restore.
+      responses:
+        "200":
+          description: Getting Restore was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestoreRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+components:
+  parameters:
+    paginationOffset:
+      name: offset
+      in: query
+      description: The first element (of the total list of elements) to include in the response. Use together with limit for pagination.
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 0
+        minimum: 0
+      example: 0
+    paginationLimit:
+      name: limit
+      in: query
+      description: The maximum number of elements to return. Use together with offset for pagination.
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 100
+        minimum: 1
+        maximum: 1000
+      example: 100
+    displayNameQuery:
+      name: "filter.name"
+      in: query
+      description: |
+          Response filter to list only items contain
+          the specified name. The value is case insensitive and matched on the
+          'displayName' field.
+      required: false
+      schema:
+        type: string
+  schemas:
+    ReplicaSetReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - type
+        - href
+        properties:
+          id:
+            description: ID of the list of ReplicaSet resources.
+            type: string
+            format: uuid
+            example: 2ec26f24-9fca-5576-8cda-03d6a0156bbc
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
+          href:
+            description: The URL of the list of ReplicaSet resources.
+            type: string
+            example: /replicasets
+          items:
+            description: The list of ReplicaSet resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/ReplicaSetRead'
+      - $ref: '#/components/schemas/Pagination'
+    ReplicaSetRead:
+      type: object
+      required:
+      - id
+      - type
+      - href
+      - metadata
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the ReplicaSet.
+          format: uuid
+          example: "1046e9bf-dbc0-5bd3-9291-713d36ab77e9"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - replicaset
+        href:
+          description: The URL of the ReplicaSet.
+          type: string
+          example: /replicasets/1046e9bf-dbc0-5bd3-9291-713d36ab77e9
+        metadata:
+          $ref: '#/components/schemas/ReplicaSetMetadata'
+        properties:
+          $ref: '#/components/schemas/ReplicaSet'
+    ReplicaSetEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the ReplicaSet.
+          format: uuid
+          example: "1046e9bf-dbc0-5bd3-9291-713d36ab77e9"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/ReplicaSet'
+    ReplicaSetCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/ReplicaSet'
+    ReplicaSet:
+      description: |
+        Properties with all data needed to create a new In-Memory DB replication.
+      required:
+        - displayName
+        - version
+        - replicas
+        - resources
+        - persistenceMode
+        - evictionPolicy
+        - connections
+        - credentials
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: The human readable name of your replica set.
+          example: In-Memory DB replica set
+        version:
+          $ref: '#/components/schemas/Version'
+        replicas:
+          $ref: '#/components/schemas/Replicas'
+        resources:
+          $ref: '#/components/schemas/Resources'
+        persistenceMode:
+          $ref: '#/components/schemas/PersistenceMode'
+        evictionPolicy:
+          $ref: '#/components/schemas/EvictionPolicy'
+        connections:
+          type: array
+          minItems: 1
+          maxItems: 1
+          description: |
+            The network connection for your replica set. Only one connection is
+            allowed.
+          items:
+            $ref: '#/components/schemas/Connection'
+        maintenanceWindow:
+          $ref: '#/components/schemas/MaintenanceWindow'
+        backup:
+          $ref: '#/components/schemas/BackupProperties'
+        credentials:
+          $ref: '#/components/schemas/User'
+        initialSnapshotId:
+          type: string
+          format: uuid
+          description: |
+            The ID of a snapshot to restore the replica set from.
+            If set, the replica set will be created from the snapshot.
+          example: 12345678-1234-1234-1234-123456789012
+    Version:
+      type: string
+      description: The In-Memory DB version of your replica set.
+      x-extensible-enum:
+        - "7.0"
+        - "7.2"
+      example: "7.2"
+    Replicas:
+      type: integer
+      description: |
+        The total number of replicas in the replica set (one active and n-1 passive).
+        In case of a standalone instance, the value is 1. In all other cases, the value is >1.
+        The replicas will not be available as read replicas, they are only standby for a failure
+        of the active instance.
+      example: 2
+      minimum: 1
+      maximum: 5
+    Resources:
+      type: object
+      description: |
+        The resources of the individual replicas.
+      required:
+        - cores
+        - ram
+        - storage
+      properties:
+        cores:
+          $ref: '#/components/schemas/Cores'
+        ram:
+          $ref: '#/components/schemas/Ram'
+        storage:
+            type: integer
+            description: |
+                The size of the storage in GB.
+                The size is derived from the amount of RAM and the persistence mode
+                and is not configurable.
+            readOnly: true
+    EvictionPolicy:
+      type: string
+      description: |
+        The eviction policy for the replica set.
+        The default value is `allkeys-lru`.
+        | Policy                | Description |
+        |-----------------------|-------------|
+        | **noeviction**        | No eviction policy is used. In-Memory DB will never remove any data. If the memory limit is reached, an error will be returned on write operations. |
+        | **allkeys-lru**       | The least recently used keys will be removed first. |
+        | **allkeys-lfu**       | The least frequently used keys will be removed first. |
+        | **allkeys-random**    | Random keys will be removed. |
+        | **volatile-lru**      | The least recently used keys will be removed first, but only among keys with the `expire` field set to `true`. |
+        | **volatile-lfu**      | The least frequently used keys will be removed first, but only among keys with the `expire` field set to `true`. |
+        | **volatile-random**   | Random keys will be removed, but only among keys with the `expire` field set to `true`. |
+        | **volatile-ttl**      | The key with the nearest time to live will be removed first, but only among keys with the `expire` field set to `true`. |
+      enum:
+        - noeviction
+        - allkeys-lru
+        - allkeys-lfu
+        - allkeys-random
+        - volatile-lru
+        - volatile-lfu
+        - volatile-random
+        - volatile-ttl
+      example: allkeys-lru
+      default: allkeys-lru
+    PersistenceMode:
+        type: string
+        enum:
+          - None
+          - AOF
+          - RDB
+          - RDB_AOF
+        description: |
+            Specifies How and If data is persisted.
+            | Mode                          | Description |
+            |-------------------------------|-------------|
+            | **None**                      | Data is inMemory only and will not be persisted. Useful for cache only applications. |
+            | **AOF** (Append Only File)    | AOF persistence logs every write operation received by the server. These operations can then be replayed again at server startup, reconstructing the original dataset. Commands are logged using the same format as the In-Memory DB protocol itself. |
+            | **RDB**                       | RDB persistence performs snapshots of the current in memory state. |
+            | **RDB_AOF**                   | Booth, RDB and AOF persistence are enabled. |
+        default: None
+    User:
+      description: Credentials for the In-Memory DB replicaset.
+      properties:
+        username:
+          $ref: '#/components/schemas/Username'
+        password:
+          oneOf:
+            - $ref: '#/components/schemas/PlaintextPassword'
+            - $ref: '#/components/schemas/HashedPassword'
+      required:
+        - username
+        - password
+      type: object
+    Username:
+      description: |
+        The username for the initial In-Memory DB user. Some system usernames
+        are restricted (e.g. `"admin"`, `"standby"`).
+      example: DatabaseAdmin
+      minLength: 1
+      maxLength: 16
+      pattern: "^[a-zA-Z0-9_]{1,16}$"
+      type: string
+    PlaintextPassword:
+      type: string
+      description: The password for a In-Memory DB user.
+      writeOnly: true
+      minLength: 10
+      maxLength: 63
+      example: my-t0p-secret-password
+    HashedPassword:
+      type: object
+      description: The hashed password for a In-Memory DB user.
+      writeOnly: true
+      required:
+        - algorithm
+        - hash
+      properties:
+        algorithm:
+          type: string
+          enum:
+            - SHA-256
+          example: SHA-256
+        hash:
+          type: string
+          minLength: 64
+          maxLength: 64
+          example: 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+    ReplicaSetMetadata:
+      readOnly: true
+      allOf:
+        - $ref: '#/components/schemas/Metadata'
+        - $ref: '#/components/schemas/ResourceState'
+        - type: object
+          required:
+          - dnsName
+          properties:
+            dnsName:
+              $ref: '#/components/schemas/DnsName'
+    DnsName:
+      type: string
+      description: |
+        The DNS name pointing to your replica set. Will be used to connect to the active/standalone instance.
+      example: imdb01.example.com
+    SnapshotReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - type
+        - href
+        properties:
+          id:
+            description: ID of the list of Snapshot resources.
+            type: string
+            format: uuid
+            example: b9cb6c65-8997-58bb-b7d1-93e5da5a6525
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
+          href:
+            description: The URL of the list of Snapshot resources.
+            type: string
+            example: /snapshots
+          items:
+            description: The list of Snapshot resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/SnapshotRead'
+      - $ref: '#/components/schemas/Pagination'
+    SnapshotRead:
+      type: object
+      required:
+      - id
+      - type
+      - href
+      - metadata
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the Snapshot.
+          format: uuid
+          example: "a8784665-3d99-5464-af32-30a2967f58e7"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - snapshot
+        href:
+          description: The URL of the Snapshot.
+          type: string
+          example: /snapshots/a8784665-3d99-5464-af32-30a2967f58e7
+        metadata:
+          $ref: '#/components/schemas/SnapshotMetadata'
+        properties:
+          $ref: '#/components/schemas/Snapshot'
+    SnapshotEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the Snapshot.
+          format: uuid
+          example: "a8784665-3d99-5464-af32-30a2967f58e7"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/Snapshot'
+    SnapshotCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/Snapshot'
+    Snapshot:
+      description: |
+        A point in time snapshot of a In-Memory DB replica set.
+      type: object
+    SnapshotMetadata:
+      readOnly: true
+      allOf:
+        - $ref: '#/components/schemas/Metadata'
+        - $ref: '#/components/schemas/ResourceState'
+        - type: object
+          required:
+            - replicasetId
+            - datacenterId
+          properties:
+            replicasetId:
+              type: string
+              format: uuid
+              description: |
+                The ID of the In-Memory DB replica set the snapshot is taken from.
+              example: 12345678-1234-1234-1234-123456789012
+            snapshotTime:
+              type: string
+              format: date-time
+              description: The time the snapshot was dumped from the replica set.
+            datacenterId:
+              type: string
+              format: uuid
+              description: |
+                The ID of the datacenter the snapshot was created in.
+                Please mind, that the snapshot is not available in other datacenters.
+    RestoreReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - type
+        - href
+        properties:
+          id:
+            description: ID of the list of Restore resources.
+            type: string
+            format: uuid
+            example: 5348fe6c-5e4a-5ff3-aa3c-d5232987f9d5
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
+          href:
+            description: The URL of the list of Restore resources.
+            type: string
+            example: /snapshots/{snapshotId}/restores
+          items:
+            description: The list of Restore resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/RestoreRead'
+      - $ref: '#/components/schemas/Pagination'
+    RestoreRead:
+      type: object
+      required:
+      - id
+      - type
+      - href
+      - metadata
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the Restore.
+          format: uuid
+          example: "39fe1580-552b-5182-8939-a3ac6c38f94c"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - restore
+        href:
+          description: The URL of the Restore.
+          type: string
+          example: /snapshots/{snapshotId}/restores/39fe1580-552b-5182-8939-a3ac6c38f94c
+        metadata:
+          $ref: '#/components/schemas/RestoreMetadata'
+        properties:
+          $ref: '#/components/schemas/Restore'
+    RestoreCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/Restore'
+    Restore:
+        type: object
+        description: |
+          A point in time snapshot of a In-Memory DB replica set.
+        required:
+          - replicasetId
+        properties:
+          replicasetId:
+            type: string
+            format: uuid
+            description: The ID of the replica set the restore was applied on.
+          displayName:
+            type: string
+            description: The human readable name of your snapshot.
+            example: In-Memory DB snapshot
+          description:
+            type: string
+            description: A description of the snapshot.
+            example: Snapshot of the In-Memory DB replica set.
+    RestoreMetadata:
+      readOnly: true
+      allOf:
+        - $ref: '#/components/schemas/Metadata'
+        - $ref: '#/components/schemas/ResourceState'
+        - type: object
+          properties:
+            restoreTime:
+              type: string
+              format: date-time
+              description: The time the snapshot was dumped from the replica set.
+            restoredSnapshotId:
+              type: string
+              format: uuid
+              description: The ID of the snapshot that was restored.
+    ResourceState:
+      type: object
+      description: The current status of the resource.
+      required:
+        - state
+      properties:
+        state:
+          type: string
+          enum:
+            - AVAILABLE
+            - BUSY
+            - FAILED
+            - UNKNOWN
+          example: AVAILABLE
+        message:
+          type: string
+          description: |
+            A human readable message describing the current state.
+            In case of an error, the message will contain a detailed error message.
+          example: In progress.
+    Connection:
+      description: Details about the network connection for your instance.
+      properties:
+        datacenterId:
+          description: The datacenter to connect your instance to.
+          type: string
+          example: '5a029f4a-72e5-11ec-90d6-0242ac120003'
+        lanId:
+          description: The numeric LAN ID to connect your instance to.
+          type: string
+          example: '2'
+        cidr:
+          type: string
+          description: |
+            The IP and subnet for your instance.
+            Note the following unavailable IP ranges:
+            10.210.0.0/16
+            10.212.0.0/14
+          example: 192.168.1.100/24
+      required:
+        - datacenterId
+        - lanId
+        - cidr
+      type: object
+    BackupProperties:
+      description: |
+        Properties configuring the backup of the replicaset.
+      properties:
+        location:
+          $ref: '#/components/schemas/BackupLocation'
+      type: object
+    BackupLocation:
+      type: string
+      description: The S3 location where the backups will be stored.
+      example: de
+    Cores:
+      type: integer
+      description: The number of CPU cores per instance.
+      example: 4
+      minimum: 1
+      maximum: 31
+    Ram:
+      type: integer
+      description: The amount of memory per instance in gigabytes (GB).
+      example: 4
+      minimum: 4
+      maximum: 256
+    MaintenanceWindow:
+      description: |
+        A weekly 4 hour-long window, during which maintenance might occur.
+      properties:
+        time:
+          type: string
+          description: Start of the maintenance window in UTC time.
+          example: '16:30:59'
+        dayOfTheWeek:
+          $ref: '#/components/schemas/DayOfTheWeek'
+      required:
+        - time
+        - dayOfTheWeek
+      type: object
+    DayOfTheWeek:
+      description: The name of the week day.
+      type: string
+      enum:
+        - Sunday
+        - Monday
+        - Tuesday
+        - Wednesday
+        - Thursday
+        - Friday
+        - Saturday
+      example: Monday
+    Error:
+      description: |
+        The Error object is used to represent an error response from the API.
+      type: object
+      properties:
+        httpStatus:
+          type: integer
+          description: The HTTP status code of the operation.
+          example: 400
+        messages:
+          type: array
+          description: |
+            A list of error messages.
+          items:
+            type: object
+            properties:
+              errorCode:
+                type: string
+                description: |
+                  Application internal error code
+                example: "err-1234"
+              message:
+                type: string
+                description: |
+                  A human readable explanation specific to this occurrence of the
+                  problem.
+                example: "Error message example"
+    Metadata:
+      type: object
+      description: Metadata of the resource.
+      properties:
+        createdDate:
+          type: string
+          format: date-time
+          description: The ISO 8601 creation timestamp.
+          example: "2020-12-10T13:37:50+01:00"
+          readOnly: true
+        createdBy:
+          type: string
+          description: Unique name of the identity that created the resource.
+          example: "ionos:identity:::users/87f9a82e-b28d-49ed-9d04-fba2c0459cd3"
+          readOnly: true
+        createdByUserId:
+          type: string
+          description: Unique id of the identity that created the resource.
+          example: 87f9a82e-b28d-49ed-9d04-fba2c0459cd3
+          readOnly: true
+        lastModifiedDate:
+          type: string
+          format: date-time
+          description: The ISO 8601 modified timestamp.
+          example: "2020-12-11T13:37:50+01:00"
+          readOnly: true
+        lastModifiedBy:
+          type: string
+          description: Unique name of the identity that last modified the resource.
+          example: "ionos:identity:::users/87f9a82e-b28d-49ed-9d04-fba2c0459cd3"
+          readOnly: true
+        lastModifiedByUserId:
+          type: string
+          description: Unique id of the identity that last modified the resource.
+          example: 87f9a82e-b28d-49ed-9d04-fba2c0459cd3
+          readOnly: true
+        resourceURN:
+          type: string
+          description: Unique name of the resource.
+          example: "ionos:<product>:<location>:<contract>:<resource-path>"
+          readOnly: true
+    Pagination:
+      required:
+      - offset
+      - limit
+      - _links
+      description: |
+        Pagination information. The offset and limit parameters are used to
+        navigate the list of elements. The _links object contains URLs to
+        navigate the different pages.
+      type: object
+      properties:
+        offset:
+          $ref: '#/components/schemas/Offset'
+        limit:
+          $ref: '#/components/schemas/Limit'
+        _links:
+          $ref: '#/components/schemas/Links'
+    
+    Offset:
+      description: |
+        The offset specified in the request (if none was specified, the default
+        offset is 0).
+      type: integer
+      example: 0
+      minimum: 0
+      readOnly: true
+    Limit:
+      description: |
+        The limit specified in the request (if none was specified, use the
+        endpoint's default pagination limit).
+      type: integer
+      example: 42
+      minimum: 0
+      readOnly: true
+    Links:
+      description: |
+        URLs to navigate the different pages. As of now we always only return a
+        single page.
+      type: object
+      properties:
+        prev:
+          description: |
+            URL (with offset and limit parameters) of the previous page; only
+            present if offset is greater than 0.
+          type: string
+          format: uri
+          example: http://PREVIOUS-PAGE-URI
+          readOnly: true
+        self:
+          description: |
+            URL (with offset and limit parameters) of the current page.
+          type: string
+          format: uri
+          example: http://THIS-PAGE-URI
+          readOnly: true
+        next:
+          description: |
+            URL (with offset and limit parameters) of the next page; only
+            present if offset + limit is less than the total number of elements.
+          type: string
+          format: uri
+          example: http://NEXT-PAGE-URI
+          readOnly: true
+  securitySchemes:
+    tokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        The token can be generated using the 
+        [Authentication API](https://api.ionos.com/docs/authentication/v1/#tag/tokens/operation/tokensGenerate).
+  responses:
+    BadRequest:
+      description: |
+        ### Bad Request
+        The request send to the API was malformed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: |
+        ### Unauthorized
+        The request is missing authorization information or the authorization information provided are expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotAllowed:
+      description: |
+        ### Not Allowed
+        The user issuing the request does not have the needed permissions.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: |
+        ### Conflict
+        The UUID is already taken by another party, follow the guides to generate UUIDs uniquely.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: |
+        ### Not Found
+        The resource that was requested could not be found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnexpectedError:
+      description: |
+        ### Unexpected Internal Server Error
+        An unexpected internal error occurred. We apologize for the inconvenience!
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnprocessableEntity:
+      description: |
+        ### Unprocessable Entity
+        The request was well-formed but was unable to be followed due to semantic errors.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    TooManyRequests:
+      description: |
+        ### Too Many Requests
+        The user has sent too many requests in a given amount of time.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnsupportedMediaType:
+      description: |
+        ### Unsupported Media Type
+        The request has an unsupported media type.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalError:
+      description: |
+        ### Internal Server Error
+        An internal error occurred. We apologize for the inconvenience!
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServiceUnavailable:
+      description: |
+        ### Service Unavailable
+        The server is currently unable to handle the request due to a temporary overloading or maintenance of the server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

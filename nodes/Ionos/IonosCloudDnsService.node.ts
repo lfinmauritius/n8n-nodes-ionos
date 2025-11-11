@@ -17,7 +17,7 @@ export class IonosCloudDnsService implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
-		description: 'Manage IONOS Cloud DNS zones, records, DNSSEC, and reverse DNS. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage IONOS Cloud DNS zones, records, DNSSEC, and reverse DNS. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud DNS Service',
 		},

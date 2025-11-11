@@ -16,7 +16,7 @@ export class IonosCloudBilling implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["resource"]}} - {{$parameter["operation"]}}',
-		description: 'Retrieve billing information, invoices, usage data, and resource utilization from IONOS Cloud. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Retrieve billing information, invoices, usage data, and resource utilization from IONOS Cloud. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Billing',
 		},

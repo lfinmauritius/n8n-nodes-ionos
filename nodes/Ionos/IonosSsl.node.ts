@@ -16,7 +16,7 @@ export class IonosSsl implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"]}}',
-		description: 'Manage SSL certificates with IONOS. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage SSL certificates with IONOS. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS SSL',
 		},

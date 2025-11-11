@@ -17,7 +17,7 @@ export class IonosCloudCertificateManager implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{ $parameter["operation"] }}',
-		description: 'Manage SSL/TLS certificates with IONOS Certificate Manager. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage SSL/TLS certificates with IONOS Certificate Manager. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Certificate Manager',
 		},

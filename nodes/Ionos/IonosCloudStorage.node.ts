@@ -17,7 +17,7 @@ export class IonosCloudStorage implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
-		description: 'Manage IONOS Cloud Storage (S3 Keys, Backup Units). Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage IONOS Cloud Storage (S3 Keys, Backup Units). Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Storage',
 		},

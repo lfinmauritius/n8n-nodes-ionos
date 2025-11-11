@@ -1,0 +1,63 @@
+openapi: 3.0.3
+info:
+  title: IONOS Object Storage API Reference
+  version: 2.0.17
+  description: |
+    ### API References
+    - [Object Storage Management API Reference](https://api.ionos.com/docs/s3-management/v1/) for managing Access Keys
+    - [Object Storage API Reference for contract-owned buckets](https://api.ionos.com/docs/s3-contract-owned-buckets/v2/)
+    - [Object Storage API Reference for user-owned buckets](https://api.ionos.com/docs/s3-user-owned-buckets/v2/)
+
+    ### User documentation
+    [IONOS Object Storage User Guide](https://docs.ionos.com/cloud/storage-and-backup/ionos-object-storage)
+    * [Documentation on user-owned and contract-owned buckets](https://docs.ionos.com/cloud/managed-services/s3-object-storage/concepts/buckets)
+    * [Documentation on S3 API Compatibility](https://docs.ionos.com/cloud/managed-services/s3-object-storage/concepts/s3-api-compatibility)
+    * [S3 Tools](https://docs.ionos.com/cloud/managed-services/s3-object-storage/s3-tools) that can be used
+
+    ### Endpoints
+    | Location | Region Name | Bucket Type | Endpoint |
+    | --- | --- | --- | --- |
+    | **Frankfurt, Germany** | **de** | User-owned | `https://s3.eu-central-1.ionoscloud.com` |
+    | **Berlin, Germany** | **eu-central-2** | User-owned | `https://s3.eu-central-2.ionoscloud.com` |
+    | **Logroño, Spain** | **eu-south-2** | User-owned | `https://s3.eu-south-2.ionoscloud.com` |
+    | **Berlin, Germany** | **eu-central-3** | Contract-owned | `https://s3.eu-central-3.ionoscloud.com` |
+    | **Lenexa, USA** | **us-central-1** | Contract-owned | `https://s3.us-central-1.ionoscloud.com` |
+servers:
+  - url: https://s3.eu-central-1.ionoscloud.com
+    description: URL for `de` (Frankfurt, Germany)
+  - url: https://s3.eu-central-2.ionoscloud.com
+    description: URL for `eu-central-2` (Berlin, Germany)
+  - url: https://s3.eu-south-2.ionoscloud.com    
+    description: URL for `eu-south-2` (Logroño, Spain)
+  - url: https://s3.eu-central-3.ionoscloud.com    
+    description: URL for `eu-central-3` (Berlin, Germany)
+  - url: https://s3.us-central-1.ionoscloud.com    
+    description: URL for `us-central-1` (Lenexa, USA)
+x-hasEquivalentPaths: true
+tags:
+  - name: Example
+    description: Example
+paths:
+  "/example":
+    get:
+      tags:
+        - Example
+      summary: Example
+      operationId: Example
+      description: |
+        This is just an example, please navigate to the actual Object Storage API Reference depending on the bucket type:
+        - [IONOS Object Storage API for contract-owned buckets ](https://api.ionos.com/docs/s3-contract-owned-buckets/v2/)
+        - [IONOS Object Storage API for user-owned buckets](https://api.ionos.com/docs/s3-user-owned-buckets/v2/)
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Not found
+components:
+  securitySchemes:
+    hmac:
+      type: apiKey
+      name: Authorization
+      in: header
+security:
+  - hmac: []

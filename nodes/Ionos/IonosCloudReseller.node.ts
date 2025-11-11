@@ -16,7 +16,7 @@ export class IonosCloudReseller implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["resource"]}} - {{$parameter["operation"]}}',
-		description: 'Manage customer contracts and admin users for IONOS reseller partners. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage customer contracts and admin users for IONOS reseller partners. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Reseller',
 		},

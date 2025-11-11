@@ -1,0 +1,413 @@
+openapi: 3.0.3
+info:
+  version: v1
+  title: Activity Log Service API
+  description: >-
+    The Activity Log API allows contract owners and administrators to discover
+    what activity has happened under a specific contract. This allows auditing
+    of user activities as well as changes to any resources. The activity is
+    grouped by contract and can be refined using date ranges. Activity
+    information is READ-ONLY so all calls made against the Activity Log API will
+    be handled using GET requests.
+servers:
+  - url: https://api.ionos.com
+tags:
+  - name: Info
+  - name: Contracts
+paths:
+  /activitylog/v1:
+    get:
+      tags:
+        - Info
+      summary: Display API information
+      description: Display API information
+      operationId: getInfo
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+  /activitylog/v1/contracts:
+    get:
+      tags:
+        - Contracts
+      summary: List all accessible contracts
+      description: >-
+        This operation is retrieving a list of contracts that your account
+        credentials are authorized to access. This operation is primarily useful
+        to IONOS' Resellers, as a non-reseller user account will only have
+        access to a single contract.
+      operationId: getAvailableContracts
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReferenceById'
+              example:
+                - id: 12345678
+                  type: contracts
+                  href: https://api.ionos.com/activitylog/v1/contracts/12345678
+                - id: 98765432
+                  type: contracts
+                  href: https://api.ionos.com/activitylog/v1/contracts/98765432
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      security:
+        - Basic_Authentication: []
+        - Token_Authentication: []
+  /activitylog/v1/contracts/{contractNumber}:
+    get:
+      tags:
+        - Contracts
+      summary: Download Activity Log entries.
+      description: >
+        This operation returns the actual activity log data related to the
+        specific **contractId** supplied in the request. The amount of data
+        returned can be limited by providing one or both of the optional
+        **startDate** and **endDate** parameters.
+
+          If valid values for both **dateStart** and **dateEnd** are supplied, then the activity log information for the date range specified will be returned. Omitting either **dateStart** or **dateEnd** will return all entries available after **dateStart** or before **dateEnd**.
+
+          For pagination use the **page** and **size** parameters.
+      operationId: getByContract
+      parameters:
+        - name: contractNumber
+          in: path
+          description: Contract number thats activity log entires should be downloaded.
+          required: true
+          schema:
+            type: integer
+        - name: dateStart
+          in: query
+          description: >-
+            Start date for the Activity Log entries (inclusive) (e.g.
+            '2021-09-23T11:43:51Z' or '2016-07-01')
+          required: false
+          schema:
+            type: string
+        - name: dateEnd
+          in: query
+          description: >-
+            End date for the Activity Log entries (exclusive) (e.g.
+            '2021-09-27T10:31:15Z' or '2016-07-30')
+          required: false
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: Page index ( the number of hits to skip )
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Page size ( the maximum number of hits to return )
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Downloading activity log entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetByContractResponse'
+              example:
+                hits:
+                  total: 1
+                  hits:
+                    - _source:
+                        "@uuid": "c1b9b1b0-7b1b-11e6-9a41-000d3a002f99"
+                        meta:
+                          auditVersion: "0.1"
+                          time: '2016-09-23T12:02:52.394Z'
+                        principal:
+                          sourceIP: 203.0.113.42
+                          identity:
+                            contractNumber: "31721060"
+                            username: user@example.com
+                          sourceService: ExampleService
+                        event:
+                          param: {}
+                          resources:
+                            - action:
+                                - sec.user.create
+                              id: "1466"
+                              type: user
+                          type: RequestAccepted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      security:
+        - Basic_Authentication: []
+        - Token_Authentication: []
+components:
+  securitySchemes:
+    Basic_Authentication:
+      type: http
+      description: >
+        You will need to base64 encode the string containing your credentials.
+        <div style="padding: 15px; border: 1px solid #d1ecf1; background-color: #d1ecf1; color: #0c5460; margin-bottom: 15px;">
+          <strong>Note:</strong><br/><br/>
+          From **March 15, 2024**, this option will only be accessible if your account **does not 
+          have 2-Factor Authentication (2FA) enabled**.
+        </div>
+        Separate your username and password with a colon, i.e., username:password
+        and send it as 'Authorization' request header. More details: https://en.wikipedia.org/wiki/Basic_access_authentication
+      scheme: basic
+    Token_Authentication:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: >-
+        Please provide header value as 'Bearer ' and don't forget to add
+        'Bearer' HTTP Authorization Scheme before the token.
+  schemas:
+    Info:
+      description: The info model.
+      type: object
+      properties:
+        href:
+          type: string
+          format: uri
+          description: API entry point
+          readOnly: true
+        name:
+          type: string
+          example: CLOUD API
+          description: Name of the API
+          readOnly: true
+        version:
+          type: string
+          example: '1.0'
+          description: Version of the API
+          readOnly: true
+    ReferenceById:
+      description: Describes a reference to a specific activity log source.
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The Contract ID
+        type:
+          type: string
+          description: A string indicating the type
+        href:
+          type: string
+          format: uri
+          description: A URL reference
+    GetByContractResponse:
+      x-go-name: ActivityLogsByContract
+      description: Activity log data related to the specific contractId
+      type: object
+      properties:
+        hits:
+          type: object
+          description: The container for the found activity event data.
+          properties:
+            total:
+              type: integer
+              description: A count of total number of available activity events.
+            hits:
+              type: array
+              items:
+                type: object
+                properties:
+                  _source:
+                    type: object
+                    description: The payload of a single activity event.
+                    properties:
+                      principal:
+                        type: object
+                        description: The person or process which triggered the event.
+                        properties:
+                          sourceIP:
+                            type: string
+                            description: The remote IP address which triggered the activity.
+                          identity:
+                            type: object
+                            description: The identity of the user who triggered the activity.
+                            properties:
+                              contractNumber:
+                                type: string
+                                description: The customer contract number.
+                              username:
+                                type: string
+                                description: The user name.
+                          sourceService:
+                            type: string
+                            description: |
+                              The principal triggered the activity using this IONOS service.
+                              
+                              Example values are 
+                              * `PUBLIC_REST_V6` for the CloudAPI V6,
+                              * `Reseller_V1` for the Reseller API V1 or
+                              * `DCD` for the Data Center Designer.
+                          serviceHost:
+                            type: string
+                            description: |
+                              The FQDN of the hostname on which the service runs.
+                      meta:
+                        type: object
+                        description: Meta information about the activity event.
+                        properties:
+                          auditVersion:
+                            type: string
+                            description: The values returned is currently "0.1".
+                          requestId:
+                            type: string
+                            description: >-
+                              Identifier of the individual request which triggered the
+                              activity.
+                          queueRefId:
+                            type: integer
+                            description: >-
+                              Identifier of the provisioning queue reference. Use this
+                              value to group different events that were part of the same
+                              provisioning request.
+                          time:
+                            type: string
+                            description: Combined date and time of the activity event in UTC.
+                          transactionId:
+                            type: string
+                            description: Identifier of the transaction which triggered the activity.
+                      event:
+                        type: object
+                        description: Details specific to the activity event.
+                        properties:
+                          param:
+                            type: object
+                            description: Additional parameters for the given `type` of activity event.
+                            properties:
+                              action:
+                                type: string
+                                description: HTTP protocol method used to trigger the activity.
+                                enum:
+                                  - GET
+                                  - POST
+                                  - PATCH
+                                  - PUT
+                                  - DELETE
+                              error:
+                                type: object
+                                description: >-
+                                  Details of the error response returned for a given
+                                  activity.
+                                properties:
+                                  httpStatus:
+                                    type: string
+                                    description: HTTP error code for the given activity.
+                                  messages:
+                                    type: array
+                                    description: >-
+                                      An array of error messages corresponding to the
+                                      given activity.
+                                    items:
+                                      type: object
+                                      properties:
+                                        errorCode:
+                                          type: string
+                                          description: >-
+                                            Internal error code generated by the given
+                                            activity.
+                                        message:
+                                          type: string
+                                          description: >-
+                                            Details of the specific error generated by the
+                                            given activity.
+                              uri:
+                                type: string
+                                description: HTTP URI for the given activity request.
+                              initiator:
+                                type: string
+                                description: >-
+                                  Component which initiated the activity. Usually
+                                  equivalent to sourceService in the **principal**
+                                  section.
+                              errorCode:
+                                type: string
+                                description: Internal error code generated by the given activity.
+                              sourceService:
+                                type: string
+                                description: |
+                                  The IONOS service in which the activity took place.
+                                  
+                                  Example values are
+                                  `PUBLIC_REST` for the CloudAPI or
+                                  `Provisioning` for events happening during the asynchronous
+                                  resource provisioning process.
+                          resources:
+                            type: array
+                            description: An array of resources affected by the given activity.
+                            items:
+                              type: object
+                              properties:
+                                action:
+                                  type: array
+                                  description: |
+                                    An array of items containing a string describing the
+                                    action that was performed on the resource. There are
+                                    a large number of possible values returned here.
+                                    
+                                    Some example values are 
+                                    * in the security domain `sec.user.create` for a user 
+                                      creation, 
+                                    * in the IP domain `ip.ipblock.reserve` for reserving an 
+                                      IP block,
+                                    * in the virtual resources domain `vr.firewall.activate` for 
+                                      a firewall activation or
+                                    * in the snapshot domain `sn.snapshot.create` for creating
+                                      a snapshot.
+                                  items:
+                                    type: string
+                                id:
+                                  type: string
+                                  description: Identifier of the given resource.
+                                type:
+                                  type: string
+                                  description: |
+                                    Type of the given resource. Example values are
+                                    
+                                    * `datacenter`,
+                                    * `firewallrule` or
+                                    * `backupUnit`.
+                          message:
+                            type: string
+                            description: Message explaining the current status of the request.
+                          status:
+                            type: string
+                            description: The current status of the request.
+                            enum:
+                              - DONE
+                              - RUNNING
+                              - QUEUED
+                              - FAILED
+                          type:
+                            type: string
+                            description: |
+                              Type of the activity event. The exact contents of the `event` object
+                              will vary depending on this value.
+                              
+                              There are a large number of possible values, examples are
+                              * `Error` for a request that couldn't be completed,
+                              * `RequestAccepted` for an incoming request (e.g. via HTTP),
+                              * `RequestStatusUpdate` for a later update about a request which was
+                                logged earlier,
+                              * `Provision` for resource provisionings running in the background or 
+                              * `DCDUserEvent` for events about a DCD user.

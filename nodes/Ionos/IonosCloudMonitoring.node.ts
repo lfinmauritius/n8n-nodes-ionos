@@ -14,7 +14,7 @@ export class IonosCloudMonitoring implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["resource"]}} - {{$parameter["operation"]}}',
-		description: 'Manage monitoring pipelines and centralized metrics collection with IONOS Cloud Monitoring Service. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage monitoring pipelines and centralized metrics collection with IONOS Cloud Monitoring Service. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Monitoring',
 		},

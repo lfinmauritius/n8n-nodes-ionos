@@ -16,7 +16,7 @@ export class IonosCloudIdentity implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"]}}',
-		description: 'Manage IAM password policies for security and compliance with IONOS Cloud Identity. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage IAM password policies for security and compliance with IONOS Cloud Identity. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Identity',
 		},

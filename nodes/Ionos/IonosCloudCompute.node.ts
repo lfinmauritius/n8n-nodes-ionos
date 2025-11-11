@@ -16,7 +16,7 @@ export class IonosCloudCompute implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage IONOS Cloud servers, volumes, images, and snapshots. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage IONOS Cloud servers, volumes, images, and snapshots. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Compute',
 		},

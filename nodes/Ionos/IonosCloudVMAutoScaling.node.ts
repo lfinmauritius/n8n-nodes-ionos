@@ -16,7 +16,7 @@ export class IonosCloudVMAutoScaling implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage VM Auto Scaling Groups with IONOS Cloud. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage VM Auto Scaling Groups with IONOS Cloud. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS VM Auto Scaling',
 		},

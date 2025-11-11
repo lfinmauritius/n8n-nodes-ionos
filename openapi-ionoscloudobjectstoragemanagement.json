@@ -1,0 +1,1128 @@
+openapi: "3.0.3"
+info:
+  title: IONOS Cloud - Object Storage Management API
+  description: |
+    Object Storage Management API is a RESTful API that manages the object storage
+    service configuration for IONOS Cloud.
+  version: 0.1.0
+servers:
+- url: https://s3.ionos.com
+  description: Production
+tags:
+- name: Accesskeys
+  description: |
+    Per user access key.
+    
+    This tag groups all operations for accesskeys.
+- name: Regions
+  description: |
+    IONOS Cloud object storage regions they define the location of the bucket, can also be used as `LocationConstraint` for bucket creation.
+    
+    This tag groups all operations for regions.
+paths:
+  /accesskeys:
+    get:
+      operationId: accesskeysGet
+      summary: Retrieve all Accesskeys
+      security:
+      - tokenAuth: []
+      description: |
+        This endpoint enables retrieving all Accesskeys using
+        pagination and optional filters.
+      parameters:
+        - $ref: "#/components/parameters/paginationOffset"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/accesskeyId"
+      tags:
+        - Accesskeys
+      responses:
+        "200":
+          description: |
+            Returned all requested Accesskeys successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessKeyReadList"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    post:
+      operationId: accesskeysPost
+      summary: Create AccessKey
+      security:
+      - tokenAuth: []
+      tags:
+        - Accesskeys
+      description: |
+        Creates a new AccessKey.
+        
+        The full AccessKey needs to be provided to create the object.
+        Optional data will be filled with defaults or left empty.
+      requestBody:
+        description: AccessKey to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccessKeyCreate"
+      responses:
+        "201":
+          description: AccessKey successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessKeyRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /accesskeys/{accesskeyId}:
+    get:
+      operationId: accesskeysFindById
+      summary: Retrieve AccessKey
+      security:
+      - tokenAuth: []
+      tags:
+        - Accesskeys
+      description: Returns the AccessKey by ID.
+      parameters:
+        - name: accesskeyId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "fb68d39a-5706-51b4-b2b2-7b4bf9cbf0af"
+          required: true
+          description: The ID (UUID) of the AccessKey.
+      responses:
+        "200":
+          description: Getting AccessKey was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessKeyRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    put:
+      operationId: accesskeysPut
+      summary: Ensure AccessKey
+      security:
+      - tokenAuth: []
+      tags:
+        - Accesskeys
+      description: |
+        Ensures that the AccessKey with the provided ID is created or modified.
+        The full AccessKey needs to be provided to ensure
+        (either update or create) the AccessKey. Non present data will
+        only be filled with defaults or left empty, but not take
+        previous values into consideration.
+      parameters:
+        - name: accesskeyId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "fb68d39a-5706-51b4-b2b2-7b4bf9cbf0af"
+          required: true
+          description: The ID (UUID) of the AccessKey.
+      requestBody:
+        description: update AccessKey
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccessKeyEnsure"
+      responses:
+        "200":
+          description: AccessKey successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessKeyRead"
+        "201":
+          description: AccessKey successfully ensured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessKeyRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    delete:
+      operationId: accesskeysDelete
+      summary: Delete AccessKey
+      security:
+      - tokenAuth: []
+      tags:
+        - Accesskeys
+      description: Deletes the specified AccessKey.
+      parameters:
+        - name: accesskeyId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "fb68d39a-5706-51b4-b2b2-7b4bf9cbf0af"
+          required: true
+          description: The ID (UUID) of the AccessKey.
+      responses:
+        "202":
+          description: Deleting AccessKey was successful.
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /accesskeys/{accesskeyId}/renew:
+    put:
+      operationId: accesskeysRenew
+      summary: Ensure AccessKey
+      security:
+      - tokenAuth: []
+      tags:
+        - Accesskeys
+      description: |
+        Renew will replace the existing secret access key with a new one.
+      parameters:
+        - name: accesskeyId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: fb68d39a-5706-51b4-b2b2-7b4bf9cbf0af
+          required: true
+          description: The ID (UUID) of the AccessKey that should be ensured.
+      responses:
+        "200":
+          description: AccessKey successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessKeyRead"
+        "201":
+          description: AccessKey successfully ensured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessKeyRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalError'
+  /regions:
+    get:
+      operationId: regionsGet
+      summary: Retrieve all Regions
+      security:
+      - tokenAuth: []
+      description: |
+        This endpoint enables retrieving all Regions using
+        pagination and optional filters.
+      parameters:
+        - $ref: "#/components/parameters/paginationOffset"
+        - $ref: "#/components/parameters/paginationLimit"
+      tags:
+        - Regions
+      responses:
+        "200":
+          description: |
+            Returned all requested Regions successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegionReadList"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /regions/{region}:
+    get:
+      operationId: regionsFindByRegion
+      summary: Retrieve Region
+      security:
+      - tokenAuth: []
+      tags:
+        - Regions
+      description: Returns the Region by Region.
+      parameters:
+        - name: region
+          in: path
+          schema:
+            type: string
+          example: "eu-central-3"
+          required: true
+          description: The Region of the Region.
+      responses:
+        "200":
+          description: Getting Region was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegionRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+components:
+  parameters:
+    paginationOffset:
+      name: offset
+      in: query
+      description: The first element (of the total list of elements) to include in the response. Use together with limit for pagination.
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 0
+        minimum: 0
+      example: 0
+    paginationLimit:
+      name: limit
+      in: query
+      description: The maximum number of elements to return. Use together with offset for pagination.
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 100
+        minimum: 1
+        maximum: 1000
+      example: 100
+    accesskeyId:
+      name: "filter.accesskeyId"
+      in: query
+      description: The accesskey ID to filter by.
+      required: false
+      schema:
+        type: string
+  schemas:
+    AccessKeyReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - type
+        - href
+        properties:
+          id:
+            description: ID of the list of AccessKey resources.
+            type: string
+            format: uuid
+            example: 5cd907ee-6b6a-5e3a-abaf-5c2edd01d78c
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
+          href:
+            description: The URL of the list of AccessKey resources.
+            type: string
+            example: /accesskeys
+          items:
+            description: The list of AccessKey resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/AccessKeyRead'
+      - $ref: '#/components/schemas/Pagination'
+    AccessKeyRead:
+      type: object
+      required:
+      - id
+      - type
+      - href
+      - metadata
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the AccessKey.
+          format: uuid
+          example: "fb68d39a-5706-51b4-b2b2-7b4bf9cbf0af"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - accesskey
+        href:
+          description: The URL of the AccessKey.
+          type: string
+          example: /accesskeys/fb68d39a-5706-51b4-b2b2-7b4bf9cbf0af
+        metadata:
+          $ref: '#/components/schemas/MetadataWithSupportedRegions'
+        properties:
+          $ref: '#/components/schemas/AccessKey'
+    AccessKeyEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the AccessKey.
+          format: uuid
+          example: "fb68d39a-5706-51b4-b2b2-7b4bf9cbf0af"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/AccessKey'
+    AccessKeyCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/AccessKey'
+    RegionReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - type
+        - href
+        properties:
+          id:
+            description: ID of the list of Region resources.
+            type: string
+            format: uuid
+            example: 1bcda4f5-f78b-532d-976d-183e3437af91
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
+          href:
+            description: The URL of the list of Region resources.
+            type: string
+            example: /regions
+          items:
+            description: The list of Region resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/RegionRead'
+      - $ref: '#/components/schemas/Pagination'
+    RegionRead:
+      type: object
+      required:
+      - id
+      - type
+      - href
+      - metadata
+      - properties
+      properties:
+        id:
+          type: string
+          description: The Region of the Region.
+          example: "eu-central-3"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - region
+        href:
+          description: The URL of the Region.
+          type: string
+          example: /regions/eu-central-3
+        metadata:
+          $ref: '#/components/schemas/NoMetadata'
+        properties:
+          $ref: '#/components/schemas/Region'
+    RegionEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The Region of the Region.
+          example: "eu-central-3"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/Region'
+    RegionCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/Region'
+    BucketReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - type
+        - href
+        properties:
+          id:
+            description: ID of the list of Bucket resources.
+            type: string
+            format: uuid
+            example: 5233dd4a-3048-5c08-8f16-fe636dae3bba
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
+          href:
+            description: The URL of the list of Bucket resources.
+            type: string
+            example: /buckets
+          items:
+            description: The list of Bucket resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/BucketRead'
+      - $ref: '#/components/schemas/Pagination'
+    BucketRead:
+      type: object
+      required:
+      - id
+      - type
+      - href
+      - metadata
+      - properties
+      properties:
+        id:
+          type: string
+          description: The Bucket of the Bucket.
+          example: "my-bucket"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - bucket
+        href:
+          description: The URL of the Bucket.
+          type: string
+          example: /buckets/my-bucket
+        metadata:
+          $ref: '#/components/schemas/NoMetadata'
+        properties:
+          $ref: '#/components/schemas/Bucket'
+    BucketEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The Bucket of the Bucket.
+          example: "my-bucket"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/Bucket'
+    BucketCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/Bucket'
+    StorageClassReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - type
+        - href
+        properties:
+          id:
+            description: ID of the list of StorageClass resources.
+            type: string
+            format: uuid
+            example: 965ebaca-6089-5961-ac9f-5ac94498bf3f
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
+          href:
+            description: The URL of the list of StorageClass resources.
+            type: string
+            example: /storageclasses
+          items:
+            description: The list of StorageClass resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/StorageClassRead'
+      - $ref: '#/components/schemas/Pagination'
+    StorageClassRead:
+      type: object
+      required:
+      - id
+      - type
+      - href
+      - metadata
+      - properties
+      properties:
+        id:
+          type: string
+          description: The StorageClass of the StorageClass.
+          example: "c-standard"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - storageclass
+        href:
+          description: The URL of the StorageClass.
+          type: string
+          example: /storageclasses/c-standard
+        metadata:
+          $ref: '#/components/schemas/NoMetadata'
+        properties:
+          $ref: '#/components/schemas/StorageClass'
+    StorageClassEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The StorageClass of the StorageClass.
+          example: "c-standard"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/StorageClass'
+    StorageClassCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/StorageClass'
+    AccessKey:
+      type: object
+      description: |
+        Per user access key.
+      required:
+        - description
+        - accessKey
+        - secretKey
+      properties:
+        description:
+          type: string
+          example: Access key details
+          description: Description of the Access key.
+        accessKey:
+          type: string
+          example: "00000Du4KiV8A1tGUbjI2Ky1YmXqXnCpaQpgWw6_1V5fhMPRnAAAAAEIkfcQAAAAAAiR9xAioHCB_FWuNJ4un864Pouw"
+          description: Access key metadata is a string of 92 characters.
+          readOnly: true
+        secretKey:
+          type: string
+          example: "tFVkUARsoeCdntQs2jVSyGG6TMPfPZ+ghnsWj/gG"
+          description: The secret key of the Access key.
+          readOnly: true
+        canonicalUserId:
+          type: string
+          readOnly: true
+          example: "a73e086eeaaa03e21e4e932ac8a2ed7a"
+          description: The canonical user ID which is valid for user-owned buckets.
+        contractUserId:
+          type: string
+          readOnly: true
+          example: "11111111:00000000-0000-0000-0000-000000000000"
+          description: The contract user ID which is valid for contract-owned buckets.
+    
+    Region:
+      type: object
+      description: |
+        IONOS Cloud object storage regions they define the location of the bucket, can also be used as `LocationConstraint` for bucket creation.
+      properties:
+        version:
+          type: integer
+          description: "The version of the region properties"
+          example: 1
+        endpoint:
+          type: string
+          description: "The endpoint URL for the region"
+          example: "s3.eu-central-3.ionoscloud.com"
+        website:
+          type: string
+          description: "The website URL for the region"
+          example: "s3-website-de-central.profitbricks.com"
+        capability:
+          type: object
+          description: "The capabilities of the region"
+          properties:
+            iam:
+              type: boolean
+              description: "Indicates if IAM policy based access is supported"
+              example: false
+            s3select:
+              type: boolean
+              description: "Indicates if S3 Select is supported"
+              example: true
+        storageClasses:
+          type: array
+          description: "The available classes in the region"
+          items:
+            type: string
+          example:
+            - standard
+            - standardInfrequentAccess
+        location:
+          type: string
+          description: |
+            The data center location of the region as per [Get Location](/docs/cloud/v6/#tag/Locations/operation/locationsGet).
+            *Can't be used as `LocationConstraint` on bucket creation.*
+          example: "de/fra"
+        bucketOwnership:
+          type: string
+          description: "Indicates whether a region supports user-owned or contract-owned buckets."
+          example: "user-owned"
+          enum:
+           - user-owned
+           - contract-owned
+      required:
+        - version
+        - endpoint
+        - website
+        - capability
+        - location
+    Bucket:
+      type: object
+      description: |
+        Buckets visible to the user.
+      properties:
+        region:
+          type: string
+          description: "The region where the bucket is located"
+          example: "eu-central-3"
+        website:
+          type: string
+          description: "The website URL for the bucket"
+          example: "my-bucket.s3.eu-central-3.ionoscloud.com"
+      required:
+        - region
+        - website
+    StorageClass:
+      type: object
+      description: |
+        Details the cross functional aspects of the given storage class.
+      properties:
+        description:
+          type: string
+          description: "Explains the motivation for the storage class"
+        durability:
+          type: string
+          description: "The durability of the storage class"
+          example: "99.999999999"
+        availability:
+          type: string
+          description: "The availability of the storage class"
+          example: "99.99"
+      required:
+        - description
+        - durability
+        - availability
+    NoMetadata:
+      type: object
+    MetadataWithStatus:
+      allOf:
+        - $ref: '#/components/schemas/Metadata'
+        - type: object
+          required:
+            - status
+          properties:
+            status:
+              type: string
+              description: |
+                The status of the object. The status can be:
+                * `AVAILABLE` - resource exists and is healthy.
+                * `PROVISIONING` - resource is being created or updated.
+                * `DESTROYING` - delete command was issued, the resource is being deleted.
+                * `FAILED` - resource failed, details in `failureMessage`.
+              enum:
+                - PROVISIONING
+                - DESTROYING
+                - AVAILABLE
+                - FAILED
+              example: "AVAILABLE"
+              readOnly: true
+            statusMessage:
+              type: string
+              description: |
+                The message of the failure if the status is `FAILED`.
+              example: null
+              readOnly: true
+            administrative:
+              type: boolean
+              description: |
+                Indicates if the key is an administrative key. Administrative keys
+                can create buckets and set bucket policies.
+              example: false
+              readOnly: true
+    MetadataWithSupportedRegions:
+      allOf:
+        - $ref: '#/components/schemas/MetadataWithStatus'
+        - type: object
+          required:
+            - supportedRegions
+          properties:
+            supportedRegions:
+              type: array
+              items:
+                type: string
+              description: |
+                The list of supported regions.
+              example: ["de", "eu-central-2", "eu-south-2"]
+    Error:
+      description: |
+        The Error object is used to represent an error response from the API.
+      type: object
+      properties:
+        httpStatus:
+          type: integer
+          description: The HTTP status code of the operation.
+          example: 400
+        messages:
+          type: array
+          description: |
+            A list of error messages.
+          items:
+            type: object
+            properties:
+              errorCode:
+                type: string
+                description: |
+                  Application internal error code
+                example: "err-1234"
+              message:
+                type: string
+                description: |
+                  A human readable explanation specific to this occurrence of the
+                  problem.
+                example: "Error message example"
+    Metadata:
+      type: object
+      description: Metadata of the resource.
+      properties:
+        createdDate:
+          type: string
+          format: date-time
+          description: The ISO 8601 creation timestamp.
+          example: "2020-12-10T13:37:50+01:00"
+          readOnly: true
+        createdBy:
+          type: string
+          description: Unique name of the identity that created the resource.
+          example: "ionos:identity:::users/87f9a82e-b28d-49ed-9d04-fba2c0459cd3"
+          readOnly: true
+        createdByUserId:
+          type: string
+          description: Unique id of the identity that created the resource.
+          example: 87f9a82e-b28d-49ed-9d04-fba2c0459cd3
+          readOnly: true
+        lastModifiedDate:
+          type: string
+          format: date-time
+          description: The ISO 8601 modified timestamp.
+          example: "2020-12-11T13:37:50+01:00"
+          readOnly: true
+        lastModifiedBy:
+          type: string
+          description: Unique name of the identity that last modified the resource.
+          example: "ionos:identity:::users/87f9a82e-b28d-49ed-9d04-fba2c0459cd3"
+          readOnly: true
+        lastModifiedByUserId:
+          type: string
+          description: Unique id of the identity that last modified the resource.
+          example: 87f9a82e-b28d-49ed-9d04-fba2c0459cd3
+          readOnly: true
+        resourceURN:
+          type: string
+          description: Unique name of the resource.
+          example: "ionos:<product>:<location>:<contract>:<resource-path>"
+          readOnly: true
+    Pagination:
+      required:
+      - offset
+      - limit
+      - _links
+      description: |
+        Pagination information. The offset and limit parameters are used to
+        navigate the list of elements. The _links object contains URLs to
+        navigate the different pages.
+      type: object
+      properties:
+        offset:
+          $ref: '#/components/schemas/Offset'
+        limit:
+          $ref: '#/components/schemas/Limit'
+        _links:
+          $ref: '#/components/schemas/Links'
+    
+    Offset:
+      description: |
+        The offset specified in the request (if none was specified, the default
+        offset is 0).
+      type: integer
+      example: 0
+      minimum: 0
+      readOnly: true
+    Limit:
+      description: |
+        The limit specified in the request (if none was specified, use the
+        endpoint's default pagination limit).
+      type: integer
+      example: 42
+      minimum: 0
+      readOnly: true
+    Links:
+      description: |
+        URLs to navigate the different pages. As of now we always only return a
+        single page.
+      type: object
+      properties:
+        prev:
+          description: |
+            URL (with offset and limit parameters) of the previous page; only
+            present if offset is greater than 0.
+          type: string
+          format: uri
+          example: http://PREVIOUS-PAGE-URI
+          readOnly: true
+        self:
+          description: |
+            URL (with offset and limit parameters) of the current page.
+          type: string
+          format: uri
+          example: http://THIS-PAGE-URI
+          readOnly: true
+        next:
+          description: |
+            URL (with offset and limit parameters) of the next page; only
+            present if offset + limit is less than the total number of elements.
+          type: string
+          format: uri
+          example: http://NEXT-PAGE-URI
+          readOnly: true
+  securitySchemes:
+    tokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        The token can be generated using the 
+        [Authentication API](https://api.ionos.com/docs/authentication/v1/#tag/tokens/operation/tokensGenerate).
+  responses:
+    BadRequest:
+      description: |
+        ### Bad Request
+        The request send to the API was malformed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: |
+        ### Unauthorized
+        The request is missing authorization information or the authorization information provided are expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotAllowed:
+      description: |
+        ### Not Allowed
+        The user issuing the request does not have the needed permissions.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: |
+        ### Conflict
+        The UUID is already taken by another party, follow the guides to generate UUIDs uniquely.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: |
+        ### Not Found
+        The resource that was requested could not be found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnexpectedError:
+      description: |
+        ### Unexpected Internal Server Error
+        An unexpected internal error occurred. We apologize for the inconvenience!
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnprocessableEntity:
+      description: |
+        ### Unprocessable Entity
+        The request was well-formed but was unable to be followed due to semantic errors.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    TooManyRequests:
+      description: |
+        ### Too Many Requests
+        The user has sent too many requests in a given amount of time.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnsupportedMediaType:
+      description: |
+        ### Unsupported Media Type
+        The request has an unsupported media type.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalError:
+      description: |
+        ### Internal Server Error
+        An internal error occurred. We apologize for the inconvenience!
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServiceUnavailable:
+      description: |
+        ### Service Unavailable
+        The server is currently unable to handle the request due to a temporary overloading or maintenance of the server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

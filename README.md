@@ -673,7 +673,7 @@ Future enhancements planned:
 
 ---
 
-**Developped with Love and AI by [Ascenzia](https://ascenzia.fr)**
+**Developped with Love by [Ascenzia](https://ascenzia.fr)**
 
 **Made with ❤️ for the n8n community**
 

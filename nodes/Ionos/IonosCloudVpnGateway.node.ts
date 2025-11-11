@@ -15,7 +15,7 @@ export class IonosCloudVpnGateway implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["resource"]}} - {{$parameter["operation"]}}',
-		description: 'Manage IONOS Cloud VPN Gateways (WireGuard and IPSec). Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage IONOS Cloud VPN Gateways (WireGuard and IPSec). Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud VPN Gateway',
 		},

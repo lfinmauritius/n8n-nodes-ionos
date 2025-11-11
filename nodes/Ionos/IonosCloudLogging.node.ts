@@ -14,7 +14,7 @@ export class IonosCloudLogging implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["resource"]}} - {{$parameter["operation"]}}',
-		description: 'Manage centralized logging pipelines, keys, and configurations with IONOS Cloud Logging Service. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Manage centralized logging pipelines, keys, and configurations with IONOS Cloud Logging Service. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Logging',
 		},

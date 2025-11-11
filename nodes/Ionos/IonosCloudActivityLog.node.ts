@@ -16,7 +16,7 @@ export class IonosCloudActivityLog implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"]}}',
-		description: 'Retrieve audit logs and activity information from IONOS Cloud contracts. Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		description: 'Retrieve audit logs and activity information from IONOS Cloud contracts. Developped with Love by Ascenzia (ascenzia.fr)',
 		defaults: {
 			name: 'IONOS Cloud Activity Log',
 		},
