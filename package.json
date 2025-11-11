@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-ionos",
   "version": "0.1.0",
-  "description": "n8n nodes for IONOS DNS, Domain, and SSL management API",
+  "description": "n8n nodes for IONOS DNS, Domain, SSL management, Cloud AI, and Cloud Infrastructure",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
@@ -9,7 +9,37 @@
     "dns",
     "domains",
     "ssl",
-    "certificates"
+    "certificates",
+    "ai",
+    "llm",
+    "openai",
+    "autoscaling",
+    "vm",
+    "cloud",
+    "datacenter",
+    "infrastructure",
+    "iaas",
+    "compute",
+    "servers",
+    "volumes",
+    "storage",
+    "network",
+    "lan",
+    "nic",
+    "firewall",
+    "nat",
+    "ipblock",
+    "loadbalancer",
+    "nlb",
+    "alb",
+    "targetgroup",
+    "kubernetes",
+    "k8s",
+    "nodepool",
+    "kubeconfig",
+    "s3",
+    "backup",
+    "objectstorage"
   ],
   "license": "MIT",
   "homepage": "https://github.com/lfinmauritius/n8n-nodes-ionos",
@@ -41,12 +71,21 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/IonosApi.credentials.js"
+      "dist/credentials/IonosApi.credentials.js",
+      "dist/credentials/IonosCloud.credentials.js"
     ],
     "nodes": [
       "dist/nodes/Ionos/IonosDns.node.js",
       "dist/nodes/Ionos/IonosDomain.node.js",
-      "dist/nodes/Ionos/IonosSsl.node.js"
+      "dist/nodes/Ionos/IonosSsl.node.js",
+      "dist/nodes/Ionos/IonosCloudAi.node.js",
+      "dist/nodes/Ionos/IonosCloudVMAutoScaling.node.js",
+      "dist/nodes/Ionos/IonosCloudDatacenter.node.js",
+      "dist/nodes/Ionos/IonosCloudCompute.node.js",
+      "dist/nodes/Ionos/IonosCloudNetwork.node.js",
+      "dist/nodes/Ionos/IonosCloudLoadBalancing.node.js",
+      "dist/nodes/Ionos/IonosCloudKubernetes.node.js",
+      "dist/nodes/Ionos/IonosCloudStorage.node.js"
     ]
   },
   "devDependencies": {
