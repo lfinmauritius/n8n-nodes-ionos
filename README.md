@@ -7,7 +7,7 @@ A comprehensive n8n community package providing nodes for **IONOS Cloud** servic
 
 ## Features
 
-This package provides **22 powerful nodes** covering the entire IONOS ecosystem:
+This package provides **25 powerful nodes** covering the entire IONOS ecosystem:
 
 - 🌐 **DNS & Domain Management** - Manage DNS zones, records, domains, and SSL certificates
 - 🤖 **AI/ML Services** - Integrate with IONOS Cloud AI for chat, embeddings, audio processing
@@ -15,13 +15,14 @@ This package provides **22 powerful nodes** covering the entire IONOS ecosystem:
 - 🌐 **Networking** - Manage LANs, NICs, firewalls, NAT gateways, and IP blocks
 - ⚖️ **Load Balancing** - Configure classic, network, and application load balancers
 - ☸️ **Kubernetes** - Create and manage K8s clusters with auto-scaling node pools
-- 💾 **Storage & Backup** - S3 object storage, backup units, and container registries
+- 💾 **Storage & Backup** - S3 object storage, backup units, container registries, and NFS file sharing
 - 📈 **Auto-scaling** - VM auto-scaling groups with policies and metrics
 - 🗄️ **Database as a Service** - Managed PostgreSQL, MariaDB, MongoDB, and Redis databases
 - 🌍 **CDN & Edge** - Content delivery network with routing rules and certificates
-- 🔐 **Security & Certificates** - SSL/TLS certificate management and VPN gateways
+- 🔐 **Security & IAM** - SSL/TLS certificates, VPN gateways, and password policies
 - 📊 **Monitoring & Logging** - Centralized logging pipelines and metrics collection
 - 💰 **Billing & Activity** - Invoice management, usage tracking, and audit logs
+- 🏢 **Partner & Reseller** - Multi-tenant contract management and admin provisioning
 
 ## Installation
 
@@ -360,6 +361,69 @@ S3-compatible object storage access key and region management.
 - Access key lifecycle management
 - Integration with n8n's native S3 node
 
+### 23. IONOS Cloud Identity 🔐
+IAM password policy management for security and compliance.
+
+**Resources:**
+- **Password Policy** - Create and manage password complexity rules
+
+**Use Cases:**
+- Enforce password complexity requirements
+- Security compliance (PCI-DSS, HIPAA, ISO 27001)
+- Contract-level password policies
+- Automatic fallback to IONOS defaults
+- Audit and track password security policies
+
+**Password Requirements:**
+- Minimum length (5+ characters)
+- Minimum number of digits [0-9]
+- Minimum uppercase letters [A-Z]
+- Minimum lowercase letters [a-z]
+- Minimum special characters (non-alphanumeric)
+
+### 24. IONOS Cloud Network File Storage 💾
+NFSv4.2 managed network file storage clusters and shares.
+
+**Resources:**
+- **Cluster** - Create and manage NFS storage clusters (2-42 TiB)
+- **Share** - Configure shared directories with quotas and access control
+
+**Use Cases:**
+- Shared file storage for multiple VMs
+- Kubernetes persistent volumes
+- Docker container shared storage
+- Backup and archive storage
+- Collaborative workspaces
+
+**Features:**
+- Multi-region support (8 locations)
+- Client access control via IP networks and hosts
+- NFS squash modes (none, root-anonymous, all-anonymous)
+- Flexible quota management per share
+- Network integration via datacenter LAN
+
+### 25. IONOS Cloud Reseller 🏢
+Multi-tenant contract and admin user management for IONOS partners.
+
+**Resources:**
+- **Contract** - Create and manage customer contracts with resource quotas
+- **Admin** - Manage admin users for contracts
+
+**Use Cases:**
+- IONOS reseller/partner operations
+- Automated customer provisioning
+- Multi-tenant infrastructure management
+- Resource quota enforcement per customer
+- Customer admin user management
+- Contract lifecycle tracking
+
+**Features:**
+- Resource limits: RAM, CPU, HDD, SSD per VM and contract
+- Status tracking: BILLABLE, CEASED, REJECTED
+- Specialized operations: updateName, updateResourceLimits
+- High pagination limit (5000 items)
+- Contract filtering by status
+
 ## Authentication
 
 This package uses two credential types:
@@ -469,7 +533,10 @@ Trigger (Schedule - Daily)
 | IONOS Cloud Logging | 3 | CRUD + Pipeline | 11 |
 | IONOS Cloud Monitoring | 3 | CRUD + Pipeline | 11 |
 | IONOS Cloud Object Storage Management | 2 | CRUD + Renew | 11 |
-| **TOTAL** | **73** | - | **308** |
+| IONOS Cloud Identity | 1 | CRUD + Effective Policy | 5 |
+| IONOS Cloud Network File Storage | 2 | CRUD + Ensure | 10 |
+| IONOS Cloud Reseller | 2 | CRUD + Special Ops | 11 |
+| **TOTAL** | **78** | - | **334** |
 
 ## API Rate Limits
 
@@ -557,7 +624,10 @@ n8n-nodes-ionos/
 │       ├── IonosCloudBilling.node.ts        # Billing & usage
 │       ├── IonosCloudLogging.node.ts        # Centralized logging
 │       ├── IonosCloudMonitoring.node.ts     # Monitoring pipelines
-│       └── IonosCloudObjectStorageManagement.node.ts  # Object storage
+│       ├── IonosCloudObjectStorageManagement.node.ts  # Object storage
+│       ├── IonosCloudIdentity.node.ts       # Password policies
+│       ├── IonosCloudNetworkFileStorage.node.ts  # NFS storage
+│       └── IonosCloudReseller.node.ts       # Reseller API
 ├── package.json
 └── README.md
 ```
