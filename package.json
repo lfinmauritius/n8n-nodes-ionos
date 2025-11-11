@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-ionos",
-  "version": "1.0.0",
-  "description": "n8n nodes for IONOS DNS, Domain, SSL management, Cloud AI, and Cloud Infrastructure",
+  "version": "1.1.0",
+  "description": "n8n nodes for IONOS DNS, Domain, SSL management, Cloud AI, Cloud Infrastructure, and Container Registry",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
@@ -39,7 +39,12 @@
     "kubeconfig",
     "s3",
     "backup",
-    "objectstorage"
+    "objectstorage",
+    "containerregistry",
+    "docker",
+    "oci",
+    "artifacts",
+    "registry"
   ],
   "license": "MIT",
   "homepage": "https://github.com/lfinmauritius/n8n-nodes-ionos",
@@ -85,7 +90,8 @@
       "dist/nodes/Ionos/IonosCloudNetwork.node.js",
       "dist/nodes/Ionos/IonosCloudLoadBalancing.node.js",
       "dist/nodes/Ionos/IonosCloudKubernetes.node.js",
-      "dist/nodes/Ionos/IonosCloudStorage.node.js"
+      "dist/nodes/Ionos/IonosCloudStorage.node.js",
+      "dist/nodes/Ionos/IonosCloudContainerRegistry.node.js"
     ]
   },
   "devDependencies": {
