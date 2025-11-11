@@ -30,6 +30,38 @@ export class IonosCloudAi implements INodeType {
 		],
 		properties: [
 			{
+				displayName: 'API Type',
+				name: 'apiType',
+				type: 'options',
+				options: [
+					{
+						name: 'Native API',
+						value: 'native',
+						description: 'IONOS AI Model Hub native API',
+					},
+					{
+						name: 'OpenAI Compatible',
+						value: 'openai',
+						description: 'OpenAI-compatible API endpoints',
+					},
+				],
+				default: 'native',
+				description: 'The type of API to use for AI Model Hub',
+			},
+			{
+				displayName: 'Region',
+				name: 'region',
+				type: 'options',
+				options: [
+					{
+						name: 'Berlin (de-txl)',
+						value: 'de-txl',
+					},
+				],
+				default: 'de-txl',
+				description: 'The region for AI Model Hub API',
+			},
+			{
 				displayName: 'Resource',
 				name: 'resource',
 				type: 'options',
@@ -999,13 +1031,12 @@ export class IonosCloudAi implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
+		const apiType = this.getNodeParameter('apiType', 0) as string;
+		const region = this.getNodeParameter('region', 0) as string;
 		const resource = this.getNodeParameter('resource', 0);
 		const operation = this.getNodeParameter('operation', 0);
-		const credentials = await this.getCredentials('ionosCloud');
 
-		// Determine base URL based on credentials
-		const apiType = credentials.apiType as string;
-		const region = credentials.region as string;
+		// Determine base URL based on parameters
 		const baseURL =
 			apiType === 'openai'
 				? `https://openai.inference.${region}.ionos.com`
