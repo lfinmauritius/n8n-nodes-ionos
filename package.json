@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-ionos",
-  "version": "1.10.0",
-  "description": "n8n nodes for IONOS DNS, Domain, SSL/Certificate management, Cloud AI, Cloud Infrastructure, Container Registry, Database as a Service, CDN, VPN Gateway, Activity Log, Billing, Logging, and Monitoring",
+  "version": "1.11.0",
+  "description": "n8n nodes for IONOS DNS, Domain, SSL/Certificate management, Cloud AI, Cloud Infrastructure, Container Registry, Database as a Service, CDN, VPN Gateway, Activity Log, Billing, Logging, Monitoring, and Object Storage Management",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
@@ -40,6 +40,9 @@
     "s3",
     "backup",
     "objectstorage",
+    "object-storage",
+    "bucket",
+    "access-key",
     "containerregistry",
     "docker",
     "oci",
@@ -145,7 +148,8 @@
       "dist/nodes/Ionos/IonosCloudActivityLog.node.js",
       "dist/nodes/Ionos/IonosCloudBilling.node.js",
       "dist/nodes/Ionos/IonosCloudLogging.node.js",
-      "dist/nodes/Ionos/IonosCloudMonitoring.node.js"
+      "dist/nodes/Ionos/IonosCloudMonitoring.node.js",
+      "dist/nodes/Ionos/IonosCloudObjectStorageManagement.node.js"
     ]
   },
   "devDependencies": {
