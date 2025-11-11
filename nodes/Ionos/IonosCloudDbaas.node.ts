@@ -1,0 +1,2311 @@
+import type {
+	IDataObject,
+	IExecuteFunctions,
+	INodeExecutionData,
+	INodeProperties,
+	INodeType,
+	INodeTypeDescription,
+} from 'n8n-workflow';
+
+export class IonosCloudDbaas implements INodeType {
+	description: INodeTypeDescription = {
+		displayName: 'IONOS Cloud DBaaS',
+		name: 'ionosCloudDbaas',
+		icon: 'file:ionos.svg',
+		group: ['transform'],
+		version: 1,
+		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
+		description: 'Manage IONOS Cloud Database as a Service (PostgreSQL, MongoDB, MariaDB, Redis). Developped with Love and AI by Ascenzia (ascenzia.fr)',
+		defaults: {
+			name: 'IONOS Cloud DBaaS',
+		},
+		inputs: ['main'],
+		outputs: ['main'],
+		credentials: [
+			{
+				name: 'ionosCloud',
+				required: true,
+			},
+		],
+		properties: [
+			// Resource Selection
+			{
+				displayName: 'Database Type',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'PostgreSQL',
+						value: 'postgresql',
+						description: 'Manage PostgreSQL database clusters',
+					},
+					{
+						name: 'MongoDB',
+						value: 'mongodb',
+						description: 'Manage MongoDB database clusters',
+					},
+					{
+						name: 'MariaDB',
+						value: 'mariadb',
+						description: 'Manage MariaDB database clusters',
+					},
+					{
+						name: 'Redis',
+						value: 'redis',
+						description: 'Manage Redis In-Memory database replica sets',
+					},
+				],
+				default: 'postgresql',
+			},
+
+			// ====================
+			// PostgreSQL Operations
+			// ====================
+			{
+				displayName: 'Resource',
+				name: 'postgresqlResource',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['postgresql'],
+					},
+				},
+				options: [
+					{
+						name: 'Cluster',
+						value: 'cluster',
+						description: 'Manage PostgreSQL clusters',
+					},
+					{
+						name: 'User',
+						value: 'user',
+						description: 'Manage PostgreSQL users',
+					},
+					{
+						name: 'Database',
+						value: 'database',
+						description: 'Manage PostgreSQL databases',
+					},
+					{
+						name: 'Backup',
+						value: 'backup',
+						description: 'Manage PostgreSQL backups',
+					},
+					{
+						name: 'Log',
+						value: 'log',
+						description: 'Get PostgreSQL logs',
+					},
+				],
+				default: 'cluster',
+			},
+
+			// PostgreSQL Cluster Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['postgresql'],
+						postgresqlResource: ['cluster'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create a PostgreSQL cluster',
+						action: 'Create a PostgreSQL cluster',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get a PostgreSQL cluster',
+						action: 'Get a PostgreSQL cluster',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many PostgreSQL clusters',
+						action: 'Get many PostgreSQL clusters',
+					},
+					{
+						name: 'Update',
+						value: 'update',
+						description: 'Update a PostgreSQL cluster',
+						action: 'Update a PostgreSQL cluster',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a PostgreSQL cluster',
+						action: 'Delete a PostgreSQL cluster',
+					},
+					{
+						name: 'Restore',
+						value: 'restore',
+						description: 'Restore PostgreSQL cluster from backup',
+						action: 'Restore PostgreSQL cluster from backup',
+					},
+				],
+				default: 'create',
+			},
+
+			// PostgreSQL User Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['postgresql'],
+						postgresqlResource: ['user'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create a PostgreSQL user',
+						action: 'Create a PostgreSQL user',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get a PostgreSQL user',
+						action: 'Get a PostgreSQL user',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many PostgreSQL users',
+						action: 'Get many PostgreSQL users',
+					},
+					{
+						name: 'Update',
+						value: 'update',
+						description: 'Update a PostgreSQL user',
+						action: 'Update a PostgreSQL user',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a PostgreSQL user',
+						action: 'Delete a PostgreSQL user',
+					},
+				],
+				default: 'create',
+			},
+
+			// PostgreSQL Database Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['postgresql'],
+						postgresqlResource: ['database'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create a PostgreSQL database',
+						action: 'Create a PostgreSQL database',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get a PostgreSQL database',
+						action: 'Get a PostgreSQL database',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many PostgreSQL databases',
+						action: 'Get many PostgreSQL databases',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a PostgreSQL database',
+						action: 'Delete a PostgreSQL database',
+					},
+				],
+				default: 'create',
+			},
+
+			// PostgreSQL Backup Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['postgresql'],
+						postgresqlResource: ['backup'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get a PostgreSQL backup',
+						action: 'Get a PostgreSQL backup',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many PostgreSQL backups',
+						action: 'Get many PostgreSQL backups',
+					},
+				],
+				default: 'getMany',
+			},
+
+			// PostgreSQL Log Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['postgresql'],
+						postgresqlResource: ['log'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get PostgreSQL logs',
+						action: 'Get PostgreSQL logs',
+					},
+				],
+				default: 'get',
+			},
+
+			// ====================
+			// MongoDB Operations
+			// ====================
+			{
+				displayName: 'Resource',
+				name: 'mongodbResource',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['mongodb'],
+					},
+				},
+				options: [
+					{
+						name: 'Cluster',
+						value: 'cluster',
+						description: 'Manage MongoDB clusters',
+					},
+					{
+						name: 'User',
+						value: 'user',
+						description: 'Manage MongoDB users',
+					},
+					{
+						name: 'Snapshot',
+						value: 'snapshot',
+						description: 'Manage MongoDB snapshots',
+					},
+					{
+						name: 'Template',
+						value: 'template',
+						description: 'Get MongoDB templates',
+					},
+					{
+						name: 'Log',
+						value: 'log',
+						description: 'Get MongoDB logs',
+					},
+				],
+				default: 'cluster',
+			},
+
+			// MongoDB Cluster Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['mongodb'],
+						mongodbResource: ['cluster'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create a MongoDB cluster',
+						action: 'Create a MongoDB cluster',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get a MongoDB cluster',
+						action: 'Get a MongoDB cluster',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many MongoDB clusters',
+						action: 'Get many MongoDB clusters',
+					},
+					{
+						name: 'Update',
+						value: 'update',
+						description: 'Update a MongoDB cluster',
+						action: 'Update a MongoDB cluster',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a MongoDB cluster',
+						action: 'Delete a MongoDB cluster',
+					},
+					{
+						name: 'Restore',
+						value: 'restore',
+						description: 'Restore MongoDB cluster from snapshot',
+						action: 'Restore MongoDB cluster from snapshot',
+					},
+				],
+				default: 'create',
+			},
+
+			// MongoDB User Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['mongodb'],
+						mongodbResource: ['user'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create a MongoDB user',
+						action: 'Create a MongoDB user',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get a MongoDB user',
+						action: 'Get a MongoDB user',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many MongoDB users',
+						action: 'Get many MongoDB users',
+					},
+					{
+						name: 'Update',
+						value: 'update',
+						description: 'Update a MongoDB user',
+						action: 'Update a MongoDB user',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a MongoDB user',
+						action: 'Delete a MongoDB user',
+					},
+				],
+				default: 'create',
+			},
+
+			// MongoDB Snapshot Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['mongodb'],
+						mongodbResource: ['snapshot'],
+					},
+				},
+				options: [
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many MongoDB snapshots',
+						action: 'Get many MongoDB snapshots',
+					},
+				],
+				default: 'getMany',
+			},
+
+			// MongoDB Template Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['mongodb'],
+						mongodbResource: ['template'],
+					},
+				},
+				options: [
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many MongoDB templates',
+						action: 'Get many MongoDB templates',
+					},
+				],
+				default: 'getMany',
+			},
+
+			// MongoDB Log Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['mongodb'],
+						mongodbResource: ['log'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get MongoDB logs',
+						action: 'Get MongoDB logs',
+					},
+				],
+				default: 'get',
+			},
+
+			// ====================
+			// MariaDB Operations
+			// ====================
+			{
+				displayName: 'Resource',
+				name: 'mariadbResource',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['mariadb'],
+					},
+				},
+				options: [
+					{
+						name: 'Cluster',
+						value: 'cluster',
+						description: 'Manage MariaDB clusters',
+					},
+					{
+						name: 'Backup',
+						value: 'backup',
+						description: 'Manage MariaDB backups',
+					},
+				],
+				default: 'cluster',
+			},
+
+			// MariaDB Cluster Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['mariadb'],
+						mariadbResource: ['cluster'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create a MariaDB cluster',
+						action: 'Create a MariaDB cluster',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get a MariaDB cluster',
+						action: 'Get a MariaDB cluster',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many MariaDB clusters',
+						action: 'Get many MariaDB clusters',
+					},
+					{
+						name: 'Update',
+						value: 'update',
+						description: 'Update a MariaDB cluster',
+						action: 'Update a MariaDB cluster',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a MariaDB cluster',
+						action: 'Delete a MariaDB cluster',
+					},
+					{
+						name: 'Restore',
+						value: 'restore',
+						description: 'Restore MariaDB cluster from backup',
+						action: 'Restore MariaDB cluster from backup',
+					},
+				],
+				default: 'create',
+			},
+
+			// MariaDB Backup Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['mariadb'],
+						mariadbResource: ['backup'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get a MariaDB backup',
+						action: 'Get a MariaDB backup',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many MariaDB backups',
+						action: 'Get many MariaDB backups',
+					},
+				],
+				default: 'getMany',
+			},
+
+			// ====================
+			// Redis Operations
+			// ====================
+			{
+				displayName: 'Resource',
+				name: 'redisResource',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['redis'],
+					},
+				},
+				options: [
+					{
+						name: 'ReplicaSet',
+						value: 'replicaset',
+						description: 'Manage Redis replica sets',
+					},
+					{
+						name: 'Snapshot',
+						value: 'snapshot',
+						description: 'Manage Redis snapshots',
+					},
+				],
+				default: 'replicaset',
+			},
+
+			// Redis ReplicaSet Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['redis'],
+						redisResource: ['replicaset'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create a Redis replica set',
+						action: 'Create a Redis replica set',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get a Redis replica set',
+						action: 'Get a Redis replica set',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many Redis replica sets',
+						action: 'Get many Redis replica sets',
+					},
+					{
+						name: 'Update',
+						value: 'update',
+						description: 'Update a Redis replica set',
+						action: 'Update a Redis replica set',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a Redis replica set',
+						action: 'Delete a Redis replica set',
+					},
+				],
+				default: 'create',
+			},
+
+			// Redis Snapshot Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['redis'],
+						redisResource: ['snapshot'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create a Redis snapshot',
+						action: 'Create a Redis snapshot',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get a Redis snapshot',
+						action: 'Get a Redis snapshot',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get many Redis snapshots',
+						action: 'Get many Redis snapshots',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a Redis snapshot',
+						action: 'Delete a Redis snapshot',
+					},
+					{
+						name: 'Restore',
+						value: 'restore',
+						description: 'Restore Redis replica set from snapshot',
+						action: 'Restore Redis replica set from snapshot',
+					},
+				],
+				default: 'create',
+			},
+
+			// ====================
+			// Common Fields
+			// ====================
+
+			// Cluster ID (for PostgreSQL, MongoDB, MariaDB)
+			{
+				displayName: 'Cluster ID',
+				name: 'clusterId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['get', 'update', 'delete', 'restore'],
+					},
+					hide: {
+						resource: ['redis'],
+					},
+				},
+				default: '',
+				description: 'The unique ID of the cluster',
+			},
+
+			// ReplicaSet ID (for Redis)
+			{
+				displayName: 'ReplicaSet ID',
+				name: 'replicasetId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['redis'],
+						redisResource: ['replicaset'],
+						operation: ['get', 'update', 'delete'],
+					},
+				},
+				default: '',
+				description: 'The unique ID of the replica set',
+			},
+
+			// Snapshot ID (for Redis)
+			{
+				displayName: 'Snapshot ID',
+				name: 'snapshotId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['redis'],
+						redisResource: ['snapshot'],
+						operation: ['get', 'delete', 'restore'],
+					},
+				},
+				default: '',
+				description: 'The unique ID of the snapshot',
+			},
+
+			// Backup ID (for PostgreSQL, MariaDB)
+			{
+				displayName: 'Backup ID',
+				name: 'backupId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						postgresqlResource: ['backup'],
+						operation: ['get'],
+					},
+				},
+				default: '',
+				description: 'The unique ID of the backup',
+			},
+
+			{
+				displayName: 'Backup ID',
+				name: 'backupId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						mariadbResource: ['backup'],
+						operation: ['get'],
+					},
+				},
+				default: '',
+				description: 'The unique ID of the backup',
+			},
+
+			// Username (for PostgreSQL, MongoDB users)
+			{
+				displayName: 'Username',
+				name: 'username',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						postgresqlResource: ['user'],
+						operation: ['get', 'update', 'delete'],
+					},
+				},
+				default: '',
+				description: 'The username',
+			},
+
+			{
+				displayName: 'Username',
+				name: 'username',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						mongodbResource: ['user'],
+						operation: ['get', 'update', 'delete'],
+					},
+				},
+				default: '',
+				description: 'The username',
+			},
+
+			// Database Name (for PostgreSQL databases)
+			{
+				displayName: 'Database Name',
+				name: 'databaseName',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						postgresqlResource: ['database'],
+						operation: ['get', 'delete'],
+					},
+				},
+				default: '',
+				description: 'The database name',
+			},
+
+			// Display Name (for cluster/replicaset creation)
+			{
+				displayName: 'Display Name',
+				name: 'displayName',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+					},
+				},
+				default: '',
+				description: 'The display name of the cluster/replica set',
+			},
+
+			// PostgreSQL Version
+			{
+				displayName: 'PostgreSQL Version',
+				name: 'postgresVersion',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['postgresql'],
+						postgresqlResource: ['cluster'],
+						operation: ['create'],
+					},
+				},
+				default: '15',
+				description: 'The PostgreSQL version (e.g., 12, 13, 14, 15, 16)',
+			},
+
+			// MongoDB Version
+			{
+				displayName: 'MongoDB Version',
+				name: 'mongoVersion',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['mongodb'],
+						mongodbResource: ['cluster'],
+						operation: ['create'],
+					},
+				},
+				default: '6.0',
+				description: 'The MongoDB version (e.g., 5.0, 6.0, 7.0)',
+			},
+
+			// MariaDB Version
+			{
+				displayName: 'MariaDB Version',
+				name: 'mariadbVersion',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['mariadb'],
+						mariadbResource: ['cluster'],
+						operation: ['create'],
+					},
+				},
+				default: '10.6',
+				description: 'The MariaDB version (e.g., 10.6, 10.11)',
+			},
+
+			// Redis Version
+			{
+				displayName: 'Redis Version',
+				name: 'redisVersion',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['redis'],
+						redisResource: ['replicaset'],
+						operation: ['create'],
+					},
+				},
+				default: '7.2',
+				description: 'The Redis version (e.g., 7.0, 7.2)',
+			},
+
+			// Instances (for cluster creation)
+			{
+				displayName: 'Instances',
+				name: 'instances',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+					},
+					hide: {
+						resource: ['redis'],
+					},
+				},
+				default: 1,
+				typeOptions: {
+					minValue: 1,
+					maxValue: 5,
+				},
+				description: 'The number of instances in the cluster (1-5)',
+			},
+
+			// Replicas (for Redis)
+			{
+				displayName: 'Replicas',
+				name: 'replicas',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['redis'],
+						redisResource: ['replicaset'],
+						operation: ['create'],
+					},
+				},
+				default: 1,
+				typeOptions: {
+					minValue: 1,
+					maxValue: 5,
+				},
+				description: 'The number of replicas (1 = standalone, >1 = leader-follower)',
+			},
+
+			// Cores
+			{
+				displayName: 'Cores',
+				name: 'cores',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+					},
+				},
+				default: 4,
+				description: 'The number of CPU cores',
+			},
+
+			// RAM (in MB)
+			{
+				displayName: 'RAM (MB)',
+				name: 'ram',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+					},
+				},
+				default: 4096,
+				description: 'The amount of RAM in MB',
+			},
+
+			// Storage Size (in MB)
+			{
+				displayName: 'Storage Size (MB)',
+				name: 'storageSize',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+					},
+				},
+				default: 20480,
+				description: 'The storage size in MB',
+			},
+
+			// Location
+			{
+				displayName: 'Location',
+				name: 'location',
+				type: 'options',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						name: 'Frankfurt, Germany (de-fra)',
+						value: 'de-fra',
+					},
+					{
+						name: 'Berlin, Germany (de-txl)',
+						value: 'de-txl',
+					},
+					{
+						name: 'Logroño, Spain (es-vit)',
+						value: 'es-vit',
+					},
+					{
+						name: 'Paris, France (fr-par)',
+						value: 'fr-par',
+					},
+					{
+						name: 'London, UK (gb-lhr)',
+						value: 'gb-lhr',
+					},
+					{
+						name: 'Newark, USA (us-ewr)',
+						value: 'us-ewr',
+					},
+					{
+						name: 'Las Vegas, USA (us-las)',
+						value: 'us-las',
+					},
+					{
+						name: 'Lenexa, USA (us-mci)',
+						value: 'us-mci',
+					},
+				],
+				default: 'de-fra',
+				description: 'The location/region for the database',
+			},
+
+			// Connections (for cluster creation)
+			{
+				displayName: 'Connections',
+				name: 'connections',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: false,
+				},
+				displayOptions: {
+					show: {
+						operation: ['create'],
+					},
+					hide: {
+						resource: ['redis'],
+					},
+				},
+				default: {},
+				placeholder: 'Add Connection',
+				options: [
+					{
+						displayName: 'Connection',
+						name: 'connectionValues',
+						values: [
+							{
+								displayName: 'Datacenter ID',
+								name: 'datacenterId',
+								type: 'string',
+								default: '',
+								description: 'The datacenter ID to connect to',
+							},
+							{
+								displayName: 'LAN ID',
+								name: 'lanId',
+								type: 'string',
+								default: '',
+								description: 'The LAN ID to connect to',
+							},
+							{
+								displayName: 'CIDR',
+								name: 'cidr',
+								type: 'string',
+								default: '',
+								placeholder: '192.168.1.0/24',
+								description: 'The IP and subnet in CIDR notation',
+							},
+						],
+					},
+				],
+			},
+
+			// Additional Fields for Update
+			{
+				displayName: 'Update Fields',
+				name: 'updateFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				default: {},
+				displayOptions: {
+					show: {
+						operation: ['update'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Display Name',
+						name: 'displayName',
+						type: 'string',
+						default: '',
+						description: 'The new display name',
+					},
+					{
+						displayName: 'Instances',
+						name: 'instances',
+						type: 'number',
+						default: 1,
+						description: 'The new number of instances',
+					},
+					{
+						displayName: 'Cores',
+						name: 'cores',
+						type: 'number',
+						default: 4,
+						description: 'The new number of CPU cores',
+					},
+					{
+						displayName: 'RAM (MB)',
+						name: 'ram',
+						type: 'number',
+						default: 4096,
+						description: 'The new amount of RAM in MB',
+					},
+					{
+						displayName: 'Storage Size (MB)',
+						name: 'storageSize',
+						type: 'number',
+						default: 20480,
+						description: 'The new storage size in MB',
+					},
+				],
+			},
+
+			// User Creation Fields
+			{
+				displayName: 'Username',
+				name: 'newUsername',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+					},
+					hide: {
+						mariadbResource: ['cluster', 'backup'],
+						redisResource: ['replicaset', 'snapshot'],
+					},
+				},
+				default: '',
+				description: 'The username for the new user',
+			},
+
+			{
+				displayName: 'Password',
+				name: 'password',
+				type: 'string',
+				typeOptions: {
+					password: true,
+				},
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+					},
+					hide: {
+						mariadbResource: ['cluster', 'backup'],
+						redisResource: ['replicaset', 'snapshot'],
+					},
+				},
+				default: '',
+				description: 'The password for the new user',
+			},
+
+			// Database Name (for creation)
+			{
+				displayName: 'Database Name',
+				name: 'newDatabaseName',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						postgresqlResource: ['database'],
+						operation: ['create'],
+					},
+				},
+				default: '',
+				description: 'The name for the new database',
+			},
+
+			{
+				displayName: 'Owner',
+				name: 'owner',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						postgresqlResource: ['database'],
+						operation: ['create'],
+					},
+				},
+				default: '',
+				description: 'The owner username for the new database',
+			},
+
+			// Backup Restore ID
+			{
+				displayName: 'Backup ID',
+				name: 'restoreBackupId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['restore'],
+					},
+					hide: {
+						resource: ['redis'],
+					},
+				},
+				default: '',
+				description: 'The backup ID to restore from',
+			},
+
+			// Return All
+			{
+				displayName: 'Return All',
+				name: 'returnAll',
+				type: 'boolean',
+				displayOptions: {
+					show: {
+						operation: ['getMany'],
+					},
+				},
+				default: false,
+				description: 'Whether to return all results or only up to a given limit',
+			},
+
+			// Limit
+			{
+				displayName: 'Limit',
+				name: 'limit',
+				type: 'number',
+				displayOptions: {
+					show: {
+						operation: ['getMany'],
+						returnAll: [false],
+					},
+				},
+				typeOptions: {
+					minValue: 1,
+					maxValue: 1000,
+				},
+				default: 50,
+				description: 'Max number of results to return',
+			},
+		],
+	};
+
+	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+		const items = this.getInputData();
+		const returnData: INodeExecutionData[] = []
+
+		const resource = this.getNodeParameter('resource', 0) as string;
+		const operation = this.getNodeParameter('operation', 0) as string;
+
+		for (let i = 0; i < items.length; i++) {
+			try {
+				let responseData: IDataObject | IDataObject[] = {};
+
+				// ====================
+				// PostgreSQL
+				// ====================
+				if (resource === 'postgresql') {
+					const postgresqlResource = this.getNodeParameter('postgresqlResource', i) as string;
+					const baseUrl = 'https://api.ionos.com/databases/postgresql';
+
+					if (postgresqlResource === 'cluster') {
+						if (operation === 'create') {
+							const displayName = this.getNodeParameter('displayName', i) as string;
+							const postgresVersion = this.getNodeParameter('postgresVersion', i) as string;
+							const instances = this.getNodeParameter('instances', i) as number;
+							const cores = this.getNodeParameter('cores', i) as number;
+							const ram = this.getNodeParameter('ram', i) as number;
+							const storageSize = this.getNodeParameter('storageSize', i) as number;
+							const location = this.getNodeParameter('location', i) as string;
+							const connections = this.getNodeParameter('connections', i) as IDataObject;
+
+							const body: IDataObject = {
+								properties: {
+									displayName,
+									postgresVersion,
+									instances,
+									cores,
+									ram,
+									storageSize,
+									location,
+								},
+							};
+
+							if (connections.connectionValues) {
+								const conn = connections.connectionValues as IDataObject;
+								(body.properties as IDataObject).connections = [{
+									datacenterId: conn.datacenterId,
+									lanId: conn.lanId,
+									cidr: conn.cidr,
+								}];
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/clusters`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'get') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters/${clusterId}`,
+								},
+							);
+						} else if (operation === 'getMany') {
+							const returnAll = this.getNodeParameter('returnAll', i);
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+
+							const qs: IDataObject = {};
+							if (!returnAll) {
+								qs.limit = limit;
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters`,
+									qs,
+								},
+							);
+
+							responseData = (responseData as IDataObject).items as IDataObject[];
+						} else if (operation === 'update') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+							const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
+
+							const body: IDataObject = {
+								properties: updateFields,
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'PATCH',
+									url: `${baseUrl}/clusters/${clusterId}`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'delete') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'DELETE',
+									url: `${baseUrl}/clusters/${clusterId}`,
+								},
+							);
+
+							responseData = { success: true };
+						} else if (operation === 'restore') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+							const restoreBackupId = this.getNodeParameter('restoreBackupId', i) as string;
+
+							const body: IDataObject = {
+								backupId: restoreBackupId,
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/clusters/${clusterId}/restore`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						}
+					} else if (postgresqlResource === 'user') {
+						const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+						if (operation === 'create') {
+							const newUsername = this.getNodeParameter('newUsername', i) as string;
+							const password = this.getNodeParameter('password', i) as string;
+
+							const body: IDataObject = {
+								properties: {
+									username: newUsername,
+									password,
+								},
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/clusters/${clusterId}/users`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'get') {
+							const username = this.getNodeParameter('username', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters/${clusterId}/users/${username}`,
+								},
+							);
+						} else if (operation === 'getMany') {
+							const returnAll = this.getNodeParameter('returnAll', i);
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+
+							const qs: IDataObject = {};
+							if (!returnAll) {
+								qs.limit = limit;
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters/${clusterId}/users`,
+									qs,
+								},
+							);
+
+							responseData = (responseData as IDataObject).items as IDataObject[];
+						} else if (operation === 'update') {
+							const username = this.getNodeParameter('username', i) as string;
+							const password = this.getNodeParameter('password', i) as string;
+
+							const body: IDataObject = {
+								properties: {
+									password,
+								},
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'PATCH',
+									url: `${baseUrl}/clusters/${clusterId}/users/${username}`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'delete') {
+							const username = this.getNodeParameter('username', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'DELETE',
+									url: `${baseUrl}/clusters/${clusterId}/users/${username}`,
+								},
+							);
+
+							responseData = { success: true };
+						}
+					} else if (postgresqlResource === 'database') {
+						const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+						if (operation === 'create') {
+							const newDatabaseName = this.getNodeParameter('newDatabaseName', i) as string;
+							const owner = this.getNodeParameter('owner', i) as string;
+
+							const body: IDataObject = {
+								properties: {
+									name: newDatabaseName,
+									owner,
+								},
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/clusters/${clusterId}/databases`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'get') {
+							const databaseName = this.getNodeParameter('databaseName', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters/${clusterId}/databases/${databaseName}`,
+								},
+							);
+						} else if (operation === 'getMany') {
+							const returnAll = this.getNodeParameter('returnAll', i);
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+
+							const qs: IDataObject = {};
+							if (!returnAll) {
+								qs.limit = limit;
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters/${clusterId}/databases`,
+									qs,
+								},
+							);
+
+							responseData = (responseData as IDataObject).items as IDataObject[];
+						} else if (operation === 'delete') {
+							const databaseName = this.getNodeParameter('databaseName', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'DELETE',
+									url: `${baseUrl}/clusters/${clusterId}/databases/${databaseName}`,
+								},
+							);
+
+							responseData = { success: true };
+						}
+					} else if (postgresqlResource === 'backup') {
+						if (operation === 'get') {
+							const backupId = this.getNodeParameter('backupId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters/backups/${backupId}`,
+								},
+							);
+						} else if (operation === 'getMany') {
+							const returnAll = this.getNodeParameter('returnAll', i);
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+
+							const qs: IDataObject = {};
+							if (!returnAll) {
+								qs.limit = limit;
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters/backups`,
+									qs,
+								},
+							);
+
+							responseData = (responseData as IDataObject).items as IDataObject[];
+						}
+					} else if (postgresqlResource === 'log') {
+						const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+						responseData = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'ionosCloud',
+							{
+								method: 'GET',
+								url: `${baseUrl}/clusters/${clusterId}/logs`,
+							},
+						);
+					}
+				}
+
+				// ====================
+				// MongoDB
+				// ====================
+				else if (resource === 'mongodb') {
+					const mongodbResource = this.getNodeParameter('mongodbResource', i) as string;
+					const baseUrl = 'https://api.ionos.com/databases/mongodb';
+
+					if (mongodbResource === 'cluster') {
+						if (operation === 'create') {
+							const displayName = this.getNodeParameter('displayName', i) as string;
+							const mongoVersion = this.getNodeParameter('mongoVersion', i) as string;
+							const instances = this.getNodeParameter('instances', i) as number;
+							const cores = this.getNodeParameter('cores', i) as number;
+							const ram = this.getNodeParameter('ram', i) as number;
+							const storageSize = this.getNodeParameter('storageSize', i) as number;
+							const location = this.getNodeParameter('location', i) as string;
+							const connections = this.getNodeParameter('connections', i) as IDataObject;
+
+							const body: IDataObject = {
+								properties: {
+									displayName,
+									mongoDBVersion: mongoVersion,
+									instances,
+									cores,
+									ram,
+									storageSize,
+									location,
+								},
+							};
+
+							if (connections.connectionValues) {
+								const conn = connections.connectionValues as IDataObject;
+								(body.properties as IDataObject).connections = [{
+									datacenterId: conn.datacenterId,
+									lanId: conn.lanId,
+									cidr: conn.cidr,
+								}];
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/clusters`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'get') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters/${clusterId}`,
+								},
+							);
+						} else if (operation === 'getMany') {
+							const returnAll = this.getNodeParameter('returnAll', i);
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+
+							const qs: IDataObject = {};
+							if (!returnAll) {
+								qs.limit = limit;
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters`,
+									qs,
+								},
+							);
+
+							responseData = (responseData as IDataObject).items as IDataObject[];
+						} else if (operation === 'update') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+							const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
+
+							const body: IDataObject = {
+								properties: updateFields,
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'PATCH',
+									url: `${baseUrl}/clusters/${clusterId}`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'delete') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'DELETE',
+									url: `${baseUrl}/clusters/${clusterId}`,
+								},
+							);
+
+							responseData = { success: true };
+						} else if (operation === 'restore') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+							const restoreBackupId = this.getNodeParameter('restoreBackupId', i) as string;
+
+							const body: IDataObject = {
+								snapshotId: restoreBackupId,
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/clusters/${clusterId}/restore`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						}
+					} else if (mongodbResource === 'user') {
+						const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+						if (operation === 'create') {
+							const newUsername = this.getNodeParameter('newUsername', i) as string;
+							const password = this.getNodeParameter('password', i) as string;
+
+							const body: IDataObject = {
+								properties: {
+									username: newUsername,
+									password,
+								},
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/clusters/${clusterId}/users`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'get') {
+							const username = this.getNodeParameter('username', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters/${clusterId}/users/${username}`,
+								},
+							);
+						} else if (operation === 'getMany') {
+							const returnAll = this.getNodeParameter('returnAll', i);
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+
+							const qs: IDataObject = {};
+							if (!returnAll) {
+								qs.limit = limit;
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters/${clusterId}/users`,
+									qs,
+								},
+							);
+
+							responseData = (responseData as IDataObject).items as IDataObject[];
+						} else if (operation === 'update') {
+							const username = this.getNodeParameter('username', i) as string;
+							const password = this.getNodeParameter('password', i) as string;
+
+							const body: IDataObject = {
+								properties: {
+									password,
+								},
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'PATCH',
+									url: `${baseUrl}/clusters/${clusterId}/users/${username}`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'delete') {
+							const username = this.getNodeParameter('username', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'DELETE',
+									url: `${baseUrl}/clusters/${clusterId}/users/${username}`,
+								},
+							);
+
+							responseData = { success: true };
+						}
+					} else if (mongodbResource === 'snapshot') {
+						const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+						const returnAll = this.getNodeParameter('returnAll', i);
+						const limit = this.getNodeParameter('limit', i, 50) as number;
+
+						const qs: IDataObject = {};
+						if (!returnAll) {
+							qs.limit = limit;
+						}
+
+						responseData = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'ionosCloud',
+							{
+								method: 'GET',
+								url: `${baseUrl}/clusters/${clusterId}/snapshots`,
+								qs,
+							},
+						);
+
+						responseData = (responseData as IDataObject).items as IDataObject[];
+					} else if (mongodbResource === 'template') {
+						const returnAll = this.getNodeParameter('returnAll', i);
+						const limit = this.getNodeParameter('limit', i, 50) as number;
+
+						const qs: IDataObject = {};
+						if (!returnAll) {
+							qs.limit = limit;
+						}
+
+						responseData = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'ionosCloud',
+							{
+								method: 'GET',
+								url: `${baseUrl}/templates`,
+								qs,
+							},
+						);
+
+						responseData = (responseData as IDataObject).items as IDataObject[];
+					} else if (mongodbResource === 'log') {
+						const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+						responseData = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'ionosCloud',
+							{
+								method: 'GET',
+								url: `${baseUrl}/clusters/${clusterId}/logs`,
+							},
+						);
+					}
+				}
+
+				// ====================
+				// MariaDB
+				// ====================
+				else if (resource === 'mariadb') {
+					const mariadbResource = this.getNodeParameter('mariadbResource', i) as string;
+					const location = this.getNodeParameter('location', i, 'de-fra') as string;
+					const baseUrl = `https://mariadb.${location}.ionos.com`;
+
+					if (mariadbResource === 'cluster') {
+						if (operation === 'create') {
+							const displayName = this.getNodeParameter('displayName', i) as string;
+							const mariadbVersion = this.getNodeParameter('mariadbVersion', i) as string;
+							const instances = this.getNodeParameter('instances', i) as number;
+							const cores = this.getNodeParameter('cores', i) as number;
+							const ram = this.getNodeParameter('ram', i) as number;
+							const storageSize = this.getNodeParameter('storageSize', i) as number;
+							const connections = this.getNodeParameter('connections', i) as IDataObject;
+
+							const body: IDataObject = {
+								properties: {
+									displayName,
+									mariadbVersion,
+									instances,
+									cores,
+									ram,
+									storageSize,
+								},
+							};
+
+							if (connections.connectionValues) {
+								const conn = connections.connectionValues as IDataObject;
+								(body.properties as IDataObject).connections = [{
+									datacenterId: conn.datacenterId,
+									lanId: conn.lanId,
+									cidr: conn.cidr,
+								}];
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/clusters`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'get') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters/${clusterId}`,
+								},
+							);
+						} else if (operation === 'getMany') {
+							const returnAll = this.getNodeParameter('returnAll', i);
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+
+							const qs: IDataObject = {};
+							if (!returnAll) {
+								qs.limit = limit;
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/clusters`,
+									qs,
+								},
+							);
+
+							responseData = (responseData as IDataObject).items as IDataObject[];
+						} else if (operation === 'update') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+							const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
+
+							const body: IDataObject = {
+								properties: updateFields,
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'PATCH',
+									url: `${baseUrl}/clusters/${clusterId}`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'delete') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'DELETE',
+									url: `${baseUrl}/clusters/${clusterId}`,
+								},
+							);
+
+							responseData = { success: true };
+						} else if (operation === 'restore') {
+							const clusterId = this.getNodeParameter('clusterId', i) as string;
+							const restoreBackupId = this.getNodeParameter('restoreBackupId', i) as string;
+
+							const body: IDataObject = {
+								backupId: restoreBackupId,
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/clusters/${clusterId}/restore`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						}
+					} else if (mariadbResource === 'backup') {
+						if (operation === 'get') {
+							const backupId = this.getNodeParameter('backupId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/backups/${backupId}`,
+								},
+							);
+						} else if (operation === 'getMany') {
+							const returnAll = this.getNodeParameter('returnAll', i);
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+
+							const qs: IDataObject = {};
+							if (!returnAll) {
+								qs.limit = limit;
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/backups`,
+									qs,
+								},
+							);
+
+							responseData = (responseData as IDataObject).items as IDataObject[];
+						}
+					}
+				}
+
+				// ====================
+				// Redis
+				// ====================
+				else if (resource === 'redis') {
+					const redisResource = this.getNodeParameter('redisResource', i) as string;
+					const location = this.getNodeParameter('location', i, 'de-fra') as string;
+					const baseUrl = `https://in-memory-db.${location}.ionos.com`;
+
+					if (redisResource === 'replicaset') {
+						if (operation === 'create') {
+							const displayName = this.getNodeParameter('displayName', i) as string;
+							const redisVersion = this.getNodeParameter('redisVersion', i) as string;
+							const replicas = this.getNodeParameter('replicas', i) as number;
+							const cores = this.getNodeParameter('cores', i) as number;
+							const ram = this.getNodeParameter('ram', i) as number;
+
+							const body: IDataObject = {
+								properties: {
+									displayName,
+									version: redisVersion,
+									replicas,
+									resources: {
+										cores,
+										ram,
+									},
+								},
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/replicasets`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'get') {
+							const replicasetId = this.getNodeParameter('replicasetId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/replicasets/${replicasetId}`,
+								},
+							);
+						} else if (operation === 'getMany') {
+							const returnAll = this.getNodeParameter('returnAll', i);
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+
+							const qs: IDataObject = {};
+							if (!returnAll) {
+								qs.limit = limit;
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/replicasets`,
+									qs,
+								},
+							);
+
+							responseData = (responseData as IDataObject).items as IDataObject[];
+						} else if (operation === 'update') {
+							const replicasetId = this.getNodeParameter('replicasetId', i) as string;
+							const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
+
+							const body: IDataObject = {
+								properties: updateFields,
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'PATCH',
+									url: `${baseUrl}/replicasets/${replicasetId}`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'delete') {
+							const replicasetId = this.getNodeParameter('replicasetId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'DELETE',
+									url: `${baseUrl}/replicasets/${replicasetId}`,
+								},
+							);
+
+							responseData = { success: true };
+						}
+					} else if (redisResource === 'snapshot') {
+						if (operation === 'create') {
+							const displayName = this.getNodeParameter('displayName', i) as string;
+							const replicasetId = this.getNodeParameter('replicasetId', i) as string;
+
+							const body: IDataObject = {
+								properties: {
+									displayName,
+									replicasetId,
+								},
+							};
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/snapshots`,
+									body,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						} else if (operation === 'get') {
+							const snapshotId = this.getNodeParameter('snapshotId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/snapshots/${snapshotId}`,
+								},
+							);
+						} else if (operation === 'getMany') {
+							const returnAll = this.getNodeParameter('returnAll', i);
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+
+							const qs: IDataObject = {};
+							if (!returnAll) {
+								qs.limit = limit;
+							}
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'GET',
+									url: `${baseUrl}/snapshots`,
+									qs,
+								},
+							);
+
+							responseData = (responseData as IDataObject).items as IDataObject[];
+						} else if (operation === 'delete') {
+							const snapshotId = this.getNodeParameter('snapshotId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'DELETE',
+									url: `${baseUrl}/snapshots/${snapshotId}`,
+								},
+							);
+
+							responseData = { success: true };
+						} else if (operation === 'restore') {
+							const snapshotId = this.getNodeParameter('snapshotId', i) as string;
+
+							responseData = await this.helpers.httpRequestWithAuthentication.call(
+								this,
+								'ionosCloud',
+								{
+									method: 'POST',
+									url: `${baseUrl}/snapshots/${snapshotId}/restores`,
+									headers: { 'Content-Type': 'application/json' },
+								},
+							);
+						}
+					}
+				}
+
+				const executionData = this.helpers.constructExecutionMetaData(
+					this.helpers.returnJsonArray(responseData as IDataObject[]),
+					{ itemData: { item: i } },
+				);
+
+				returnData.push(...executionData);
+			} catch (error) {
+				if (this.continueOnFail()) {
+					const executionData = this.helpers.constructExecutionMetaData(
+						this.helpers.returnJsonArray({ error: (error as Error).message }),
+						{ itemData: { item: i } },
+					);
+					returnData.push(...executionData);
+					continue;
+				}
+				throw error;
+			}
+		}
+
+		return [returnData];
+	}
+}
