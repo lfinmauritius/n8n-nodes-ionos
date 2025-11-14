@@ -743,26 +743,56 @@ export class IonosCloudDbaas implements INodeType {
 			// Common Fields
 			// ====================
 
-			// Cluster ID (for PostgreSQL, MongoDB, MariaDB)
-			{
-				displayName: 'Cluster ID',
-				name: 'clusterId',
-				type: 'string',
-				required: true,
-				displayOptions: {
-					show: {
-						operation: ['get', 'update', 'delete', 'restore'],
-					},
-					hide: {
-						resource: ['redis'],
-					postgresqlResource: ['user', 'database', 'backup', 'log'],
-					mongodbResource: ['user', 'database'],
-					mariadbResource: ['backup'],
-					},
+			// Cluster ID for PostgreSQL cluster operations
+		{
+			displayName: 'Cluster ID',
+			name: 'clusterId',
+			type: 'string',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['postgresql'],
+					postgresqlResource: ['cluster'],
+					operation: ['get', 'update', 'delete', 'restore'],
 				},
-				default: '',
-				description: 'The unique ID of the cluster',
 			},
+			default: '',
+			description: 'The unique ID of the PostgreSQL cluster',
+		},
+
+		// Cluster ID for MongoDB cluster operations
+		{
+			displayName: 'Cluster ID',
+			name: 'clusterId',
+			type: 'string',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['mongodb'],
+					mongodbResource: ['cluster'],
+					operation: ['get', 'update', 'delete', 'restore'],
+				},
+			},
+			default: '',
+			description: 'The unique ID of the MongoDB cluster',
+		},
+
+		// Cluster ID for MariaDB cluster operations
+		{
+			displayName: 'Cluster ID',
+			name: 'clusterId',
+			type: 'string',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['mariadb'],
+					mariadbResource: ['cluster'],
+					operation: ['get', 'update', 'delete', 'restore'],
+				},
+			},
+			default: '',
+			description: 'The unique ID of the MariaDB cluster',
+		},
 
 		// Cluster ID for PostgreSQL sub-resources (User, Database, Backup, Log)
 		{
