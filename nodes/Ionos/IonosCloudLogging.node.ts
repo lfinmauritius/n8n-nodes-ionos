@@ -100,7 +100,7 @@ export class IonosCloudLogging implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
-						resource: ['pipeline', 'centralLogging'],
+						resource: ['pipeline'],
 					},
 				},
 				options: [
