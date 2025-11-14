@@ -1128,48 +1128,231 @@ export class IonosCloudDbaas implements INodeType {
 					},
 				},
 				options: [
-					{
-						name: 'Frankfurt, Germany (de-fra)',
-						value: 'de-fra',
-					},
-					{
-						name: 'Berlin, Germany (de-txl)',
-						value: 'de-txl',
-					},
-					{
-						name: 'Logroño, Spain (es-vit)',
-						value: 'es-vit',
-					},
-					{
-						name: 'Paris, France (fr-par)',
-						value: 'fr-par',
-					},
-					{
-						name: 'London, UK (gb-lhr)',
-						value: 'gb-lhr',
-					},
-					{
-						name: 'Newark, USA (us-ewr)',
-						value: 'us-ewr',
-					},
-					{
-						name: 'Las Vegas, USA (us-las)',
-						value: 'us-las',
-					},
-					{
-						name: 'Lenexa, USA (us-mci)',
-						value: 'us-mci',
-					},
+				{
+					name: 'Frankfurt, Germany (de/fra)',
+					value: 'de/fra',
+				},
+				{
+					name: 'Frankfurt 2, Germany (de/fra/2)',
+					value: 'de/fra/2',
+				},
+				{
+					name: 'Berlin, Germany (de/txl)',
+					value: 'de/txl',
+				},
+				{
+					name: 'Logroño, Spain (es/vit)',
+					value: 'es/vit',
+				},
+				{
+					name: 'Paris, France (fr/par)',
+					value: 'fr/par',
+				},
+				{
+					name: 'Birmingham, UK (gb/bhx)',
+					value: 'gb/bhx',
+				},
+				{
+					name: 'London, UK (gb/lhr)',
+					value: 'gb/lhr',
+				},
+				{
+					name: 'Newark, USA (us/ewr)',
+					value: 'us/ewr',
+				},
+				{
+					name: 'Las Vegas, USA (us/las)',
+					value: 'us/las',
+				},
+				{
+					name: 'Lenexa, USA (us/mci)',
+					value: 'us/mci',
+				},
 				],
-				default: 'de-fra',
+				default: 'de/fra',
 				description: 'The location/region for the database',
 			},
+
+		// Storage Type (PostgreSQL & MongoDB only)
+		{
+			displayName: 'Storage Type',
+			name: 'storageType',
+			type: 'options',
+			required: true,
+			displayOptions: {
+				show: {
+					operation: ['create'],
+				},
+				hide: {
+					resource: ['mariadb', 'redis'],
+				},
+			},
+			options: [
+				{
+					name: 'HDD',
+					value: 'HDD',
+				},
+				{
+					name: 'SSD Standard',
+					value: 'SSD Standard',
+				},
+				{
+					name: 'SSD Premium',
+					value: 'SSD Premium',
+				},
+			],
+			default: 'SSD Standard',
+			description: 'The storage type for the database cluster',
+		},
+
+		// Initial Username (Credentials)
+		{
+			displayName: 'Username',
+			name: 'credentialsUsername',
+			type: 'string',
+			required: true,
+			displayOptions: {
+				show: {
+					operation: ['create'],
+				},
+				hide: {
+					resource: ['redis'],
+				},
+			},
+			default: '',
+			placeholder: 'admin',
+			description: 'The initial username for database access',
+		},
+
+		// Initial Password (Credentials)
+		{
+			displayName: 'Password',
+			name: 'credentialsPassword',
+			type: 'string',
+			required: true,
+			typeOptions: {
+				password: true,
+			},
+			displayOptions: {
+				show: {
+					operation: ['create'],
+				},
+				hide: {
+					resource: ['redis'],
+				},
+			},
+			default: '',
+			description: 'The initial password for database access (min 10 characters)',
+		},
+
+		// Synchronization Mode (PostgreSQL only)
+		{
+			displayName: 'Synchronization Mode',
+			name: 'synchronizationMode',
+			type: 'options',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['postgresql'],
+					postgresqlResource: ['cluster'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					name: 'Asynchronous',
+					value: 'ASYNCHRONOUS',
+					description: 'Asynchronous replication - faster but may lose data on failure',
+				},
+				{
+					name: 'Synchronous',
+					value: 'SYNCHRONOUS',
+					description: 'Synchronous replication - balanced performance and durability',
+				},
+				{
+					name: 'Strictly Synchronous',
+					value: 'STRICTLY_SYNCHRONOUS',
+					description: 'Strictly synchronous - highest durability but slower',
+				},
+			],
+			default: 'ASYNCHRONOUS',
+			description: 'The synchronization mode for PostgreSQL replication',
+		},
+
+		// Synchronization Mode (MongoDB only)
+		{
+			displayName: 'Synchronization Mode',
+			name: 'synchronizationMode',
+			type: 'options',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['mongodb'],
+					mongodbResource: ['cluster'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					name: 'Asynchronous',
+					value: 'ASYNCHRONOUS',
+					description: 'Asynchronous replication',
+				},
+				{
+					name: 'Synchronous',
+					value: 'SYNCHRONOUS',
+					description: 'Synchronous replication',
+				},
+				{
+					name: 'Strictly Synchronous',
+					value: 'STRICTLY_SYNCHRONOUS',
+					description: 'Strictly synchronous replication',
+				},
+			],
+			default: 'ASYNCHRONOUS',
+			description: 'The synchronization mode for MongoDB replication',
+		},
+
+		// Synchronization Mode (MariaDB only)
+		{
+			displayName: 'Synchronization Mode',
+			name: 'synchronizationMode',
+			type: 'options',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['mariadb'],
+					mariadbResource: ['cluster'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					name: 'Asynchronous',
+					value: 'ASYNCHRONOUS',
+					description: 'Asynchronous replication',
+				},
+				{
+					name: 'Synchronous',
+					value: 'SYNCHRONOUS',
+					description: 'Synchronous replication',
+				},
+				{
+					name: 'Strictly Synchronous',
+					value: 'STRICTLY_SYNCHRONOUS',
+					description: 'Strictly synchronous replication',
+				},
+			],
+			default: 'ASYNCHRONOUS',
+			description: 'The synchronization mode for MariaDB replication',
+		},
 
 			// Connections (for cluster creation)
 			{
 				displayName: 'Connections',
 				name: 'connections',
 				type: 'fixedCollection',
+			required: true,
 				typeOptions: {
 					multipleValues: false,
 				},
@@ -1447,6 +1630,10 @@ export class IonosCloudDbaas implements INodeType {
 							const storageSize = this.getNodeParameter('storageSize', i) as number;
 							const location = this.getNodeParameter('location', i) as string;
 							const connections = this.getNodeParameter('connections', i) as IDataObject;
+						const storageType = this.getNodeParameter('storageType', i) as string;
+						const credentialsUsername = this.getNodeParameter('credentialsUsername', i) as string;
+						const credentialsPassword = this.getNodeParameter('credentialsPassword', i) as string;
+						const synchronizationMode = this.getNodeParameter('synchronizationMode', i) as string;
 
 							const body: IDataObject = {
 								properties: {
@@ -1457,6 +1644,12 @@ export class IonosCloudDbaas implements INodeType {
 									ram,
 									storageSize,
 									location,
+								storageType,
+								synchronizationMode,
+								credentials: {
+									username: credentialsUsername,
+									password: credentialsPassword,
+								},
 								},
 							};
 
@@ -1782,6 +1975,10 @@ export class IonosCloudDbaas implements INodeType {
 							const storageSize = this.getNodeParameter('storageSize', i) as number;
 							const location = this.getNodeParameter('location', i) as string;
 							const connections = this.getNodeParameter('connections', i) as IDataObject;
+						const storageType = this.getNodeParameter('storageType', i) as string;
+						const credentialsUsername = this.getNodeParameter('credentialsUsername', i) as string;
+						const credentialsPassword = this.getNodeParameter('credentialsPassword', i) as string;
+						const synchronizationMode = this.getNodeParameter('synchronizationMode', i) as string;
 
 							const body: IDataObject = {
 								properties: {
@@ -1792,6 +1989,12 @@ export class IonosCloudDbaas implements INodeType {
 									ram,
 									storageSize,
 									location,
+								storageType,
+								synchronizationMode,
+								credentials: {
+									username: credentialsUsername,
+									password: credentialsPassword,
+								},
 								},
 							};
 
@@ -2045,8 +2248,8 @@ export class IonosCloudDbaas implements INodeType {
 				// ====================
 				else if (resource === 'mariadb') {
 					const mariadbResource = this.getNodeParameter('mariadbResource', i) as string;
-					const location = this.getNodeParameter('location', i, 'de-fra') as string;
-					const baseUrl = `https://mariadb.${location}.ionos.com`;
+					const location = this.getNodeParameter('location', i, 'de/fra') as string;
+					const baseUrl = `https://mariadb.${location.replace(/\//g, '-')}.ionos.com`;
 
 					if (mariadbResource === 'cluster') {
 						if (operation === 'create') {
@@ -2057,6 +2260,9 @@ export class IonosCloudDbaas implements INodeType {
 							const ram = this.getNodeParameter('ram', i) as number;
 							const storageSize = this.getNodeParameter('storageSize', i) as number;
 							const connections = this.getNodeParameter('connections', i) as IDataObject;
+						const credentialsUsername = this.getNodeParameter('credentialsUsername', i) as string;
+						const credentialsPassword = this.getNodeParameter('credentialsPassword', i) as string;
+						const synchronizationMode = this.getNodeParameter('synchronizationMode', i) as string;
 
 							const body: IDataObject = {
 								properties: {
@@ -2066,6 +2272,11 @@ export class IonosCloudDbaas implements INodeType {
 									cores,
 									ram,
 									storageSize,
+								synchronizationMode,
+								credentials: {
+									username: credentialsUsername,
+									password: credentialsPassword,
+								},
 								},
 							};
 
@@ -2210,8 +2421,8 @@ export class IonosCloudDbaas implements INodeType {
 				// ====================
 				else if (resource === 'redis') {
 					const redisResource = this.getNodeParameter('redisResource', i) as string;
-					const location = this.getNodeParameter('location', i, 'de-fra') as string;
-					const baseUrl = `https://in-memory-db.${location}.ionos.com`;
+					const location = this.getNodeParameter('location', i, 'de/fra') as string;
+					const baseUrl = `https://in-memory-db.${location.replace(/\//g, '-')}.ionos.com`;
 
 					if (redisResource === 'replicaset') {
 						if (operation === 'create') {
