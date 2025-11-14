@@ -1510,7 +1510,12 @@ export class IonosCloudDnsService implements INodeType {
 							},
 						);
 
+
+					// Handle different response formats - return the full response
+					// so users can see DNSSEC keys information including keyTag, algorithms, digest, etc.
+					if ((responseData as IDataObject).items) {
 						responseData = (responseData as IDataObject).items as IDataObject[];
+					}
 					} else if (operation === 'delete') {
 						await this.helpers.httpRequestWithAuthentication.call(
 							this,
