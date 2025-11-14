@@ -2159,7 +2159,6 @@ export class IonosCloudDbaas implements INodeType {
 						const storageType = this.getNodeParameter('storageType', i) as string;
 						const credentialsUsername = this.getNodeParameter('credentialsUsername', i) as string;
 						const credentialsPassword = this.getNodeParameter('credentialsPassword', i) as string;
-						const synchronizationMode = this.getNodeParameter('synchronizationMode', i) as string;
 
 							const body: IDataObject = {
 								properties: {
@@ -2171,7 +2170,6 @@ export class IonosCloudDbaas implements INodeType {
 									storageSize,
 									location,
 								storageType,
-								synchronizationMode,
 								credentials: {
 									username: credentialsUsername,
 									password: credentialsPassword,
