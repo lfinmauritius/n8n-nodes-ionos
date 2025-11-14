@@ -1477,17 +1477,13 @@ export class IonosCloudNetwork implements INodeType {
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 
 						const body: IDataObject = {
-							...((additionalFields.public !== undefined || additionalFields.pcc || additionalFields.ipv4CidrBlock || additionalFields.ipv6CidrBlock) && {
-								properties: {
-									...(additionalFields.public !== undefined && { public: additionalFields.public }),
-									...(additionalFields.pcc && { pcc: additionalFields.pcc }),
-								...(additionalFields.ipv4CidrBlock && {
-									ipv4CidrBlock: additionalFields.ipv4CidrBlock,
-								}),
-									...(additionalFields.ipv6CidrBlock && {
-										ipv6CidrBlock: additionalFields.ipv6CidrBlock,
-									}),
-								},
+							...(additionalFields.public !== undefined && { public: additionalFields.public }),
+							...(additionalFields.pcc && { pcc: additionalFields.pcc }),
+							...(additionalFields.ipv4CidrBlock && {
+								ipv4CidrBlock: additionalFields.ipv4CidrBlock,
+							}),
+							...(additionalFields.ipv6CidrBlock && {
+								ipv6CidrBlock: additionalFields.ipv6CidrBlock,
 							}),
 						};
 
