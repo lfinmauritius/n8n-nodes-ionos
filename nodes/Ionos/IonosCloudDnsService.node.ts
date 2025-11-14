@@ -1296,11 +1296,9 @@ export class IonosCloudDnsService implements INodeType {
 
 						const body: IDataObject = {
 							properties: {
-								keyParameters: [
-									{
+								keyParameters: {
 										algorithm: dnssecAlgorithm,
-									},
-								],
+								},
 							},
 						};
 
