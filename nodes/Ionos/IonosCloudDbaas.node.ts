@@ -915,6 +915,11 @@ export class IonosCloudDbaas implements INodeType {
 					show: {
 						operation: ['create'],
 					},
+				hide: {
+					postgresqlResource: ['user', 'database', 'backup', 'log'],
+					mongodbResource: ['user', 'database'],
+					mariadbResource: ['backup'],
+				},
 				},
 				default: '',
 				description: 'The display name of the cluster/replica set',
@@ -1000,6 +1005,9 @@ export class IonosCloudDbaas implements INodeType {
 					},
 					hide: {
 						resource: ['redis'],
+					postgresqlResource: ['user', 'database', 'backup', 'log'],
+					mongodbResource: ['user', 'database'],
+					mariadbResource: ['backup'],
 					},
 				},
 				default: 1,
@@ -1041,6 +1049,11 @@ export class IonosCloudDbaas implements INodeType {
 					show: {
 						operation: ['create'],
 					},
+				hide: {
+					postgresqlResource: ['user', 'database', 'backup', 'log'],
+					mongodbResource: ['user', 'database'],
+					mariadbResource: ['backup'],
+				},
 				},
 				default: 4,
 				description: 'The number of CPU cores',
@@ -1059,6 +1072,8 @@ export class IonosCloudDbaas implements INodeType {
 					},
 					hide: {
 						resource: ['mariadb', 'redis'],
+					postgresqlResource: ['user', 'database', 'backup', 'log'],
+					mongodbResource: ['user', 'database'],
 					},
 				},
 				typeOptions: {
@@ -1078,6 +1093,7 @@ export class IonosCloudDbaas implements INodeType {
 					show: {
 						operation: ['create'],
 						resource: ['mariadb'],
+					mariadbResource: ['cluster'],
 					},
 				},
 				typeOptions: {
@@ -1097,6 +1113,7 @@ export class IonosCloudDbaas implements INodeType {
 					show: {
 						operation: ['create'],
 						resource: ['redis'],
+					redisResource: ['replicaset'],
 					},
 				},
 				typeOptions: {
@@ -1119,6 +1136,8 @@ export class IonosCloudDbaas implements INodeType {
 					},
 					hide: {
 						resource: ['redis', 'mariadb'],
+					postgresqlResource: ['user', 'database', 'backup', 'log'],
+					mongodbResource: ['user', 'database'],
 					},
 				},
 				typeOptions: {
@@ -1138,6 +1157,7 @@ export class IonosCloudDbaas implements INodeType {
 					show: {
 						operation: ['create'],
 						resource: ['mariadb'],
+					mariadbResource: ['cluster'],
 					},
 				},
 				typeOptions: {
@@ -1158,6 +1178,11 @@ export class IonosCloudDbaas implements INodeType {
 					show: {
 						operation: ['create'],
 					},
+				hide: {
+					postgresqlResource: ['user', 'database', 'backup', 'log'],
+					mongodbResource: ['user', 'database'],
+					mariadbResource: ['backup'],
+				},
 				},
 				options: [
 				{
@@ -1217,6 +1242,8 @@ export class IonosCloudDbaas implements INodeType {
 				},
 				hide: {
 					resource: ['mariadb', 'redis'],
+				postgresqlResource: ['user', 'database', 'backup', 'log'],
+				mongodbResource: ['user', 'database'],
 				},
 			},
 			options: [
