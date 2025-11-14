@@ -354,7 +354,7 @@ export class IonosCloudDnsService implements INodeType {
 			// Zone Fields
 			// ====================
 
-			// Zone ID
+			// Zone ID (for zone operations)
 			{
 				displayName: 'Zone ID',
 				name: 'zoneId',
@@ -362,12 +362,60 @@ export class IonosCloudDnsService implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['zone', 'record', 'zoneFile', 'dnssecKey'],
-						operation: ['get', 'update', 'delete', 'import'],
+						resource: ['zone'],
+						operation: ['get', 'update', 'delete'],
 					},
 				},
 				default: '',
 				description: 'The unique ID (UUID) of the zone',
+			},
+
+			// Zone ID (for record operations)
+			{
+				displayName: 'Zone ID',
+				name: 'zoneId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['record'],
+						operation: ['create', 'get', 'getMany', 'update', 'delete'],
+					},
+				},
+				default: '',
+				description: 'The unique ID (UUID) of the zone containing the record',
+			},
+
+			// Zone ID (for zone file operations)
+			{
+				displayName: 'Zone ID',
+				name: 'zoneId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['zoneFile'],
+						operation: ['get', 'import'],
+					},
+				},
+				default: '',
+				description: 'The unique ID (UUID) of the zone',
+			},
+
+			// Zone ID (for DNSSEC key operations)
+			{
+				displayName: 'Zone ID',
+				name: 'zoneId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['dnssecKey'],
+						operation: ['create', 'getMany', 'delete'],
+					},
+				},
+				default: '',
+				description: 'The unique ID (UUID) of the zone for DNSSEC operations',
 			},
 
 			// Zone Name (for create)
@@ -743,8 +791,8 @@ export class IonosCloudDnsService implements INodeType {
 					},
 				},
 				default: '',
-				placeholder: '192.0.2.1 or 2001:db8::1',
-				description: 'The IP address for reverse DNS',
+				placeholder: '203.0.113.1 or 2001:db8::1',
+				description: 'The PUBLIC IP address for reverse DNS. Private IPs (192.168.x.x, 10.x.x.x, 172.16-31.x.x) are not allowed.',
 			},
 
 			// Reverse Record Name
