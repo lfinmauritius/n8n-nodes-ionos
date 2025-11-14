@@ -26,7 +26,7 @@ export class IonosCloud implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				Authorization: '="Bearer " + $credentials.apiToken',
+				Authorization: '={{ "Bearer " + $credentials.apiToken }}',
 			},
 		},
 	};
