@@ -990,7 +990,7 @@ export class IonosCloudDbaas implements INodeType {
 					},
 				hide: {
 					postgresqlResource: ['user', 'database', 'backup', 'log'],
-					mongodbResource: ['user', 'database', 'cluster'],
+					mongodbResource: ['user', 'database'],
 					mariadbResource: ['backup'],
 				},
 				},
@@ -1097,7 +1097,7 @@ export class IonosCloudDbaas implements INodeType {
 					hide: {
 						resource: ['redis'],
 					postgresqlResource: ['user', 'database', 'backup', 'log'],
-					mongodbResource: ['user', 'database', 'cluster'],
+					mongodbResource: ['user', 'database'],
 					mariadbResource: ['backup'],
 					},
 				},
@@ -1271,7 +1271,7 @@ export class IonosCloudDbaas implements INodeType {
 					},
 				hide: {
 					postgresqlResource: ['user', 'database', 'backup', 'log'],
-					mongodbResource: ['user', 'database', 'cluster'],
+					mongodbResource: ['user', 'database'],
 					mariadbResource: ['backup'],
 				},
 				},
@@ -1516,7 +1516,7 @@ export class IonosCloudDbaas implements INodeType {
 					hide: {
 						resource: ['redis'],
 					postgresqlResource: ['user', 'database', 'backup', 'log'],
-					mongodbResource: ['user', 'database', 'cluster'],
+					mongodbResource: ['user', 'database'],
 					mariadbResource: ['backup'],
 					},
 				},
