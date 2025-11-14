@@ -477,7 +477,12 @@ export class IonosCloudNetwork implements INodeType {
 					type: 'string',
 					default: '',
 					placeholder: '10.0.0.0/24',
-					description: 'The IPv4 CIDR block for the LAN (e.g., 10.0.0.0/24, 192.168.1.0/24)',
+					description: 'The IPv4 CIDR block for the LAN (e.g., 10.0.0.0/24, 192.168.1.0/24). Note: This field is read-only after creation.',
+					displayOptions: {
+						show: {
+							operation: ['create'],
+						},
+					},
 				},
 				{
 					displayName: 'IPv6 CIDR Block',
@@ -485,7 +490,12 @@ export class IonosCloudNetwork implements INodeType {
 					type: 'string',
 					default: '',
 					placeholder: '2001:db8::/64',
-					description: 'The IPv6 CIDR block for the LAN (e.g., 2001:db8::/64)',
+					description: 'The IPv6 CIDR block for the LAN (e.g., 2001:db8::/64). Note: This field is read-only after creation.',
+					displayOptions: {
+						show: {
+							operation: ['create'],
+						},
+					},
 				},
 				],
 			},
@@ -1479,12 +1489,6 @@ export class IonosCloudNetwork implements INodeType {
 						const body: IDataObject = {
 							...(additionalFields.public !== undefined && { public: additionalFields.public }),
 							...(additionalFields.pcc && { pcc: additionalFields.pcc }),
-							...(additionalFields.ipv4CidrBlock && {
-								ipv4CidrBlock: additionalFields.ipv4CidrBlock,
-							}),
-							...(additionalFields.ipv6CidrBlock && {
-								ipv6CidrBlock: additionalFields.ipv6CidrBlock,
-							}),
 						};
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
