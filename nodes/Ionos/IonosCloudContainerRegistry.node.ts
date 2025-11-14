@@ -496,7 +496,7 @@ export class IonosCloudContainerRegistry implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['repository', 'artifact'],
-						operation: ['get', 'delete', 'getMany', 'getVulnerabilities'],
+						operation: ['get', 'delete', 'getVulnerabilities'],
 					},
 				},
 				default: '',
@@ -817,7 +817,7 @@ export class IonosCloudContainerRegistry implements INodeType {
 								method: 'PATCH',
 								url: `${baseUrl}/registries/${registryId}/tokens/${tokenId}`,
 								body,
-								headers: { 'Content-Type': 'application/json' },
+								headers: { 'Content-Type': 'application/vnd.profitbricks.partial-properties+json' },
 							},
 						);
 					} else if (operation === 'delete') {
