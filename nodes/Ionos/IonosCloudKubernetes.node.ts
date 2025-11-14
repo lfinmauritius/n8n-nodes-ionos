@@ -310,6 +310,37 @@ export class IonosCloudKubernetes implements INodeType {
 				},
 				options: [
 					{
+						displayName: 'Public',
+						name: 'public',
+						type: 'boolean',
+						default: true,
+						description: 'Whether the cluster is public or private. When false, location and natGatewayIp become mandatory.',
+					},
+					{
+						displayName: 'Location',
+						name: 'location',
+						type: 'string',
+						default: '',
+						placeholder: 'de/fra',
+						description: 'Location where the cluster will be created (e.g., de/fra, de/txl). Mandatory if cluster is private, optional if public.',
+					},
+					{
+						displayName: 'NAT Gateway IP',
+						name: 'natGatewayIp',
+						type: 'string',
+						default: '',
+						placeholder: '203.0.113.1',
+						description: 'NAT gateway IP for private clusters. Must be a reserved IP in the same location. Mandatory if cluster is private.',
+					},
+					{
+						displayName: 'Node Subnet',
+						name: 'nodeSubnet',
+						type: 'string',
+						default: '',
+						placeholder: '10.0.0.0/16',
+						description: 'Node subnet for private clusters (IPv4 CIDR with /16 prefix). Optional and immutable.',
+					},
+					{
 						displayName: 'Maintenance Window',
 						name: 'maintenanceWindow',
 						type: 'json',
@@ -733,6 +764,10 @@ export class IonosCloudKubernetes implements INodeType {
 							properties: {
 								name,
 								...(k8sVersion && { k8sVersion }),
+						...(additionalFields.public !== undefined && { public: additionalFields.public }),
+						...(additionalFields.location && { location: additionalFields.location }),
+						...(additionalFields.natGatewayIp && { natGatewayIp: additionalFields.natGatewayIp }),
+						...(additionalFields.nodeSubnet && { nodeSubnet: additionalFields.nodeSubnet }),
 								...(additionalFields.maintenanceWindow && {
 									maintenanceWindow: JSON.parse(additionalFields.maintenanceWindow as string),
 								}),
