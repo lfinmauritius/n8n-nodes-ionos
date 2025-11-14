@@ -1057,7 +1057,7 @@ export class IonosCloudVMAutoScaling implements INodeType {
 							url: `${baseURL}/groups/${groupId}`,
 							headers: {
 								Accept: 'application/json',
-								'Content-Type': 'application/json',
+								'Content-Type': 'application/vnd.profitbricks.partial-properties+json',
 							},
 							body,
 						};
