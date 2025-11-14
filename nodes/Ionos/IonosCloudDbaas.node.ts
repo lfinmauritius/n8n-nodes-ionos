@@ -819,7 +819,7 @@ export class IonosCloudDbaas implements INodeType {
 			displayOptions: {
 				show: {
 					resource: ['mongodb'],
-					mongodbResource: ['user', 'database', 'cluster'],
+					mongodbResource: ['user', 'database'],
 				},
 			},
 			default: '',
