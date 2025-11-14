@@ -874,6 +874,26 @@ export class IonosCloudDbaas implements INodeType {
 				description: 'The username',
 			},
 
+		// Password for PostgreSQL User Update
+		{
+			displayName: 'New Password',
+			name: 'password',
+			type: 'string',
+			typeOptions: {
+				password: true,
+			},
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['postgresql'],
+					postgresqlResource: ['user'],
+					operation: ['update'],
+				},
+			},
+			default: '',
+			description: 'The new password for the PostgreSQL user (10-63 characters)',
+		},
+
 			{
 				displayName: 'Username',
 				name: 'username',
@@ -888,6 +908,26 @@ export class IonosCloudDbaas implements INodeType {
 				default: '',
 				description: 'The username',
 			},
+
+		// Password for MongoDB User Update
+		{
+			displayName: 'New Password',
+			name: 'password',
+			type: 'string',
+			typeOptions: {
+				password: true,
+			},
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['mongodb'],
+					mongodbResource: ['user'],
+					operation: ['update'],
+				},
+			},
+			default: '',
+			description: 'The new password for the MongoDB user (10-63 characters)',
+		},
 
 			// Database Name (for PostgreSQL databases)
 			{
@@ -1546,6 +1586,11 @@ export class IonosCloudDbaas implements INodeType {
 					show: {
 						operation: ['update'],
 					},
+				hide: {
+					postgresqlResource: ['user', 'database', 'backup', 'log'],
+					mongodbResource: ['user', 'database'],
+					mariadbResource: ['backup'],
+				},
 				},
 				options: [
 					{
