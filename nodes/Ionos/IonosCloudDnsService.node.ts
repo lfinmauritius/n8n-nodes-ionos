@@ -816,6 +816,122 @@ export class IonosCloudDnsService implements INodeType {
 				description: 'Zone Signing Key length in bits. Must be <= KSK Bits.',
 			},
 
+		// NSEC Mode
+		{
+			displayName: 'NSEC Mode',
+			name: 'dnssecNsecMode',
+			type: 'options',
+			displayOptions: {
+				show: {
+					resource: ['dnssecKey'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					name: 'NSEC',
+					value: 'NSEC',
+				},
+				{
+					name: 'NSEC3',
+					value: 'NSEC3',
+				},
+			],
+			default: 'NSEC3',
+			description: 'NSEC mode for DNSSEC',
+		},
+
+		// NSEC3 Iterations
+		{
+			displayName: 'NSEC3 Iterations',
+			name: 'dnssecNsec3Iterations',
+			type: 'number',
+			displayOptions: {
+				show: {
+					resource: ['dnssecKey'],
+					operation: ['create'],
+				},
+			},
+			typeOptions: {
+				minValue: 0,
+				maxValue: 50,
+			},
+			default: 10,
+			description: 'Number of iterations for NSEC3 (between 0 and 50)',
+		},
+
+		// NSEC3 Salt Bits
+		{
+			displayName: 'NSEC3 Salt Bits',
+			name: 'dnssecNsec3SaltBits',
+			type: 'options',
+			displayOptions: {
+				show: {
+					resource: ['dnssecKey'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					name: '64 bits',
+					value: 64,
+				},
+				{
+					name: '72 bits',
+					value: 72,
+				},
+				{
+					name: '80 bits',
+					value: 80,
+				},
+				{
+					name: '88 bits',
+					value: 88,
+				},
+				{
+					name: '96 bits',
+					value: 96,
+				},
+				{
+					name: '104 bits',
+					value: 104,
+				},
+				{
+					name: '112 bits',
+					value: 112,
+				},
+				{
+					name: '120 bits',
+					value: 120,
+				},
+				{
+					name: '128 bits',
+					value: 128,
+				},
+			],
+			default: 64,
+			description: 'Salt length in bits for NSEC3 (between 64 and 128, multiples of 8)',
+		},
+
+		// Validity
+		{
+			displayName: 'Signature Validity (Days)',
+			name: 'dnssecValidity',
+			type: 'number',
+			displayOptions: {
+				show: {
+					resource: ['dnssecKey'],
+					operation: ['create'],
+				},
+			},
+			typeOptions: {
+				minValue: 90,
+				maxValue: 365,
+			},
+			default: 180,
+			description: 'Signature validity in days (between 90 and 365)',
+		},
+
 			// ====================
 			// Reverse Record Fields
 			// ====================
@@ -1354,6 +1470,10 @@ export class IonosCloudDnsService implements INodeType {
 
 					const dnssecKskBits = this.getNodeParameter('dnssecKskBits', i, 2048) as number;
 					const dnssecZskBits = this.getNodeParameter('dnssecZskBits', i, 1024) as number;
+					const dnssecNsecMode = this.getNodeParameter('dnssecNsecMode', i, 'NSEC3') as string;
+					const dnssecNsec3Iterations = this.getNodeParameter('dnssecNsec3Iterations', i, 10) as number;
+					const dnssecNsec3SaltBits = this.getNodeParameter('dnssecNsec3SaltBits', i, 64) as number;
+					const dnssecValidity = this.getNodeParameter('dnssecValidity', i, 180) as number;
 						const body: IDataObject = {
 							properties: {
 								keyParameters: {
@@ -1361,6 +1481,12 @@ export class IonosCloudDnsService implements INodeType {
 									kskBits: dnssecKskBits,
 								zskBits: dnssecZskBits,
 								},
+							nsecParameters: {
+								nsecMode: dnssecNsecMode,
+								nsec3Iterations: dnssecNsec3Iterations,
+								nsec3SaltBits: dnssecNsec3SaltBits,
+							},
+							validity: dnssecValidity,
 							},
 						};
 
