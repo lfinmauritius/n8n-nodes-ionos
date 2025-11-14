@@ -1376,45 +1376,7 @@ export class IonosCloudDbaas implements INodeType {
 			description: 'The initial password for database access (min 10 characters)',
 		},
 
-		// Initial Username (Credentials) - MongoDB Cluster only
-		{
-			displayName: 'Username',
-			name: 'credentialsUsername',
-			type: 'string',
-			required: true,
-			displayOptions: {
-				show: {
-					resource: ['mongodb'],
-					mongodbResource: ['cluster'],
-					operation: ['create'],
-				},
-			},
-			default: '',
-			placeholder: 'admin',
-			description: 'The initial username for database access',
-		},
-
-		// Initial Password (Credentials) - MongoDB Cluster only
-		{
-			displayName: 'Password',
-			name: 'credentialsPassword',
-			type: 'string',
-			required: true,
-			typeOptions: {
-				password: true,
-			},
-			displayOptions: {
-				show: {
-					resource: ['mongodb'],
-					mongodbResource: ['cluster'],
-					operation: ['create'],
-				},
-			},
-			default: '',
-			description: 'The initial password for database access (min 10 characters)',
-		},
-
-		// Initial Username (Credentials) - MariaDB Cluster only
+// Initial Username (Credentials) - MariaDB Cluster only
 		{
 			displayName: 'Username',
 			name: 'credentialsUsername',
@@ -2157,8 +2119,6 @@ export class IonosCloudDbaas implements INodeType {
 							const location = this.getNodeParameter('location', i) as string;
 							const connections = this.getNodeParameter('connections', i) as IDataObject;
 						const storageType = this.getNodeParameter('storageType', i) as string;
-						const credentialsUsername = this.getNodeParameter('credentialsUsername', i) as string;
-						const credentialsPassword = this.getNodeParameter('credentialsPassword', i) as string;
 
 							const body: IDataObject = {
 								properties: {
@@ -2170,10 +2130,6 @@ export class IonosCloudDbaas implements INodeType {
 									storageSize,
 									location,
 								storageType,
-								credentials: {
-									username: credentialsUsername,
-									password: credentialsPassword,
-								},
 								},
 							};
 
