@@ -758,6 +758,64 @@ export class IonosCloudDnsService implements INodeType {
 				description: 'The DNSSEC signing algorithm',
 			},
 
+			// KSK Bits
+			{
+				displayName: 'KSK Bits (Key Signing Key Length)',
+				name: 'dnssecKskBits',
+				type: 'options',
+				displayOptions: {
+					show: {
+						resource: ['dnssecKey'],
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						name: '1024 bits',
+						value: 1024,
+					},
+					{
+						name: '2048 bits',
+						value: 2048,
+					},
+					{
+						name: '4096 bits',
+						value: 4096,
+					},
+				],
+				default: 2048,
+				description: 'Key Signing Key length in bits. Must be >= ZSK Bits.',
+			},
+
+			// ZSK Bits
+			{
+				displayName: 'ZSK Bits (Zone Signing Key Length)',
+				name: 'dnssecZskBits',
+				type: 'options',
+				displayOptions: {
+					show: {
+						resource: ['dnssecKey'],
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						name: '1024 bits',
+						value: 1024,
+					},
+					{
+						name: '2048 bits',
+						value: 2048,
+					},
+					{
+						name: '4096 bits',
+						value: 4096,
+					},
+				],
+				default: 1024,
+				description: 'Zone Signing Key length in bits. Must be <= KSK Bits.',
+			},
+
 			// ====================
 			// Reverse Record Fields
 			// ====================
@@ -1294,10 +1352,14 @@ export class IonosCloudDnsService implements INodeType {
 					if (operation === 'create') {
 						const dnssecAlgorithm = this.getNodeParameter('dnssecAlgorithm', i, 'ECDSAP256SHA256') as string;
 
+					const dnssecKskBits = this.getNodeParameter('dnssecKskBits', i, 2048) as number;
+					const dnssecZskBits = this.getNodeParameter('dnssecZskBits', i, 1024) as number;
 						const body: IDataObject = {
 							properties: {
 								keyParameters: {
 										algorithm: dnssecAlgorithm,
+									kskBits: dnssecKskBits,
+								zskBits: dnssecZskBits,
 								},
 							},
 						};
