@@ -1486,41 +1486,7 @@ export class IonosCloudDbaas implements INodeType {
 			description: 'The synchronization mode for PostgreSQL replication',
 		},
 
-		// Synchronization Mode (MongoDB only)
-		{
-			displayName: 'Synchronization Mode',
-			name: 'synchronizationMode',
-			type: 'options',
-			required: true,
-			displayOptions: {
-				show: {
-					resource: ['mongodb'],
-					mongodbResource: ['cluster'],
-					operation: ['create'],
-				},
-			},
-			options: [
-				{
-					name: 'Asynchronous',
-					value: 'ASYNCHRONOUS',
-					description: 'Asynchronous replication',
-				},
-				{
-					name: 'Synchronous',
-					value: 'SYNCHRONOUS',
-					description: 'Synchronous replication',
-				},
-				{
-					name: 'Strictly Synchronous',
-					value: 'STRICTLY_SYNCHRONOUS',
-					description: 'Strictly synchronous replication',
-				},
-			],
-			default: 'ASYNCHRONOUS',
-			description: 'The synchronization mode for MongoDB replication',
-		},
-
-		// Synchronization Mode (MariaDB only)
+	// Synchronization Mode (MariaDB only)
 		{
 			displayName: 'Synchronization Mode',
 			name: 'synchronizationMode',
