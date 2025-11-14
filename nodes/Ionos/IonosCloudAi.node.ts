@@ -132,10 +132,10 @@ export class IonosCloudAi implements INodeType {
 						action: 'Get all models',
 					},
 					{
-						name: 'Make Prediction',
+						name: 'Send Request',
 						value: 'predict',
 						description: 'Send a request to an AI model',
-						action: 'Make a prediction',
+						action: 'Send a request',
 					},
 				],
 				default: 'getAll',
