@@ -1553,7 +1553,7 @@ export class IonosCloudDbaas implements INodeType {
 				],
 			},
 
-			// Connections (for MongoDB cluster creation - without CIDR)
+			// Connections (for MongoDB cluster creation - with cidrList)
 			{
 				displayName: 'Connections',
 				name: 'connections',
@@ -1589,6 +1589,14 @@ export class IonosCloudDbaas implements INodeType {
 								type: 'string',
 								default: '',
 								description: 'The LAN ID to connect to',
+							},
+							{
+								displayName: 'CIDR List',
+								name: 'cidrList',
+								type: 'string',
+								default: '',
+								placeholder: '192.168.1.1,192.168.1.2,192.168.1.3',
+								description: 'Comma-separated list of IPs for your cluster. Must provide as many IPs as instances. All IPs must be in a /24 network.',
 							},
 						],
 					},
@@ -2188,9 +2196,13 @@ export class IonosCloudDbaas implements INodeType {
 
 							if (connections.connectionValues) {
 								const conn = connections.connectionValues as IDataObject;
+								const cidrListString = conn.cidrList as string;
+								const cidrList = cidrListString.split(',').map(ip => ip.trim());
+
 								(body.properties as IDataObject).connections = [{
 									datacenterId: conn.datacenterId,
 									lanId: conn.lanId,
+									cidrList: cidrList,
 								}];
 							}
 
