@@ -81,12 +81,6 @@ export class IonosCloudObjectStorageManagement implements INodeType {
 						action: 'Get many access keys',
 					},
 					{
-						name: 'Update',
-						value: 'update',
-						description: 'Update an access key',
-						action: 'Update an access key',
-					},
-					{
 						name: 'Delete',
 						value: 'delete',
 						description: 'Delete an access key',
@@ -143,7 +137,7 @@ export class IonosCloudObjectStorageManagement implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['accessKey'],
-						operation: ['get', 'update', 'delete', 'renew'],
+						operation: ['get', 'delete', 'renew'],
 					},
 				},
 				default: '',
@@ -159,7 +153,7 @@ export class IonosCloudObjectStorageManagement implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['accessKey'],
-						operation: ['create', 'update'],
+						operation: ['create'],
 					},
 				},
 				default: '',
@@ -334,26 +328,6 @@ export class IonosCloudObjectStorageManagement implements INodeType {
 						);
 
 						responseData = (responseData as IDataObject).items as IDataObject[];
-					} else if (operation === 'update') {
-						const accessKeyId = this.getNodeParameter('accessKeyId', i) as string;
-						const description = this.getNodeParameter('description', i) as string;
-
-						const body: IDataObject = {
-							properties: {
-								description,
-							},
-						};
-
-						responseData = await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'ionosCloud',
-							{
-								method: 'PUT',
-								url: `${baseUrl}/accesskeys/${accessKeyId}`,
-								body,
-								headers: { 'Content-Type': 'application/vnd.profitbricks.partial-properties+json' },
-							},
-						);
 					} else if (operation === 'delete') {
 						const accessKeyId = this.getNodeParameter('accessKeyId', i) as string;
 
