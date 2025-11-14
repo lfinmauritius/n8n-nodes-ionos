@@ -1094,7 +1094,7 @@ export class IonosCloudLoadBalancing implements INodeType {
 								method: 'PATCH',
 								url: `${baseUrl}/datacenters/${datacenterId}/loadbalancers/${loadBalancerId}`,
 								body,
-								headers: { 'Content-Type': 'application/json' },
+								headers: { 'Content-Type': 'application/vnd.profitbricks.partial-properties+json' },
 							},
 						);
 					} else if (operation === 'delete') {
