@@ -25,7 +25,9 @@
       "Bash(move credentialsIonosCloudAiApi.credentials.ts credentialsIonosCloud.credentials.ts)",
       "Bash(npm whoami:*)",
       "Bash(git tag:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

@@ -339,7 +339,6 @@ export class IonosCloudObjectStorageManagement implements INodeType {
 						const description = this.getNodeParameter('description', i) as string;
 
 						const body: IDataObject = {
-							id: accessKeyId,
 							properties: {
 								description,
 							},
@@ -352,7 +351,7 @@ export class IonosCloudObjectStorageManagement implements INodeType {
 								method: 'PUT',
 								url: `${baseUrl}/accesskeys/${accessKeyId}`,
 								body,
-								headers: { 'Content-Type': 'application/json' },
+								headers: { 'Content-Type': 'application/vnd.profitbricks.partial-properties+json' },
 							},
 						);
 					} else if (operation === 'delete') {
