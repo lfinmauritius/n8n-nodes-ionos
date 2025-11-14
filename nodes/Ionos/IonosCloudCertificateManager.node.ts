@@ -150,7 +150,6 @@ export class IonosCloudCertificateManager implements INodeType {
 				name: 'privateKey',
 				type: 'string',
 				typeOptions: {
-					password: true,
 					rows: 10,
 				},
 				required: true,

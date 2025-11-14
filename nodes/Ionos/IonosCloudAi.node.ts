@@ -61,11 +61,17 @@ export class IonosCloudAi implements INodeType {
 				default: 'de-txl',
 				description: 'The region for AI Model Hub API',
 			},
+			// Resource for Native API
 			{
 				displayName: 'Resource',
 				name: 'resource',
 				type: 'options',
 				noDataExpression: true,
+				displayOptions: {
+					show: {
+						apiType: ['native'],
+					},
+				},
 				options: [
 					{
 						name: 'Foundation Model',
@@ -79,12 +85,30 @@ export class IonosCloudAi implements INodeType {
 						name: 'Document',
 						value: 'document',
 					},
+				],
+				default: 'model',
+				description: 'Choose a resource for Native API operations',
+			},
+
+			// Resource for OpenAI Compatible API
+			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						apiType: ['openai'],
+					},
+				},
+				options: [
 					{
 						name: 'OpenAI Compatible',
 						value: 'openai',
 					},
 				],
-				default: 'model',
+				default: 'openai',
+				description: 'OpenAI Compatible API endpoints',
 			},
 
 			// ===================================

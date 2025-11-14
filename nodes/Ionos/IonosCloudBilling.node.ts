@@ -75,7 +75,7 @@ export class IonosCloudBilling implements INodeType {
 				default: 'invoice',
 			},
 
-			// Operations
+			// EVN Operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -83,33 +83,167 @@ export class IonosCloudBilling implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
-						resource: ['evn', 'invoice', 'product', 'traffic', 'usage', 'utilization'],
+						resource: ['evn'],
 					},
 				},
 				options: [
 					{
 						name: 'Get',
 						value: 'get',
-						description: 'Get resource information',
-						action: 'Get resource information',
+						description: 'Get EVN information',
+						action: 'Get EVN information',
 					},
 					{
 						name: 'Get by Period',
 						value: 'getByPeriod',
-						description: 'Get resource information for a specific period',
-						action: 'Get resource by period',
+						description: 'Get EVN for a specific period',
+						action: 'Get EVN by period',
+					},
+				],
+				default: 'get',
+			},
+
+			// Invoice Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['invoice'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get invoice information',
+						action: 'Get invoice information',
 					},
 					{
 						name: 'Get by ID',
 						value: 'getById',
-						description: 'Get resource by ID',
-						action: 'Get resource by ID',
+						description: 'Get invoice by ID',
+						action: 'Get invoice by ID',
+					},
+					{
+						name: 'Get by Period',
+						value: 'getByPeriod',
+						description: 'Get invoices for a specific period',
+						action: 'Get invoice by period',
+					},
+				],
+				default: 'get',
+			},
+
+			// Product Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['product'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get available products',
+						action: 'Get available products',
+					},
+				],
+				default: 'get',
+			},
+
+			// Traffic Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['traffic'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get traffic information',
+						action: 'Get traffic information',
+					},
+					{
+						name: 'Get by Period',
+						value: 'getByPeriod',
+						description: 'Get traffic for a specific period',
+						action: 'Get traffic by period',
+					},
+				],
+				default: 'get',
+			},
+
+			// Usage Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['usage'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get usage information',
+						action: 'Get usage information',
 					},
 					{
 						name: 'Get by Datacenter',
 						value: 'getByDatacenter',
-						description: 'Get resource by datacenter',
-						action: 'Get resource by datacenter',
+						description: 'Get usage by datacenter',
+						action: 'Get usage by datacenter',
+					},
+				],
+				default: 'get',
+			},
+
+			// Utilization Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['utilization'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get utilization information',
+						action: 'Get utilization information',
+					},
+					{
+						name: 'Get by Period',
+						value: 'getByPeriod',
+						description: 'Get utilization for a specific period',
+						action: 'Get utilization by period',
+					},
+					{
+						name: 'Get by ID',
+						value: 'getById',
+						description: 'Get daily utilization by ID',
+						action: 'Get utilization by ID',
 					},
 				],
 				default: 'get',
@@ -141,6 +275,7 @@ export class IonosCloudBilling implements INodeType {
 			// Contract Number (used by most resources)
 			// ====================
 
+			// Contract Number for EVN, Product, Traffic, Usage, Utilization (all operations)
 			{
 				displayName: 'Contract Number',
 				name: 'contractNumber',
@@ -148,11 +283,7 @@ export class IonosCloudBilling implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['evn', 'invoice', 'product', 'traffic', 'usage', 'utilization'],
-					},
-					hide: {
-						resource: ['profile'],
-						operation: ['getByPeriod'],
+						resource: ['evn', 'product', 'traffic', 'usage', 'utilization'],
 					},
 				},
 				default: '',
@@ -160,11 +291,29 @@ export class IonosCloudBilling implements INodeType {
 				description: 'Contract number',
 			},
 
-			// Contract Number for invoice getByPeriod (optional query parameter)
+			// Contract Number for Invoice (Get and Get by ID only)
 			{
 				displayName: 'Contract Number',
 				name: 'contractNumber',
 				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['invoice'],
+						operation: ['get', 'getById'],
+					},
+				},
+				default: '',
+				placeholder: '12345678',
+				description: 'Contract number',
+			},
+
+			// Contract Number for Invoice Get by Period
+			{
+				displayName: 'Contract Number',
+				name: 'contractNumber',
+				type: 'string',
+				required: true,
 				displayOptions: {
 					show: {
 						resource: ['invoice'],
@@ -173,8 +322,9 @@ export class IonosCloudBilling implements INodeType {
 				},
 				default: '',
 				placeholder: '12345678',
-				description: 'Contract number (optional for filtering)',
+				description: 'Contract number',
 			},
+
 
 			// ====================
 			// Period Parameter
