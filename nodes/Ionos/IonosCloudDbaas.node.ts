@@ -2130,24 +2130,18 @@ export class IonosCloudDbaas implements INodeType {
 						if (operation === 'create') {
 							const displayName = this.getNodeParameter('displayName', i) as string;
 							const mongoVersion = this.getNodeParameter('mongoVersion', i) as string;
+							const templateId = this.getNodeParameter('templateId', i) as string;
 							const instances = this.getNodeParameter('instances', i) as number;
-							const cores = this.getNodeParameter('cores', i) as number;
-							const ram = this.getNodeParameter('ram', i) as number;
-							const storageSize = this.getNodeParameter('storageSize', i) as number;
 							const location = this.getNodeParameter('location', i) as string;
 							const connections = this.getNodeParameter('connections', i) as IDataObject;
-						const storageType = this.getNodeParameter('storageType', i) as string;
 
 							const body: IDataObject = {
 								properties: {
 									displayName,
 									mongoDBVersion: mongoVersion,
+									templateID: templateId,
 									instances,
-									cores,
-									ram,
-									storageSize,
 									location,
-								storageType,
 								},
 							};
 
