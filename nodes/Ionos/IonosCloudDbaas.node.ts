@@ -1014,7 +1014,8 @@ export class IonosCloudDbaas implements INodeType {
 				description: 'The number of CPU cores',
 			},
 
-			// RAM (in MB)
+
+			// RAM (in MB) - PostgreSQL & MongoDB
 			{
 				displayName: 'RAM (MB)',
 				name: 'ram',
@@ -1024,12 +1025,57 @@ export class IonosCloudDbaas implements INodeType {
 					show: {
 						operation: ['create'],
 					},
+					hide: {
+						resource: ['mariadb', 'redis'],
+					},
+				},
+				typeOptions: {
+					minValue: 1024,
 				},
 				default: 4096,
 				description: 'The amount of RAM in MB',
 			},
 
-			// Storage Size (in MB)
+			// RAM (in MB) - MariaDB
+			{
+				displayName: 'RAM (MB)',
+				name: 'ram',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+						resource: ['mariadb'],
+					},
+				},
+				typeOptions: {
+					minValue: 1024,
+				},
+				default: 2048,
+				description: 'The amount of RAM in MB',
+			},
+
+			// RAM (in MB) - Redis (fixed value)
+			{
+				displayName: 'RAM (MB)',
+				name: 'ram',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+						resource: ['redis'],
+					},
+				},
+				typeOptions: {
+					minValue: 256,
+					maxValue: 256,
+				},
+				default: 256,
+				description: 'The amount of RAM in MB (fixed at 256 MB for Redis)',
+			},
+
+			// Storage Size (in MB) - PostgreSQL & MongoDB
 			{
 				displayName: 'Storage Size (MB)',
 				name: 'storageSize',
@@ -1039,9 +1085,35 @@ export class IonosCloudDbaas implements INodeType {
 					show: {
 						operation: ['create'],
 					},
+					hide: {
+						resource: ['redis', 'mariadb'],
+					},
+				},
+				typeOptions: {
+					minValue: 5120,
 				},
 				default: 20480,
 				description: 'The storage size in MB',
+			},
+
+			// Storage Size (in MB) - MariaDB (limited to 2000 MB)
+			{
+				displayName: 'Storage Size (MB)',
+				name: 'storageSize',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+						resource: ['mariadb'],
+					},
+				},
+				typeOptions: {
+					minValue: 1024,
+					maxValue: 2000,
+				},
+				default: 2000,
+				description: 'The storage size in MB (max 2000 MB / 2 GB for MariaDB)',
 			},
 
 			// Location
@@ -1194,7 +1266,8 @@ export class IonosCloudDbaas implements INodeType {
 				],
 			},
 
-			// User Creation Fields
+
+			// User Creation Fields - PostgreSQL
 			{
 				displayName: 'Username',
 				name: 'newUsername',
@@ -1203,14 +1276,11 @@ export class IonosCloudDbaas implements INodeType {
 				displayOptions: {
 					show: {
 						operation: ['create'],
-					},
-					hide: {
-						mariadbResource: ['cluster', 'backup'],
-						redisResource: ['replicaset', 'snapshot'],
+						postgresqlResource: ['user'],
 					},
 				},
 				default: '',
-				description: 'The username for the new user',
+				description: 'The username for the new PostgreSQL user',
 			},
 
 			{
@@ -1224,14 +1294,45 @@ export class IonosCloudDbaas implements INodeType {
 				displayOptions: {
 					show: {
 						operation: ['create'],
-					},
-					hide: {
-						mariadbResource: ['cluster', 'backup'],
-						redisResource: ['replicaset', 'snapshot'],
+						postgresqlResource: ['user'],
 					},
 				},
 				default: '',
-				description: 'The password for the new user',
+				description: 'The password for the new PostgreSQL user',
+			},
+
+			// User Creation Fields - MongoDB
+			{
+				displayName: 'Username',
+				name: 'newUsername',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+						mongodbResource: ['user'],
+					},
+				},
+				default: '',
+				description: 'The username for the new MongoDB user',
+			},
+
+			{
+				displayName: 'Password',
+				name: 'password',
+				type: 'string',
+				typeOptions: {
+					password: true,
+				},
+				required: true,
+				displayOptions: {
+					show: {
+						operation: ['create'],
+						mongodbResource: ['user'],
+					},
+				},
+				default: '',
+				description: 'The password for the new MongoDB user',
 			},
 
 			// Database Name (for creation)

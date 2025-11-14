@@ -146,7 +146,7 @@ export class IonosCloudCertificateManager implements INodeType {
 
 			// Private Key
 			{
-				displayName: 'Private Key',
+				displayName: 'Private Key (PEM Format)',
 				name: 'privateKey',
 				type: 'string',
 				typeOptions: {

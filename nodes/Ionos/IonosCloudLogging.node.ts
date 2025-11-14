@@ -135,7 +135,45 @@ export class IonosCloudLogging implements INodeType {
 						action: 'Delete a resource',
 					},
 				],
-				default: 'create',
+				default: 'create',},
+
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['centralLogging'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get a central logging configuration',
+						action: 'Get a central logging configuration',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'Get all central logging configurations',
+						action: 'Get many central logging configurations',
+					},
+					{
+						name: 'Update',
+						value: 'update',
+						description: 'Update a central logging configuration',
+						action: 'Update a central logging configuration',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a central logging configuration',
+						action: 'Delete a central logging configuration',
+					},
+				],
+				default: 'getMany',
 			},
 
 			// Key operation (only regenerate)
@@ -341,7 +379,7 @@ export class IonosCloudLogging implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['centralLogging'],
-						operation: ['get', 'update'],
+						operation: ['get', 'update', 'delete'],
 					},
 				},
 				default: '',
@@ -566,7 +604,7 @@ export class IonosCloudLogging implements INodeType {
 					} else if (operation === 'update') {
 						const pipelineId = this.getNodeParameter('pipelineId', i) as string;
 						const name = this.getNodeParameter('name', i) as string;
-						const logs = this.getNodeParameter('logs', i) as IDataObject;
+						const logs = this.getNodeParameter('logs', i, {}) as IDataObject;
 
 						const logsArray: IDataObject[] = [];
 						if (logs.logValues && Array.isArray(logs.logValues)) {
@@ -593,12 +631,14 @@ export class IonosCloudLogging implements INodeType {
 							}
 						}
 
-						const body: IDataObject = {
-							properties: {
-								name,
-								logs: logsArray,
-							},
-						};
+					const properties: IDataObject = { name };
+
+					// Only include logs if provided
+					if (logs.logValues && Array.isArray(logs.logValues) && logs.logValues.length > 0) {
+						properties.logs = logsArray;
+					}
+
+					const body: IDataObject = { properties };
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
 							this,
@@ -696,6 +736,19 @@ export class IonosCloudLogging implements INodeType {
 								headers: { 'Content-Type': 'application/json' },
 							},
 						);
+				} else if (operation === 'delete') {
+					const centralId = this.getNodeParameter('centralId', i) as string;
+
+					await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'ionosCloud',
+						{
+							method: 'DELETE',
+							url: `${baseUrl}/central/${centralId}`,
+						},
+					);
+
+					responseData = { success: true };
 					}
 				}
 

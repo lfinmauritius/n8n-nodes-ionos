@@ -471,13 +471,22 @@ export class IonosCloudNetwork implements INodeType {
 						default: '',
 						description: 'The ID of the Private Cross-Connect (PCC) to connect this LAN to',
 					},
-					{
-						displayName: 'IPv6 CIDR Block',
-						name: 'ipv6CidrBlock',
-						type: 'string',
-						default: '',
-						description: 'The IPv6 CIDR block for the LAN (e.g., 2001:db8::/64)',
-					},
+				{
+					displayName: 'IPv4 CIDR Block',
+					name: 'ipv4CidrBlock',
+					type: 'string',
+					default: '',
+					placeholder: '10.0.0.0/24',
+					description: 'The IPv4 CIDR block for the LAN (e.g., 10.0.0.0/24, 192.168.1.0/24)',
+				},
+				{
+					displayName: 'IPv6 CIDR Block',
+					name: 'ipv6CidrBlock',
+					type: 'string',
+					default: '',
+					placeholder: '2001:db8::/64',
+					description: 'The IPv6 CIDR block for the LAN (e.g., 2001:db8::/64)',
+				},
 				],
 			},
 
@@ -1410,6 +1419,9 @@ export class IonosCloudNetwork implements INodeType {
 								name,
 								...(additionalFields.public !== undefined && { public: additionalFields.public }),
 								...(additionalFields.pcc && { pcc: additionalFields.pcc }),
+							...(additionalFields.ipv4CidrBlock && {
+								ipv4CidrBlock: additionalFields.ipv4CidrBlock,
+							}),
 								...(additionalFields.ipv6CidrBlock && {
 									ipv6CidrBlock: additionalFields.ipv6CidrBlock,
 								}),
@@ -1465,10 +1477,13 @@ export class IonosCloudNetwork implements INodeType {
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 
 						const body: IDataObject = {
-							...((additionalFields.public !== undefined || additionalFields.pcc || additionalFields.ipv6CidrBlock) && {
+							...((additionalFields.public !== undefined || additionalFields.pcc || additionalFields.ipv4CidrBlock || additionalFields.ipv6CidrBlock) && {
 								properties: {
 									...(additionalFields.public !== undefined && { public: additionalFields.public }),
 									...(additionalFields.pcc && { pcc: additionalFields.pcc }),
+								...(additionalFields.ipv4CidrBlock && {
+									ipv4CidrBlock: additionalFields.ipv4CidrBlock,
+								}),
 									...(additionalFields.ipv6CidrBlock && {
 										ipv6CidrBlock: additionalFields.ipv6CidrBlock,
 									}),
