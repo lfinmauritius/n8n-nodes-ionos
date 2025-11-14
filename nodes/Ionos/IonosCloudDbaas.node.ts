@@ -761,6 +761,38 @@ export class IonosCloudDbaas implements INodeType {
 				description: 'The unique ID of the cluster',
 			},
 
+		// Cluster ID for PostgreSQL sub-resources (User, Database, Backup, Log)
+		{
+			displayName: 'Cluster ID',
+			name: 'clusterId',
+			type: 'string',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['postgresql'],
+					postgresqlResource: ['user', 'database', 'backup', 'log'],
+				},
+			},
+			default: '',
+			description: 'The unique ID of the PostgreSQL cluster',
+		},
+
+		// Cluster ID for MongoDB sub-resources (User, Database)
+		{
+			displayName: 'Cluster ID',
+			name: 'clusterId',
+			type: 'string',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['mongodb'],
+					mongodbResource: ['user', 'database'],
+				},
+			},
+			default: '',
+			description: 'The unique ID of the MongoDB cluster',
+		},
+
 			// ReplicaSet ID (for Redis)
 			{
 				displayName: 'ReplicaSet ID',
@@ -1205,7 +1237,8 @@ export class IonosCloudDbaas implements INodeType {
 			description: 'The storage type for the database cluster',
 		},
 
-		// Initial Username (Credentials)
+
+		// Initial Username (Credentials) - PostgreSQL Cluster only
 		{
 			displayName: 'Username',
 			name: 'credentialsUsername',
@@ -1213,10 +1246,9 @@ export class IonosCloudDbaas implements INodeType {
 			required: true,
 			displayOptions: {
 				show: {
+					resource: ['postgresql'],
+					postgresqlResource: ['cluster'],
 					operation: ['create'],
-				},
-				hide: {
-					resource: ['redis'],
 				},
 			},
 			default: '',
@@ -1224,7 +1256,7 @@ export class IonosCloudDbaas implements INodeType {
 			description: 'The initial username for database access',
 		},
 
-		// Initial Password (Credentials)
+		// Initial Password (Credentials) - PostgreSQL Cluster only
 		{
 			displayName: 'Password',
 			name: 'credentialsPassword',
@@ -1235,10 +1267,85 @@ export class IonosCloudDbaas implements INodeType {
 			},
 			displayOptions: {
 				show: {
+					resource: ['postgresql'],
+					postgresqlResource: ['cluster'],
 					operation: ['create'],
 				},
-				hide: {
-					resource: ['redis'],
+			},
+			default: '',
+			description: 'The initial password for database access (min 10 characters)',
+		},
+
+		// Initial Username (Credentials) - MongoDB Cluster only
+		{
+			displayName: 'Username',
+			name: 'credentialsUsername',
+			type: 'string',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['mongodb'],
+					mongodbResource: ['cluster'],
+					operation: ['create'],
+				},
+			},
+			default: '',
+			placeholder: 'admin',
+			description: 'The initial username for database access',
+		},
+
+		// Initial Password (Credentials) - MongoDB Cluster only
+		{
+			displayName: 'Password',
+			name: 'credentialsPassword',
+			type: 'string',
+			required: true,
+			typeOptions: {
+				password: true,
+			},
+			displayOptions: {
+				show: {
+					resource: ['mongodb'],
+					mongodbResource: ['cluster'],
+					operation: ['create'],
+				},
+			},
+			default: '',
+			description: 'The initial password for database access (min 10 characters)',
+		},
+
+		// Initial Username (Credentials) - MariaDB Cluster only
+		{
+			displayName: 'Username',
+			name: 'credentialsUsername',
+			type: 'string',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['mariadb'],
+					mariadbResource: ['cluster'],
+					operation: ['create'],
+				},
+			},
+			default: '',
+			placeholder: 'admin',
+			description: 'The initial username for database access',
+		},
+
+		// Initial Password (Credentials) - MariaDB Cluster only
+		{
+			displayName: 'Password',
+			name: 'credentialsPassword',
+			type: 'string',
+			required: true,
+			typeOptions: {
+				password: true,
+			},
+			displayOptions: {
+				show: {
+					resource: ['mariadb'],
+					mariadbResource: ['cluster'],
+					operation: ['create'],
 				},
 			},
 			default: '',
