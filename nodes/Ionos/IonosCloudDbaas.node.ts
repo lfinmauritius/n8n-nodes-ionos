@@ -1548,6 +1548,11 @@ export class IonosCloudDbaas implements INodeType {
 								default: '',
 								placeholder: '192.168.1.0/24',
 								description: 'The IP and subnet in CIDR notation',
+								displayOptions: {
+									hide: {
+										resource: ['mongodb'],
+									},
+								},
 							},
 						],
 					},
@@ -2150,7 +2155,6 @@ export class IonosCloudDbaas implements INodeType {
 								(body.properties as IDataObject).connections = [{
 									datacenterId: conn.datacenterId,
 									lanId: conn.lanId,
-									cidr: conn.cidr,
 								}];
 							}
 
