@@ -755,6 +755,9 @@ export class IonosCloudDbaas implements INodeType {
 					},
 					hide: {
 						resource: ['redis'],
+					postgresqlResource: ['user', 'database', 'backup', 'log'],
+					mongodbResource: ['user', 'database'],
+					mariadbResource: ['backup'],
 					},
 				},
 				default: '',
