@@ -1500,7 +1500,7 @@ export class IonosCloudDbaas implements INodeType {
 			description: 'The synchronization mode for MariaDB replication',
 		},
 
-			// Connections (for cluster creation)
+			// Connections (for PostgreSQL & MariaDB cluster creation - with CIDR)
 			{
 				displayName: 'Connections',
 				name: 'connections',
@@ -1511,12 +1511,11 @@ export class IonosCloudDbaas implements INodeType {
 				},
 				displayOptions: {
 					show: {
+						resource: ['postgresql', 'mariadb'],
 						operation: ['create'],
 					},
 					hide: {
-						resource: ['redis'],
 					postgresqlResource: ['user', 'database', 'backup', 'log'],
-					mongodbResource: ['user', 'database'],
 					mariadbResource: ['backup'],
 					},
 				},
@@ -1548,11 +1547,48 @@ export class IonosCloudDbaas implements INodeType {
 								default: '',
 								placeholder: '192.168.1.0/24',
 								description: 'The IP and subnet in CIDR notation',
-								displayOptions: {
-									hide: {
-										resource: ['mongodb'],
-									},
-								},
+							},
+						],
+					},
+				],
+			},
+
+			// Connections (for MongoDB cluster creation - without CIDR)
+			{
+				displayName: 'Connections',
+				name: 'connections',
+				type: 'fixedCollection',
+			required: true,
+				typeOptions: {
+					multipleValues: false,
+				},
+				displayOptions: {
+					show: {
+						resource: ['mongodb'],
+						mongodbResource: ['cluster'],
+						operation: ['create'],
+					},
+				},
+				default: {},
+				placeholder: 'Add Connection',
+				options: [
+					{
+						displayName: 'Connection',
+						name: 'connectionValues',
+						values: [
+							{
+								displayName: 'Datacenter ID',
+								name: 'datacenterId',
+								type: 'string',
+								default: '',
+								description: 'The datacenter ID to connect to',
+							},
+							{
+								displayName: 'LAN ID',
+								name: 'lanId',
+								type: 'string',
+								default: '',
+								description: 'The LAN ID to connect to',
 							},
 						],
 					},
