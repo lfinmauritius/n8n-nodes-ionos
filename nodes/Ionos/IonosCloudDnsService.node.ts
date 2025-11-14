@@ -792,7 +792,7 @@ export class IonosCloudDnsService implements INodeType {
 				},
 				default: '',
 				placeholder: '203.0.113.1 or 2001:db8::1',
-				description: 'The PUBLIC IP address for reverse DNS. Private IPs (192.168.x.x, 10.x.x.x, 172.16-31.x.x) are not allowed.',
+				description: 'The IP address must be from a RESERVED IP in your IONOS account. For IPv4: must be a reserved IP. For IPv6: must belong to a /56 IPv6 block assigned to your VDC with /128 prefix.',
 			},
 
 			// Reverse Record Name
