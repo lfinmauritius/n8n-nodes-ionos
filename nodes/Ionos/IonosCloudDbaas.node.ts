@@ -2612,13 +2612,18 @@ export class IonosCloudDbaas implements INodeType {
 							const clusterId = this.getNodeParameter('clusterId', i) as string;
 							const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 
-							// Convert MB to GB for MariaDB API
-							const properties: IDataObject = { ...updateFields };
-							if (properties.ram) {
-								properties.ram = Math.round((properties.ram as number) / 1024);
-							}
-							if (properties.storageSize) {
-								properties.storageSize = Math.round((properties.storageSize as number) / 1024);
+							// Convert MB to GB for MariaDB API and filter out empty values
+							const properties: IDataObject = {};
+							for (const [key, value] of Object.entries(updateFields)) {
+								if (value !== '' && value !== null && value !== undefined) {
+									if (key === 'ram' && typeof value === 'number') {
+										properties[key] = Math.round(value / 1024);
+									} else if (key === 'storageSize' && typeof value === 'number') {
+										properties[key] = Math.round(value / 1024);
+									} else {
+										properties[key] = value;
+									}
+								}
 							}
 
 							const body: IDataObject = {
