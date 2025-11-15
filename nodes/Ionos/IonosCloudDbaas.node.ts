@@ -1801,6 +1801,20 @@ export class IonosCloudDbaas implements INodeType {
 						default: 1,
 						description: 'The new number of replicas',
 					},
+					{
+						displayName: 'Cores',
+						name: 'cores',
+						type: 'number',
+						default: 4,
+						description: 'The new number of CPU cores',
+					},
+					{
+						displayName: 'RAM (MB)',
+						name: 'ram',
+						type: 'number',
+						default: 256,
+						description: 'The new amount of RAM in MB',
+					},
 				],
 			},
 
@@ -2864,23 +2878,42 @@ export class IonosCloudDbaas implements INodeType {
 
 							responseData = (responseData as IDataObject).items as IDataObject[];
 						} else if (operation === 'update') {
-							const replicasetId = this.getNodeParameter('replicasetId', i) as string;
-							const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
+						const replicasetId = this.getNodeParameter('replicasetId', i) as string;
+						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 
-							const body: IDataObject = {
-								properties: updateFields,
-							};
+						// Separate resources fields from other properties and filter out empty values
+						const properties: IDataObject = {};
+						const resources: IDataObject = {};
 
-							responseData = await this.helpers.httpRequestWithAuthentication.call(
-								this,
-								'ionosCloud',
-								{
-									method: 'PATCH',
-									url: `${baseUrl}/replicasets/${replicasetId}`,
-									body,
-									headers: { 'Content-Type': 'application/json' },
-								},
-							);
+						for (const [key, value] of Object.entries(updateFields)) {
+							if (value !== '' && value !== null && value !== undefined) {
+								if (key === 'cores' || key === 'ram') {
+									resources[key] = value;
+								} else {
+									properties[key] = value;
+								}
+							}
+						}
+
+						// Add resources object if it contains any values
+						if (Object.keys(resources).length > 0) {
+							properties.resources = resources;
+						}
+
+						const body: IDataObject = {
+							properties,
+						};
+
+						responseData = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'ionosCloud',
+							{
+								method: 'PATCH',
+								url: `${baseUrl}/replicasets/${replicasetId}`,
+								body,
+								headers: { 'Content-Type': 'application/json' },
+							},
+						);
 						} else if (operation === 'delete') {
 							const replicasetId = this.getNodeParameter('replicasetId', i) as string;
 
