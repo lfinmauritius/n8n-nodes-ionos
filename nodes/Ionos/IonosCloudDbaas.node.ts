@@ -2881,21 +2881,11 @@ export class IonosCloudDbaas implements INodeType {
 						const replicasetId = this.getNodeParameter('replicasetId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 
-						// First, GET the current replicaset configuration
-						const currentReplicaset = await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'ionosCloud',
-							{
-								method: 'GET',
-								url: `${baseUrl}/replicasets/${replicasetId}`,
-							},
-						) as IDataObject;
+						// Build properties with updated fields
+						const properties: IDataObject = {};
+						const resources: IDataObject = {};
 
-						// Merge updateFields with current properties
-						const properties = (currentReplicaset.properties || {}) as IDataObject;
-						const resources = (properties.resources || {}) as IDataObject;
-
-						// Update the fields
+						// Separate resources fields from other properties
 						for (const [key, value] of Object.entries(updateFields)) {
 							if (value !== '' && value !== null && value !== undefined) {
 								if (key === 'cores' || key === 'ram') {
@@ -2906,34 +2896,20 @@ export class IonosCloudDbaas implements INodeType {
 							}
 						}
 
-
-						// Remove credentials from properties (write-only, cannot be updated)
-						delete properties.credentials;
-						// Update resources in properties
-						properties.resources = resources;
-
-						// PUT requires the complete replicaset structure (only writable fields with values)
-						const bodyProperties: IDataObject = {};
-
-						// Only include defined fields
-						if (properties.displayName !== undefined) bodyProperties.displayName = properties.displayName;
-						if (properties.version !== undefined) bodyProperties.version = properties.version;
-						if (properties.replicas !== undefined) bodyProperties.replicas = properties.replicas;
-						if (properties.resources !== undefined) bodyProperties.resources = properties.resources;
-						if (properties.persistence !== undefined) bodyProperties.persistence = properties.persistence;
-						if (properties.evictionPolicy !== undefined) bodyProperties.evictionPolicy = properties.evictionPolicy;
-						if (properties.connections !== undefined) bodyProperties.connections = properties.connections;
-						if (properties.maintenanceWindow !== undefined) bodyProperties.maintenanceWindow = properties.maintenanceWindow;
+						// Add resources object if it contains any values
+						if (Object.keys(resources).length > 0) {
+							properties.resources = resources;
+						}
 
 						const body: IDataObject = {
-							properties: bodyProperties,
+							properties,
 						};
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
 							this,
 							'ionosCloud',
 							{
-								method: 'PUT',
+								method: 'PATCH',
 								url: `${baseUrl}/replicasets/${replicasetId}`,
 								body,
 								headers: { 'Content-Type': 'application/json' },
