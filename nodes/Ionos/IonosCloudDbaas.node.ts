@@ -1616,7 +1616,7 @@ export class IonosCloudDbaas implements INodeType {
 					},
 				hide: {
 					postgresqlResource: ['user', 'database', 'backup', 'log'],
-					mongodbResource: ['user', 'database', 'cluster'],
+					mongodbResource: ['user', 'database'],
 					mariadbResource: ['backup'],
 				},
 				},
@@ -2456,12 +2456,16 @@ export class IonosCloudDbaas implements INodeType {
 							const mariadbVersion = this.getNodeParameter('mariadbVersion', i) as string;
 							const instances = this.getNodeParameter('instances', i) as number;
 							const cores = this.getNodeParameter('cores', i) as number;
-							const ram = this.getNodeParameter('ram', i) as number;
-							const storageSize = this.getNodeParameter('storageSize', i) as number;
+							const ramMB = this.getNodeParameter('ram', i) as number;
+							const storageSizeMB = this.getNodeParameter('storageSize', i) as number;
 							const connections = this.getNodeParameter('connections', i) as IDataObject;
 						const credentialsUsername = this.getNodeParameter('credentialsUsername', i) as string;
 						const credentialsPassword = this.getNodeParameter('credentialsPassword', i) as string;
 						const synchronizationMode = this.getNodeParameter('synchronizationMode', i) as string;
+
+							// Convert MB to GB for MariaDB API
+							const ram = Math.round(ramMB / 1024);
+							const storageSize = Math.round(storageSizeMB / 1024);
 
 							const body: IDataObject = {
 								properties: {
