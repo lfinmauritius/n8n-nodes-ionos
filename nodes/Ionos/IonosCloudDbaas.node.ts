@@ -2906,6 +2906,9 @@ export class IonosCloudDbaas implements INodeType {
 							}
 						}
 
+
+						// Remove credentials from properties (write-only, cannot be updated)
+						delete properties.credentials;
 						// Update resources in properties
 						properties.resources = resources;
 
