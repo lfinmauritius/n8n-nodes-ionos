@@ -1425,6 +1425,43 @@ export class IonosCloudDbaas implements INodeType {
 			description: 'The initial password for database access (min 10 characters)',
 		},
 
+// Initial Username (Credentials) - Redis ReplicaSet only
+		{
+			displayName: 'Username',
+			name: 'credentialsUsername',
+			type: 'string',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['redis'],
+					redisResource: ['replicaset'],
+					operation: ['create'],
+				},
+			},
+			default: '',
+			description: 'The initial username for database access',
+		},
+
+		// Initial Password (Credentials) - Redis ReplicaSet only
+		{
+			displayName: 'Password',
+			name: 'credentialsPassword',
+			type: 'string',
+			typeOptions: {
+				password: true,
+			},
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['redis'],
+					redisResource: ['replicaset'],
+					operation: ['create'],
+				},
+			},
+			default: '',
+			description: 'The initial password for database access (min 10 characters)',
+		},
+
 		// Synchronization Mode (PostgreSQL only)
 		{
 			displayName: 'Synchronization Mode',
@@ -2725,6 +2762,8 @@ export class IonosCloudDbaas implements INodeType {
 							const cores = this.getNodeParameter('cores', i, 4) as number;
 							const ram = this.getNodeParameter('ram', i) as number;
 							const connections = this.getNodeParameter('connections', i) as IDataObject;
+							const credentialsUsername = this.getNodeParameter('credentialsUsername', i) as string;
+							const credentialsPassword = this.getNodeParameter('credentialsPassword', i) as string;
 
 							const body: IDataObject = {
 								properties: {
@@ -2734,6 +2773,10 @@ export class IonosCloudDbaas implements INodeType {
 									resources: {
 										cores,
 										ram,
+									},
+									credentials: {
+										username: credentialsUsername,
+										password: credentialsPassword,
 									},
 								},
 							};
