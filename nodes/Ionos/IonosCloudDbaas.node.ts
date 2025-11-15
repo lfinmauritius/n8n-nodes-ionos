@@ -677,15 +677,8 @@ export class IonosCloudDbaas implements INodeType {
 						action: 'Get many Redis replica sets',
 					},
 					{
-						name: 'Update',
-						value: 'update',
-						description: 'Update a Redis replica set',
-						action: 'Update a Redis replica set',
-					},
-					{
 						name: 'Delete',
 						value: 'delete',
-						description: 'Delete a Redis replica set',
 						action: 'Delete a Redis replica set',
 					},
 				],
@@ -836,7 +829,7 @@ export class IonosCloudDbaas implements INodeType {
 					show: {
 						resource: ['redis'],
 						redisResource: ['replicaset'],
-						operation: ['get', 'update', 'delete'],
+						operation: ['get', 'delete'],
 					},
 				},
 				default: '',
@@ -1772,51 +1765,6 @@ export class IonosCloudDbaas implements INodeType {
 				],
 			},
 
-			// Additional Fields for Update - Redis
-			{
-				displayName: 'Update Fields',
-				name: 'updateFields',
-				type: 'collection',
-				placeholder: 'Add Field',
-				default: {},
-				displayOptions: {
-					show: {
-						resource: ['redis'],
-						redisResource: ['replicaset'],
-						operation: ['update'],
-					},
-				},
-				options: [
-					{
-						displayName: 'Display Name',
-						name: 'displayName',
-						type: 'string',
-						default: '',
-						description: 'The new display name',
-					},
-					{
-						displayName: 'Replicas',
-						name: 'replicas',
-						type: 'number',
-						default: 1,
-						description: 'The new number of replicas',
-					},
-					{
-						displayName: 'Cores',
-						name: 'cores',
-						type: 'number',
-						default: 4,
-						description: 'The new number of CPU cores',
-					},
-					{
-						displayName: 'RAM (MB)',
-						name: 'ram',
-						type: 'number',
-						default: 256,
-						description: 'The new amount of RAM in MB',
-					},
-				],
-			},
 
 
 			// User Creation Fields - PostgreSQL
@@ -2877,45 +2825,6 @@ export class IonosCloudDbaas implements INodeType {
 							);
 
 							responseData = (responseData as IDataObject).items as IDataObject[];
-					} else if (operation === 'update') {
-						const replicasetId = this.getNodeParameter('replicasetId', i) as string;
-						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
-
-						// Build properties with updated fields
-						const properties: IDataObject = {};
-						const resources: IDataObject = {};
-
-						// Separate resources fields from other properties
-						for (const [key, value] of Object.entries(updateFields)) {
-							if (value !== '' && value !== null && value !== undefined) {
-								if (key === 'cores' || key === 'ram') {
-									resources[key] = value;
-								} else {
-									properties[key] = value;
-								}
-							}
-						}
-
-						// Add resources object if it contains any values
-						if (Object.keys(resources).length > 0) {
-							properties.resources = resources;
-						}
-
-						const body: IDataObject = {
-							properties,
-						};
-
-						responseData = await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'ionosCloud',
-							{
-								method: 'PATCH',
-								url: `${baseUrl}/replicasets/${replicasetId}`,
-								body,
-								headers: { 'Content-Type': 'application/json' },
-							},
-						);
-						} else if (operation === 'delete') {
 							const replicasetId = this.getNodeParameter('replicasetId', i) as string;
 
 							responseData = await this.helpers.httpRequestWithAuthentication.call(
