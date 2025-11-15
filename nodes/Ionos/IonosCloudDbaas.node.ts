@@ -2912,18 +2912,21 @@ export class IonosCloudDbaas implements INodeType {
 						// Update resources in properties
 						properties.resources = resources;
 
-						// PUT requires the complete replicaset structure (only writable fields)
+						// PUT requires the complete replicaset structure (only writable fields with values)
+						const bodyProperties: IDataObject = {};
+
+						// Only include defined fields
+						if (properties.displayName !== undefined) bodyProperties.displayName = properties.displayName;
+						if (properties.version !== undefined) bodyProperties.version = properties.version;
+						if (properties.replicas !== undefined) bodyProperties.replicas = properties.replicas;
+						if (properties.resources !== undefined) bodyProperties.resources = properties.resources;
+						if (properties.persistence !== undefined) bodyProperties.persistence = properties.persistence;
+						if (properties.evictionPolicy !== undefined) bodyProperties.evictionPolicy = properties.evictionPolicy;
+						if (properties.connections !== undefined) bodyProperties.connections = properties.connections;
+						if (properties.maintenanceWindow !== undefined) bodyProperties.maintenanceWindow = properties.maintenanceWindow;
+
 						const body: IDataObject = {
-							properties: {
-								displayName: properties.displayName,
-								version: properties.version,
-								replicas: properties.replicas,
-								resources: properties.resources,
-								persistence: properties.persistence,
-								evictionPolicy: properties.evictionPolicy,
-								connections: properties.connections,
-								maintenanceWindow: properties.maintenanceWindow,
-							},
+							properties: bodyProperties,
 						};
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
