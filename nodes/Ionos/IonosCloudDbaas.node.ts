@@ -1260,7 +1260,7 @@ export class IonosCloudDbaas implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						operation: ['create'],
+						operation: ['create', 'get', 'getMany', 'update', 'delete'],
 					},
 				hide: {
 					postgresqlResource: ['user', 'database', 'backup', 'log'],
