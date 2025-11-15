@@ -2877,14 +2877,25 @@ export class IonosCloudDbaas implements INodeType {
 							);
 
 							responseData = (responseData as IDataObject).items as IDataObject[];
-						} else if (operation === 'update') {
+					} else if (operation === 'update') {
 						const replicasetId = this.getNodeParameter('replicasetId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 
-						// Separate resources fields from other properties and filter out empty values
-						const properties: IDataObject = {};
-						const resources: IDataObject = {};
+						// First, GET the current replicaset configuration
+						const currentReplicaset = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'ionosCloud',
+							{
+								method: 'GET',
+								url: `${baseUrl}/replicasets/${replicasetId}`,
+							},
+						) as IDataObject;
 
+						// Merge updateFields with current properties
+						const properties = (currentReplicaset.properties || {}) as IDataObject;
+						const resources = (properties.resources || {}) as IDataObject;
+
+						// Update the fields
 						for (const [key, value] of Object.entries(updateFields)) {
 							if (value !== '' && value !== null && value !== undefined) {
 								if (key === 'cores' || key === 'ram') {
@@ -2895,12 +2906,13 @@ export class IonosCloudDbaas implements INodeType {
 							}
 						}
 
-						// Add resources object if it contains any values
-						if (Object.keys(resources).length > 0) {
-							properties.resources = resources;
-						}
+						// Update resources in properties
+						properties.resources = resources;
 
+						// PUT requires the complete replicaset structure
 						const body: IDataObject = {
+							id: currentReplicaset.id,
+							metadata: currentReplicaset.metadata || {},
 							properties,
 						};
 
@@ -2908,7 +2920,7 @@ export class IonosCloudDbaas implements INodeType {
 							this,
 							'ionosCloud',
 							{
-								method: 'PATCH',
+								method: 'PUT',
 								url: `${baseUrl}/replicasets/${replicasetId}`,
 								body,
 								headers: { 'Content-Type': 'application/json' },
