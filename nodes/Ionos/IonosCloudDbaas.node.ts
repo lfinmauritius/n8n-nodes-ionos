@@ -1819,10 +1819,7 @@ export class IonosCloudDbaas implements INodeType {
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
 
-		// For create operations, only process the first item to avoid duplicate creations
-		const itemsToProcess = operation === 'create' ? 1 : items.length;
-
-		for (let i = 0; i < itemsToProcess; i++) {
+		for (let i = 0; i < items.length; i++) {
 			try {
 				let responseData: IDataObject | IDataObject[] = {};
 
