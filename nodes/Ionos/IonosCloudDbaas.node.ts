@@ -1130,55 +1130,18 @@ export class IonosCloudDbaas implements INodeType {
 				description: 'The number of replicas (1 = standalone, >1 = leader-follower)',
 			},
 
-			// Cores - PostgreSQL
+			// Cores
 			{
 				displayName: 'Cores',
 				name: 'cores',
 				type: 'number',
-				required: true,
 				displayOptions: {
 					show: {
-						resource: ['postgresql'],
-						postgresqlResource: ['cluster'],
 						operation: ['create'],
 					},
 				},
 				default: 4,
-				description: 'The number of CPU cores',
-			},
-
-			// Cores - MariaDB
-			{
-				displayName: 'Cores',
-				name: 'cores',
-				type: 'number',
-				required: true,
-				displayOptions: {
-					show: {
-						resource: ['mariadb'],
-						mariadbResource: ['cluster'],
-						operation: ['create'],
-					},
-				},
-				default: 4,
-				description: 'The number of CPU cores',
-			},
-
-			// Cores - Redis
-			{
-				displayName: 'Cores',
-				name: 'cores',
-				type: 'number',
-				required: true,
-				displayOptions: {
-					show: {
-						resource: ['redis'],
-						redisResource: ['replicaset'],
-						operation: ['create'],
-					},
-				},
-				default: 4,
-				description: 'The number of CPU cores',
+				description: 'The number of CPU cores (not used for MongoDB - templates control resources)',
 			},
 
 
@@ -1948,7 +1911,7 @@ export class IonosCloudDbaas implements INodeType {
 							const displayName = this.getNodeParameter('displayName', i) as string;
 							const postgresVersion = this.getNodeParameter('postgresVersion', i) as string;
 							const instances = this.getNodeParameter('instances', i) as number;
-							const cores = this.getNodeParameter('cores', i) as number;
+							const cores = this.getNodeParameter('cores', i, 4) as number;
 							const ram = this.getNodeParameter('ram', i) as number;
 							const storageSize = this.getNodeParameter('storageSize', i) as number;
 							const location = this.getNodeParameter('location', i) as string;
@@ -2568,7 +2531,7 @@ export class IonosCloudDbaas implements INodeType {
 							const displayName = this.getNodeParameter('displayName', i) as string;
 							const mariadbVersion = this.getNodeParameter('mariadbVersion', i) as string;
 							const instances = this.getNodeParameter('instances', i) as number;
-							const cores = this.getNodeParameter('cores', i) as number;
+							const cores = this.getNodeParameter('cores', i, 4) as number;
 							const ramMB = this.getNodeParameter('ram', i) as number;
 							const storageSizeMB = this.getNodeParameter('storageSize', i) as number;
 							const connections = this.getNodeParameter('connections', i) as IDataObject;
@@ -2745,7 +2708,7 @@ export class IonosCloudDbaas implements INodeType {
 							const displayName = this.getNodeParameter('displayName', i) as string;
 							const redisVersion = this.getNodeParameter('redisVersion', i) as string;
 							const replicas = this.getNodeParameter('replicas', i) as number;
-							const cores = this.getNodeParameter('cores', i) as number;
+							const cores = this.getNodeParameter('cores', i, 4) as number;
 							const ram = this.getNodeParameter('ram', i) as number;
 
 							const body: IDataObject = {
