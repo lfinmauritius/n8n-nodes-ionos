@@ -1493,7 +1493,7 @@ export class IonosCloudDbaas implements INodeType {
 			description: 'The synchronization mode for MariaDB replication',
 		},
 
-			// Connections (for PostgreSQL & MariaDB cluster creation - with CIDR)
+			// Connections (for PostgreSQL, MariaDB & Redis cluster creation - with CIDR)
 			{
 				displayName: 'Connections',
 				name: 'connections',
@@ -1504,12 +1504,13 @@ export class IonosCloudDbaas implements INodeType {
 				},
 				displayOptions: {
 					show: {
-						resource: ['postgresql', 'mariadb'],
+						resource: ['postgresql', 'mariadb', 'redis'],
 						operation: ['create'],
 					},
 					hide: {
 					postgresqlResource: ['user', 'database', 'backup', 'log'],
 					mariadbResource: ['backup'],
+					redisResource: ['snapshot'],
 					},
 				},
 				default: {},
@@ -2723,6 +2724,7 @@ export class IonosCloudDbaas implements INodeType {
 							const replicas = this.getNodeParameter('replicas', i) as number;
 							const cores = this.getNodeParameter('cores', i, 4) as number;
 							const ram = this.getNodeParameter('ram', i) as number;
+							const connections = this.getNodeParameter('connections', i) as IDataObject;
 
 							const body: IDataObject = {
 								properties: {
@@ -2735,6 +2737,15 @@ export class IonosCloudDbaas implements INodeType {
 									},
 								},
 							};
+
+							if (connections.connectionValues) {
+								const conn = connections.connectionValues as IDataObject;
+								(body.properties as IDataObject).connections = [{
+									datacenterId: conn.datacenterId,
+									lanId: conn.lanId,
+									cidr: conn.cidr,
+								}];
+							}
 
 							responseData = await this.helpers.httpRequestWithAuthentication.call(
 								this,
