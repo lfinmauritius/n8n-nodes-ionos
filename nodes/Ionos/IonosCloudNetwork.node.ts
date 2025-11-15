@@ -477,12 +477,7 @@ export class IonosCloudNetwork implements INodeType {
 					type: 'string',
 					default: '',
 					placeholder: '10.0.0.0/24',
-					description: 'The IPv4 CIDR block for the LAN (e.g., 10.0.0.0/24, 192.168.1.0/24). Note: This field is read-only after creation.',
-					displayOptions: {
-						show: {
-							operation: ['create'],
-						},
-					},
+					description: 'The IPv4 CIDR block for the LAN (e.g., 10.0.0.0/24, 192.168.1.0/24). Note: This field is only available during creation and is read-only after creation.',
 				},
 				{
 					displayName: 'IPv6 CIDR Block',
@@ -490,12 +485,7 @@ export class IonosCloudNetwork implements INodeType {
 					type: 'string',
 					default: '',
 					placeholder: '2001:db8::/64',
-					description: 'The IPv6 CIDR block for the LAN (e.g., 2001:db8::/64). Note: This field is read-only after creation.',
-					displayOptions: {
-						show: {
-							operation: ['create'],
-						},
-					},
+					description: 'The IPv6 CIDR block for the LAN (e.g., 2001:db8::/64). Note: This field is only available during creation and is read-only after creation.',
 				},
 				],
 			},
