@@ -1772,6 +1772,38 @@ export class IonosCloudDbaas implements INodeType {
 				],
 			},
 
+			// Additional Fields for Update - Redis
+			{
+				displayName: 'Update Fields',
+				name: 'updateFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['redis'],
+						redisResource: ['replicaset'],
+						operation: ['update'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Display Name',
+						name: 'displayName',
+						type: 'string',
+						default: '',
+						description: 'The new display name',
+					},
+					{
+						displayName: 'Replicas',
+						name: 'replicas',
+						type: 'number',
+						default: 1,
+						description: 'The new number of replicas',
+					},
+				],
+			},
+
 
 			// User Creation Fields - PostgreSQL
 			{
