@@ -1184,7 +1184,7 @@ export class IonosCloudDbaas implements INodeType {
 				typeOptions: {
 					minValue: 1024,
 				},
-				default: 2048,
+				default: 4096,
 				description: 'The amount of RAM in MB',
 			},
 
@@ -1232,7 +1232,7 @@ export class IonosCloudDbaas implements INodeType {
 				description: 'The storage size in MB',
 			},
 
-			// Storage Size (in MB) - MariaDB (limited to 2000 MB)
+			// Storage Size (in MB) - MariaDB (min 10 GB)
 			{
 				displayName: 'Storage Size (MB)',
 				name: 'storageSize',
@@ -1246,11 +1246,10 @@ export class IonosCloudDbaas implements INodeType {
 					},
 				},
 				typeOptions: {
-					minValue: 1024,
-					maxValue: 2000,
+					minValue: 10240,
 				},
-				default: 2000,
-				description: 'The storage size in MB (max 2000 MB / 2 GB for MariaDB)',
+				default: 10240,
+				description: 'The storage size in MB (min 10 GB / 10240 MB)',
 			},
 
 			// Location
