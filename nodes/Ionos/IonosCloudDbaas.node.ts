@@ -1130,7 +1130,7 @@ export class IonosCloudDbaas implements INodeType {
 				description: 'The number of replicas (1 = standalone, >1 = leader-follower)',
 			},
 
-			// Cores
+			// Cores - PostgreSQL
 			{
 				displayName: 'Cores',
 				name: 'cores',
@@ -1138,13 +1138,44 @@ export class IonosCloudDbaas implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
+						resource: ['postgresql'],
+						postgresqlResource: ['cluster'],
 						operation: ['create'],
 					},
-				hide: {
-					postgresqlResource: ['user', 'database', 'backup', 'log'],
-					mongodbResource: ['user', 'database', 'cluster'],
-					mariadbResource: ['backup'],
 				},
+				default: 4,
+				description: 'The number of CPU cores',
+			},
+
+			// Cores - MariaDB
+			{
+				displayName: 'Cores',
+				name: 'cores',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['mariadb'],
+						mariadbResource: ['cluster'],
+						operation: ['create'],
+					},
+				},
+				default: 4,
+				description: 'The number of CPU cores',
+			},
+
+			// Cores - Redis
+			{
+				displayName: 'Cores',
+				name: 'cores',
+				type: 'number',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['redis'],
+						redisResource: ['replicaset'],
+						operation: ['create'],
+					},
 				},
 				default: 4,
 				description: 'The number of CPU cores',
@@ -1603,7 +1634,7 @@ export class IonosCloudDbaas implements INodeType {
 				],
 			},
 
-			// Additional Fields for Update
+			// Additional Fields for Update - PostgreSQL
 			{
 				displayName: 'Update Fields',
 				name: 'updateFields',
@@ -1612,15 +1643,95 @@ export class IonosCloudDbaas implements INodeType {
 				default: {},
 				displayOptions: {
 					show: {
+						resource: ['postgresql'],
+						postgresqlResource: ['cluster'],
 						operation: ['update'],
-						resource: ['postgresql', 'mongodb', 'mariadb'],
 					},
-				hide: {
-					postgresqlResource: ['user', 'database', 'backup', 'log'],
-					mongodbResource: ['user', 'database'],
-					mariadbResource: ['backup'],
-					redisResource: ['replicaset', 'snapshot'],
 				},
+				options: [
+					{
+						displayName: 'Display Name',
+						name: 'displayName',
+						type: 'string',
+						default: '',
+						description: 'The new display name',
+					},
+					{
+						displayName: 'Instances',
+						name: 'instances',
+						type: 'number',
+						default: 1,
+						description: 'The new number of instances',
+					},
+					{
+						displayName: 'Cores',
+						name: 'cores',
+						type: 'number',
+						default: 4,
+						description: 'The new number of CPU cores',
+					},
+					{
+						displayName: 'RAM (MB)',
+						name: 'ram',
+						type: 'number',
+						default: 4096,
+						description: 'The new amount of RAM in MB',
+					},
+					{
+						displayName: 'Storage Size (MB)',
+						name: 'storageSize',
+						type: 'number',
+						default: 20480,
+						description: 'The new storage size in MB',
+					},
+				],
+			},
+
+			// Additional Fields for Update - MongoDB
+			{
+				displayName: 'Update Fields',
+				name: 'updateFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['mongodb'],
+						mongodbResource: ['cluster'],
+						operation: ['update'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Display Name',
+						name: 'displayName',
+						type: 'string',
+						default: '',
+						description: 'The new display name',
+					},
+					{
+						displayName: 'Instances',
+						name: 'instances',
+						type: 'number',
+						default: 1,
+						description: 'The new number of instances',
+					},
+				],
+			},
+
+			// Additional Fields for Update - MariaDB
+			{
+				displayName: 'Update Fields',
+				name: 'updateFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['mariadb'],
+						mariadbResource: ['cluster'],
+						operation: ['update'],
+					},
 				},
 				options: [
 					{
