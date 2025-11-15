@@ -2555,6 +2555,7 @@ export class IonosCloudDbaas implements INodeType {
 									username: credentialsUsername,
 									password: credentialsPassword,
 								},
+								connections: [],
 								},
 							};
 
