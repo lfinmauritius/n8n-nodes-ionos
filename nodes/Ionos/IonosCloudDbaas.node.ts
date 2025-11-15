@@ -1613,11 +1613,13 @@ export class IonosCloudDbaas implements INodeType {
 				displayOptions: {
 					show: {
 						operation: ['update'],
+						resource: ['postgresql', 'mongodb', 'mariadb'],
 					},
 				hide: {
 					postgresqlResource: ['user', 'database', 'backup', 'log'],
 					mongodbResource: ['user', 'database'],
 					mariadbResource: ['backup'],
+					redisResource: ['replicaset', 'snapshot'],
 				},
 				},
 				options: [
