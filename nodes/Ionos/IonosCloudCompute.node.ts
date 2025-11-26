@@ -763,6 +763,137 @@ export class IonosCloudCompute implements INodeType {
 				default: 'SSD',
 				description: 'The storage type',
 			},
+			// Volume: Image Source selector
+			{
+				displayName: 'Image Source',
+				name: 'volumeImageSource',
+				type: 'options',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['volume'],
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						name: 'Image ID',
+						value: 'imageId',
+					},
+					{
+						name: 'Image Alias',
+						value: 'imageAlias',
+					},
+					{
+						name: 'Licence Type (Empty Volume)',
+						value: 'licenceType',
+					},
+				],
+				default: 'imageAlias',
+				description: 'How to specify the image for this volume',
+			},
+			{
+				displayName: 'Image ID',
+				name: 'volumeImage',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['volume'],
+						operation: ['create'],
+						volumeImageSource: ['imageId'],
+					},
+				},
+				default: '',
+				placeholder: '01234567-89ab-cdef-0123-456789abcdef',
+				description: 'The image UUID to use for the volume',
+			},
+			{
+				displayName: 'Image Alias',
+				name: 'volumeImageAlias',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['volume'],
+						operation: ['create'],
+						volumeImageSource: ['imageAlias'],
+					},
+				},
+				default: '',
+				placeholder: 'ubuntu:latest',
+				description: 'Image alias (e.g., ubuntu:latest, debian:latest)',
+			},
+			{
+				displayName: 'Licence Type',
+				name: 'volumeLicenceType',
+				type: 'options',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['volume'],
+						operation: ['create'],
+						volumeImageSource: ['licenceType'],
+					},
+				},
+				options: [
+					{
+						name: 'Linux',
+						value: 'LINUX',
+					},
+					{
+						name: 'Windows',
+						value: 'WINDOWS',
+					},
+					{
+						name: 'Windows 2016',
+						value: 'WINDOWS2016',
+					},
+					{
+						name: 'Other',
+						value: 'OTHER',
+					},
+					{
+						name: 'Unknown',
+						value: 'UNKNOWN',
+					},
+				],
+				default: 'LINUX',
+				description: 'Licence type for empty volumes (no image)',
+			},
+			{
+				displayName: 'Image Password',
+				name: 'volumeImagePassword',
+				type: 'string',
+				typeOptions: { password: true },
+				displayOptions: {
+					show: {
+						resource: ['volume'],
+						operation: ['create'],
+						volumeImageSource: ['imageId', 'imageAlias'],
+					},
+				},
+				default: '',
+				description: 'Password for the image (required for public images if no SSH keys)',
+			},
+			{
+				displayName: 'SSH Keys',
+				name: 'volumeSshKeys',
+				type: 'string',
+				typeOptions: {
+					rows: 4,
+				},
+				displayOptions: {
+					show: {
+						resource: ['volume'],
+						operation: ['create'],
+						volumeImageSource: ['imageId', 'imageAlias'],
+					},
+				},
+				default: '',
+				placeholder: 'ssh-rsa AAAA...',
+				description: 'SSH public keys (one per line, required for public images if no password)',
+			},
 			{
 				displayName: 'Additional Fields',
 				name: 'additionalFields',
@@ -800,40 +931,6 @@ export class IonosCloudCompute implements INodeType {
 						],
 						default: 'AUTO',
 						description: 'The availability zone',
-					},
-					{
-						displayName: 'Image ID',
-						name: 'image',
-						type: 'string',
-						default: '',
-						description: 'The image UUID to use for the volume',
-					},
-					{
-						displayName: 'Image Alias',
-						name: 'imageAlias',
-						type: 'string',
-						default: '',
-						placeholder: 'ubuntu:latest',
-						description: 'Image alias (alternative to Image ID)',
-					},
-					{
-						displayName: 'Image Password',
-						name: 'imagePassword',
-						type: 'string',
-						typeOptions: { password: true },
-						default: '',
-						description: 'Password for the image',
-					},
-					{
-						displayName: 'SSH Keys',
-						name: 'sshKeys',
-						type: 'string',
-						typeOptions: {
-							rows: 4,
-						},
-						default: '',
-						placeholder: 'ssh-rsa AAAA...',
-						description: 'SSH public keys (one per line)',
 					},
 					{
 						displayName: 'Bus',
@@ -1561,30 +1658,58 @@ export class IonosCloudCompute implements INodeType {
 						const volumeName = this.getNodeParameter('volumeName', i) as string;
 						const size = this.getNodeParameter('size', i) as number;
 						const volumeType = this.getNodeParameter('volumeType', i) as string;
+						const imageSource = this.getNodeParameter('volumeImageSource', i) as string;
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 
-						const body: IDataObject = {
-							properties: {
-								name: volumeName,
-								size,
-								type: volumeType,
-								...(additionalFields.availabilityZone && {
-									availabilityZone: additionalFields.availabilityZone,
-								}),
-								...(additionalFields.image && { image: additionalFields.image }),
-								...(additionalFields.imageAlias && { imageAlias: additionalFields.imageAlias }),
-								...(additionalFields.imagePassword && {
-									imagePassword: additionalFields.imagePassword,
-								}),
-								...(additionalFields.bus && { bus: additionalFields.bus }),
-							},
+						const properties: IDataObject = {
+							name: volumeName,
+							size,
+							type: volumeType,
 						};
 
-						if (additionalFields.sshKeys) {
-							const sshKeysString = additionalFields.sshKeys as string;
-							const sshKeysArray = sshKeysString.split('\n').filter((key) => key.trim());
-							(body.properties as IDataObject).sshKeys = sshKeysArray;
+						// Handle image source based on selection
+						if (imageSource === 'imageId') {
+							const image = this.getNodeParameter('volumeImage', i) as string;
+							if (!image) {
+								throw new NodeOperationError(this.getNode(), 'Image ID is required when "Image ID" is selected', { itemIndex: i });
+							}
+							properties.image = image;
+						} else if (imageSource === 'imageAlias') {
+							const imageAlias = this.getNodeParameter('volumeImageAlias', i) as string;
+							if (!imageAlias) {
+								throw new NodeOperationError(this.getNode(), 'Image Alias is required when "Image Alias" is selected', { itemIndex: i });
+							}
+							properties.imageAlias = imageAlias;
+						} else if (imageSource === 'licenceType') {
+							const licenceType = this.getNodeParameter('volumeLicenceType', i) as string;
+							properties.licenceType = licenceType;
 						}
+
+						// Only add password/ssh keys if using an image (not licenceType)
+						if (imageSource !== 'licenceType') {
+							const imagePassword = this.getNodeParameter('volumeImagePassword', i, '') as string;
+							const sshKeys = this.getNodeParameter('volumeSshKeys', i, '') as string;
+
+							if (imagePassword) {
+								properties.imagePassword = imagePassword;
+							}
+							if (sshKeys) {
+								const sshKeysArray = sshKeys.split('\n').filter((key) => key.trim());
+								if (sshKeysArray.length > 0) {
+									properties.sshKeys = sshKeysArray;
+								}
+							}
+						}
+
+						// Add additional fields
+						if (additionalFields.availabilityZone) {
+							properties.availabilityZone = additionalFields.availabilityZone;
+						}
+						if (additionalFields.bus) {
+							properties.bus = additionalFields.bus;
+						}
+
+						const body: IDataObject = { properties };
 
 						const options: IHttpRequestOptions = {
 							method: 'POST',
