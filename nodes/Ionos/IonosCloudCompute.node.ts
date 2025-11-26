@@ -260,20 +260,6 @@ export class IonosCloudCompute implements INodeType {
 						default: 'INTEL_ICELAKE',
 						description: 'The CPU family',
 					},
-					{
-						displayName: 'Boot Volume ID',
-						name: 'bootVolume',
-						type: 'string',
-						default: '',
-						description: 'The ID of the boot volume',
-					},
-					{
-						displayName: 'Boot CD-ROM ID',
-						name: 'bootCdrom',
-						type: 'string',
-						default: '',
-						description: 'The ID of the boot CD-ROM (image)',
-					},
 				],
 			},
 
@@ -1447,12 +1433,6 @@ export class IonosCloudCompute implements INodeType {
 									availabilityZone: additionalFields.availabilityZone,
 								}),
 								...(additionalFields.cpuFamily && { cpuFamily: additionalFields.cpuFamily }),
-								...(additionalFields.bootVolume && {
-									bootVolume: { id: additionalFields.bootVolume },
-								}),
-								...(additionalFields.bootCdrom && {
-									bootCdrom: { id: additionalFields.bootCdrom },
-								}),
 							},
 						};
 
