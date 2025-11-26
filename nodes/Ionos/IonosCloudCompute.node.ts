@@ -1860,8 +1860,24 @@ export class IonosCloudCompute implements INodeType {
 					returnData.push({ json: { error: errorMessage } });
 					continue;
 				}
-				throw new NodeOperationError(this.getNode(), error as Error, {
+				// Extract detailed error message from API response
+				const err = error as Error & { cause?: { error?: { message?: string; messages?: Array<{ message?: string }> } }; response?: { body?: { message?: string; messages?: Array<{ message?: string }> } } };
+				let errorMessage = err.message;
+
+				// Try to get more details from the error
+				if (err.cause?.error?.message) {
+					errorMessage = err.cause.error.message;
+				} else if (err.cause?.error?.messages && err.cause.error.messages.length > 0) {
+					errorMessage = err.cause.error.messages.map(m => m.message).join(', ');
+				} else if (err.response?.body?.message) {
+					errorMessage = err.response.body.message;
+				} else if (err.response?.body?.messages && err.response.body.messages.length > 0) {
+					errorMessage = err.response.body.messages.map(m => m.message).join(', ');
+				}
+
+				throw new NodeOperationError(this.getNode(), errorMessage, {
 					itemIndex: i,
+					description: JSON.stringify(error, null, 2),
 				});
 			}
 		}
