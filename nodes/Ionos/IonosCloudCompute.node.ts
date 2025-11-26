@@ -483,6 +483,111 @@ export class IonosCloudCompute implements INodeType {
 				],
 			},
 
+			// Server: Create - NICs (Network Interfaces)
+			{
+				displayName: 'Network Interfaces (NICs)',
+				name: 'nics',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+				},
+				placeholder: 'Add Network Interface',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['server'],
+						operation: ['create'],
+					},
+				},
+				description: 'Network interfaces to create and attach to the server',
+				options: [
+					{
+						name: 'nicValues',
+						displayName: 'NIC',
+						values: [
+							{
+								displayName: 'Name',
+								name: 'name',
+								type: 'string',
+								default: '',
+								placeholder: 'nic-1',
+								description: 'The name of the NIC',
+							},
+							{
+								displayName: 'LAN ID',
+								name: 'lan',
+								type: 'number',
+								required: true,
+								typeOptions: {
+									minValue: 1,
+								},
+								default: 1,
+								description: 'The LAN ID the NIC will be on',
+							},
+							{
+								displayName: 'DHCP',
+								name: 'dhcp',
+								type: 'boolean',
+								default: true,
+								description: 'Whether the NIC should get an IP address using DHCP',
+							},
+							{
+								displayName: 'IPs',
+								name: 'ips',
+								type: 'string',
+								default: '',
+								placeholder: '192.168.1.10, 192.168.1.11',
+								description: 'Static IPs for the NIC (comma-separated)',
+							},
+							{
+								displayName: 'Firewall Active',
+								name: 'firewallActive',
+								type: 'boolean',
+								default: false,
+								description: 'Whether the firewall is active on this NIC',
+							},
+							{
+								displayName: 'Firewall Type',
+								name: 'firewallType',
+								type: 'options',
+								options: [
+									{
+										name: 'Ingress',
+										value: 'INGRESS',
+									},
+									{
+										name: 'Egress',
+										value: 'EGRESS',
+									},
+									{
+										name: 'Bidirectional',
+										value: 'BIDIRECTIONAL',
+									},
+								],
+								default: 'INGRESS',
+								description: 'The type of firewall rules that will be allowed on the NIC',
+							},
+						],
+					},
+				],
+			},
+
+			// Server: Create - CD-ROM
+			{
+				displayName: 'CD-ROM Image ID',
+				name: 'cdromImageId',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['server'],
+						operation: ['create'],
+					},
+				},
+				default: '',
+				placeholder: '01234567-89ab-cdef-0123-456789abcdef',
+				description: 'The ID of a CD-ROM/ISO image to attach to the server',
+			},
+
 			// Server: Get, Update, Delete, Action, Volume operations
 			{
 				displayName: 'Server ID',
@@ -1330,6 +1435,8 @@ export class IonosCloudCompute implements INodeType {
 						const ram = this.getNodeParameter('ram', i) as number;
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 						const volumesData = this.getNodeParameter('volumes', i) as IDataObject;
+						const nicsData = this.getNodeParameter('nics', i) as IDataObject;
+						const cdromImageId = this.getNodeParameter('cdromImageId', i, '') as string;
 
 						const body: IDataObject = {
 							properties: {
@@ -1411,10 +1518,60 @@ export class IonosCloudCompute implements INodeType {
 								volumeItems.unshift(bootVolume);
 							}
 
-							body.entities = {
-								volumes: {
-									items: volumeItems,
-								},
+							if (!body.entities) {
+								body.entities = {};
+							}
+							(body.entities as IDataObject).volumes = {
+								items: volumeItems,
+							};
+						}
+
+						// Add NICs to create with the server
+						if (nicsData && nicsData.nicValues && Array.isArray(nicsData.nicValues) && nicsData.nicValues.length > 0) {
+							const nicItems: IDataObject[] = [];
+
+							for (const nic of nicsData.nicValues as IDataObject[]) {
+								const nicProperties: IDataObject = {
+									lan: nic.lan,
+								};
+
+								if (nic.name) nicProperties.name = nic.name;
+								if (nic.dhcp !== undefined) nicProperties.dhcp = nic.dhcp;
+								if (nic.firewallActive !== undefined) nicProperties.firewallActive = nic.firewallActive;
+								if (nic.firewallType) nicProperties.firewallType = nic.firewallType;
+
+								if (nic.ips) {
+									const ipsString = nic.ips as string;
+									const ipsArray = ipsString.split(',').map((ip: string) => ip.trim()).filter((ip: string) => ip);
+									if (ipsArray.length > 0) {
+										nicProperties.ips = ipsArray;
+									}
+								}
+
+								nicItems.push({
+									properties: nicProperties,
+								});
+							}
+
+							if (!body.entities) {
+								body.entities = {};
+							}
+							(body.entities as IDataObject).nics = {
+								items: nicItems,
+							};
+						}
+
+						// Add CD-ROM to create with the server
+						if (cdromImageId) {
+							if (!body.entities) {
+								body.entities = {};
+							}
+							(body.entities as IDataObject).cdroms = {
+								items: [
+									{
+										id: cdromImageId,
+									},
+								],
 							};
 						}
 
