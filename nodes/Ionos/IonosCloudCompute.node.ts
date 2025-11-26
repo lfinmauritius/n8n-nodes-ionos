@@ -345,11 +345,33 @@ export class IonosCloudCompute implements INodeType {
 								description: 'The storage type',
 							},
 							{
+								displayName: 'Image Source',
+								name: 'imageSource',
+								type: 'options',
+								options: [
+									{
+										name: 'Image ID',
+										value: 'imageId',
+									},
+									{
+										name: 'Image Alias',
+										value: 'imageAlias',
+									},
+									{
+										name: 'Licence Type (Empty Volume)',
+										value: 'licenceType',
+									},
+								],
+								default: 'imageAlias',
+								description: 'How to specify the image for this volume',
+							},
+							{
 								displayName: 'Image ID',
 								name: 'image',
 								type: 'string',
 								default: '',
-								description: 'The image UUID to use for the volume (optional)',
+								placeholder: '01234567-89ab-cdef-0123-456789abcdef',
+								description: 'The image UUID to use for the volume',
 							},
 							{
 								displayName: 'Image Alias',
@@ -357,7 +379,36 @@ export class IonosCloudCompute implements INodeType {
 								type: 'string',
 								default: '',
 								placeholder: 'ubuntu:latest',
-								description: 'Image alias (alternative to Image ID)',
+								description: 'Image alias (e.g., ubuntu:latest, debian:latest)',
+							},
+							{
+								displayName: 'Licence Type',
+								name: 'licenceType',
+								type: 'options',
+								options: [
+									{
+										name: 'Linux',
+										value: 'LINUX',
+									},
+									{
+										name: 'Windows',
+										value: 'WINDOWS',
+									},
+									{
+										name: 'Windows 2016',
+										value: 'WINDOWS2016',
+									},
+									{
+										name: 'Other',
+										value: 'OTHER',
+									},
+									{
+										name: 'Unknown',
+										value: 'UNKNOWN',
+									},
+								],
+								default: 'LINUX',
+								description: 'Licence type for empty volumes (no image)',
 							},
 							{
 								displayName: 'Image Password',
@@ -365,7 +416,7 @@ export class IonosCloudCompute implements INodeType {
 								type: 'string',
 								typeOptions: { password: true },
 								default: '',
-								description: 'Password for the image (required if using an image)',
+								description: 'Password for the image (required for public images if no SSH keys)',
 							},
 							{
 								displayName: 'SSH Keys',
@@ -376,7 +427,7 @@ export class IonosCloudCompute implements INodeType {
 								},
 								default: '',
 								placeholder: 'ssh-rsa AAAA...',
-								description: 'SSH public keys (one per line)',
+								description: 'SSH public keys (one per line, required for public images if no password)',
 							},
 							{
 								displayName: 'Bus',
@@ -1204,19 +1255,30 @@ export class IonosCloudCompute implements INodeType {
 									type: vol.type,
 								};
 
-								if (vol.image) volumeProperties.image = vol.image;
-								if (vol.imageAlias) volumeProperties.imageAlias = vol.imageAlias;
-								if (vol.imagePassword) volumeProperties.imagePassword = vol.imagePassword;
-								if (vol.bus) volumeProperties.bus = vol.bus;
-								if (vol.availabilityZone) volumeProperties.availabilityZone = vol.availabilityZone;
+								// Handle image source based on selection
+								const imageSource = vol.imageSource as string || 'imageAlias';
+								if (imageSource === 'imageId' && vol.image) {
+									volumeProperties.image = vol.image;
+								} else if (imageSource === 'imageAlias' && vol.imageAlias) {
+									volumeProperties.imageAlias = vol.imageAlias;
+								} else if (imageSource === 'licenceType') {
+									volumeProperties.licenceType = vol.licenceType || 'LINUX';
+								}
 
-								if (vol.sshKeys) {
-									const sshKeysString = vol.sshKeys as string;
-									const sshKeysArray = sshKeysString.split('\n').filter((key: string) => key.trim());
-									if (sshKeysArray.length > 0) {
-										volumeProperties.sshKeys = sshKeysArray;
+								// Only add password/ssh keys if using an image (not licenceType)
+								if (imageSource !== 'licenceType') {
+									if (vol.imagePassword) volumeProperties.imagePassword = vol.imagePassword;
+									if (vol.sshKeys) {
+										const sshKeysString = vol.sshKeys as string;
+										const sshKeysArray = sshKeysString.split('\n').filter((key: string) => key.trim());
+										if (sshKeysArray.length > 0) {
+											volumeProperties.sshKeys = sshKeysArray;
+										}
 									}
 								}
+
+								if (vol.bus) volumeProperties.bus = vol.bus;
+								if (vol.availabilityZone) volumeProperties.availabilityZone = vol.availabilityZone;
 
 								volumeItems.push({
 									properties: volumeProperties,
