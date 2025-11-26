@@ -121,6 +121,24 @@ export class IonosCloudCompute implements INodeType {
 						description: 'Update a server',
 						action: 'Update a server',
 					},
+					{
+						name: 'Attach Volume',
+						value: 'attachVolume',
+						description: 'Attach an existing volume to a server',
+						action: 'Attach volume to server',
+					},
+					{
+						name: 'Detach Volume',
+						value: 'detachVolume',
+						description: 'Detach a volume from a server',
+						action: 'Detach volume from server',
+					},
+					{
+						name: 'List Attached Volumes',
+						value: 'listVolumes',
+						description: 'List all volumes attached to a server',
+						action: 'List attached volumes',
+					},
 				],
 				default: 'getAll',
 			},
@@ -259,7 +277,155 @@ export class IonosCloudCompute implements INodeType {
 				],
 			},
 
-			// Server: Get, Update, Delete, Action
+			// Server: Create - Volumes to attach
+			{
+				displayName: 'Volumes',
+				name: 'volumes',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+				},
+				placeholder: 'Add Volume',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['server'],
+						operation: ['create'],
+					},
+				},
+				description: 'Volumes to create and attach to the server',
+				options: [
+					{
+						name: 'volumeValues',
+						displayName: 'Volume',
+						values: [
+							{
+								displayName: 'Name',
+								name: 'name',
+								type: 'string',
+								required: true,
+								default: '',
+								placeholder: 'boot-volume',
+								description: 'The name of the volume',
+							},
+							{
+								displayName: 'Size (GB)',
+								name: 'size',
+								type: 'number',
+								required: true,
+								typeOptions: {
+									minValue: 1,
+								},
+								default: 20,
+								description: 'Size of the volume in GB',
+							},
+							{
+								displayName: 'Type',
+								name: 'type',
+								type: 'options',
+								options: [
+									{
+										name: 'HDD',
+										value: 'HDD',
+									},
+									{
+										name: 'SSD',
+										value: 'SSD',
+									},
+									{
+										name: 'SSD Premium',
+										value: 'SSD_PREMIUM',
+									},
+									{
+										name: 'SSD Standard',
+										value: 'SSD_STANDARD',
+									},
+								],
+								default: 'SSD',
+								description: 'The storage type',
+							},
+							{
+								displayName: 'Image ID',
+								name: 'image',
+								type: 'string',
+								default: '',
+								description: 'The image UUID to use for the volume (optional)',
+							},
+							{
+								displayName: 'Image Alias',
+								name: 'imageAlias',
+								type: 'string',
+								default: '',
+								placeholder: 'ubuntu:latest',
+								description: 'Image alias (alternative to Image ID)',
+							},
+							{
+								displayName: 'Image Password',
+								name: 'imagePassword',
+								type: 'string',
+								typeOptions: { password: true },
+								default: '',
+								description: 'Password for the image (required if using an image)',
+							},
+							{
+								displayName: 'SSH Keys',
+								name: 'sshKeys',
+								type: 'string',
+								typeOptions: {
+									rows: 4,
+								},
+								default: '',
+								placeholder: 'ssh-rsa AAAA...',
+								description: 'SSH public keys (one per line)',
+							},
+							{
+								displayName: 'Bus',
+								name: 'bus',
+								type: 'options',
+								options: [
+									{
+										name: 'VIRTIO',
+										value: 'VIRTIO',
+									},
+									{
+										name: 'IDE',
+										value: 'IDE',
+									},
+								],
+								default: 'VIRTIO',
+								description: 'The bus type',
+							},
+							{
+								displayName: 'Availability Zone',
+								name: 'availabilityZone',
+								type: 'options',
+								options: [
+									{
+										name: 'Auto',
+										value: 'AUTO',
+									},
+									{
+										name: 'Zone 1',
+										value: 'ZONE_1',
+									},
+									{
+										name: 'Zone 2',
+										value: 'ZONE_2',
+									},
+									{
+										name: 'Zone 3',
+										value: 'ZONE_3',
+									},
+								],
+								default: 'AUTO',
+								description: 'The availability zone',
+							},
+						],
+					},
+				],
+			},
+
+			// Server: Get, Update, Delete, Action, Volume operations
 			{
 				displayName: 'Server ID',
 				name: 'serverId',
@@ -268,7 +434,7 @@ export class IonosCloudCompute implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['server'],
-						operation: ['get', 'update', 'delete', 'action'],
+						operation: ['get', 'update', 'delete', 'action', 'attachVolume', 'detachVolume', 'listVolumes'],
 					},
 				},
 				default: '',
@@ -364,6 +530,23 @@ export class IonosCloudCompute implements INodeType {
 				],
 			},
 
+			// Server: Attach/Detach Volume - Volume ID
+			{
+				displayName: 'Volume ID',
+				name: 'attachVolumeId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['server'],
+						operation: ['attachVolume', 'detachVolume'],
+					},
+				},
+				default: '',
+				placeholder: '15f67991-0f51-4efc-a8ad-ef1fb31a480c',
+				description: 'The ID of the volume to attach/detach',
+			},
+
 			// Server: Get Many
 			{
 				displayName: 'Return All',
@@ -372,7 +555,7 @@ export class IonosCloudCompute implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['server'],
-						operation: ['getAll'],
+						operation: ['getAll', 'listVolumes'],
 					},
 				},
 				default: false,
@@ -385,7 +568,7 @@ export class IonosCloudCompute implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['server'],
-						operation: ['getAll'],
+						operation: ['getAll', 'listVolumes'],
 						returnAll: [false],
 					},
 				},
@@ -951,7 +1134,7 @@ export class IonosCloudCompute implements INodeType {
 				default: {},
 				displayOptions: {
 					show: {
-						operation: ['get', 'getAll'],
+						operation: ['get', 'getAll', 'listVolumes'],
 					},
 				},
 				options: [
@@ -991,6 +1174,7 @@ export class IonosCloudCompute implements INodeType {
 						const cores = this.getNodeParameter('cores', i) as number;
 						const ram = this.getNodeParameter('ram', i) as number;
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
+						const volumesData = this.getNodeParameter('volumes', i) as IDataObject;
 
 						const body: IDataObject = {
 							properties: {
@@ -1009,6 +1193,42 @@ export class IonosCloudCompute implements INodeType {
 								}),
 							},
 						};
+
+						// Add volumes to create with the server
+						if (volumesData && volumesData.volumeValues && Array.isArray(volumesData.volumeValues) && volumesData.volumeValues.length > 0) {
+							const volumeItems: IDataObject[] = [];
+							for (const vol of volumesData.volumeValues as IDataObject[]) {
+								const volumeProperties: IDataObject = {
+									name: vol.name,
+									size: vol.size,
+									type: vol.type,
+								};
+
+								if (vol.image) volumeProperties.image = vol.image;
+								if (vol.imageAlias) volumeProperties.imageAlias = vol.imageAlias;
+								if (vol.imagePassword) volumeProperties.imagePassword = vol.imagePassword;
+								if (vol.bus) volumeProperties.bus = vol.bus;
+								if (vol.availabilityZone) volumeProperties.availabilityZone = vol.availabilityZone;
+
+								if (vol.sshKeys) {
+									const sshKeysString = vol.sshKeys as string;
+									const sshKeysArray = sshKeysString.split('\n').filter((key: string) => key.trim());
+									if (sshKeysArray.length > 0) {
+										volumeProperties.sshKeys = sshKeysArray;
+									}
+								}
+
+								volumeItems.push({
+									properties: volumeProperties,
+								});
+							}
+
+							body.entities = {
+								volumes: {
+									items: volumeItems,
+								},
+							};
+						}
 
 						const options: IHttpRequestOptions = {
 							method: 'POST',
@@ -1157,6 +1377,86 @@ export class IonosCloudCompute implements INodeType {
 
 						await this.helpers.httpRequestWithAuthentication.call(this, 'ionosCloud', options);
 						returnData.push({ json: { success: true, serverId, action: serverAction } });
+					}
+
+					if (operation === 'attachVolume') {
+						const serverId = this.getNodeParameter('serverId', i) as string;
+						const volumeId = this.getNodeParameter('attachVolumeId', i) as string;
+
+						const body: IDataObject = {
+							id: volumeId,
+						};
+
+						const options: IHttpRequestOptions = {
+							method: 'POST',
+							url: `${baseURL}/datacenters/${datacenterId}/servers/${serverId}/volumes`,
+							headers: {
+								Accept: 'application/json',
+								'Content-Type': 'application/json',
+							},
+							body,
+						};
+
+						const response = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'ionosCloud',
+							options,
+						);
+						returnData.push({ json: response as IDataObject });
+					}
+
+					if (operation === 'detachVolume') {
+						const serverId = this.getNodeParameter('serverId', i) as string;
+						const volumeId = this.getNodeParameter('attachVolumeId', i) as string;
+
+						const options: IHttpRequestOptions = {
+							method: 'DELETE',
+							url: `${baseURL}/datacenters/${datacenterId}/servers/${serverId}/volumes/${volumeId}`,
+							headers: {
+								Accept: 'application/json',
+							},
+						};
+
+						await this.helpers.httpRequestWithAuthentication.call(this, 'ionosCloud', options);
+						returnData.push({ json: { success: true, serverId, volumeId, action: 'detached' } });
+					}
+
+					if (operation === 'listVolumes') {
+						const serverId = this.getNodeParameter('serverId', i) as string;
+						const returnAll = this.getNodeParameter('returnAll', i);
+						const additionalOptions = this.getNodeParameter('additionalOptions', i) as IDataObject;
+
+						const qs: IDataObject = {};
+						if (additionalOptions.depth !== undefined) qs.depth = additionalOptions.depth;
+
+						if (!returnAll) {
+							const limit = this.getNodeParameter('limit', i) as number;
+							qs.limit = limit;
+						}
+
+						const options: IHttpRequestOptions = {
+							method: 'GET',
+							url: `${baseURL}/datacenters/${datacenterId}/servers/${serverId}/volumes`,
+							headers: {
+								Accept: 'application/json',
+							},
+							qs,
+						};
+
+						const response = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'ionosCloud',
+							options,
+						);
+
+						const volumes = (response as IDataObject).items as IDataObject[];
+						if (volumes && volumes.length > 0) {
+							volumes.forEach((volume) => {
+								returnData.push({ json: volume });
+							});
+						} else {
+							returnData.push({ json: response as IDataObject });
+						}
 					}
 				}
 

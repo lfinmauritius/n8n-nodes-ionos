@@ -28,7 +28,10 @@
       "Bash(find:*)",
       "Bash(cat:*)",
       "Bash(git checkout:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(git revert:*)",
+      "WebFetch(domain:docs.ionos.com)",
+      "Bash(npm version:*)"
     ],
     "deny": [],
     "ask": []
