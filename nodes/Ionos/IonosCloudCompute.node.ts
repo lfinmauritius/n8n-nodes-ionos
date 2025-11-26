@@ -300,6 +300,13 @@ export class IonosCloudCompute implements INodeType {
 						displayName: 'Volume',
 						values: [
 							{
+								displayName: 'Use as Boot Volume',
+								name: 'isBootVolume',
+								type: 'boolean',
+								default: false,
+								description: 'Whether this volume should be used as the boot volume for the server. Only one volume can be the boot volume.',
+							},
+							{
 								displayName: 'Name',
 								name: 'name',
 								type: 'string',
@@ -1248,12 +1255,20 @@ export class IonosCloudCompute implements INodeType {
 						// Add volumes to create with the server
 						if (volumesData && volumesData.volumeValues && Array.isArray(volumesData.volumeValues) && volumesData.volumeValues.length > 0) {
 							const volumeItems: IDataObject[] = [];
-							for (const vol of volumesData.volumeValues as IDataObject[]) {
+							let bootVolumeIndex = -1;
+
+							for (let volIndex = 0; volIndex < volumesData.volumeValues.length; volIndex++) {
+								const vol = volumesData.volumeValues[volIndex] as IDataObject;
 								const volumeProperties: IDataObject = {
 									name: vol.name,
 									size: vol.size,
 									type: vol.type,
 								};
+
+								// Track which volume should be the boot volume
+								if (vol.isBootVolume === true) {
+									bootVolumeIndex = volIndex;
+								}
 
 								// Handle image source based on selection
 								const imageSource = vol.imageSource as string || 'imageAlias';
@@ -1283,6 +1298,12 @@ export class IonosCloudCompute implements INodeType {
 								volumeItems.push({
 									properties: volumeProperties,
 								});
+							}
+
+							// Reorder volumes so boot volume is first (IONOS uses first volume as boot by default)
+							if (bootVolumeIndex > 0) {
+								const bootVolume = volumeItems.splice(bootVolumeIndex, 1)[0];
+								volumeItems.unshift(bootVolume);
 							}
 
 							body.entities = {
