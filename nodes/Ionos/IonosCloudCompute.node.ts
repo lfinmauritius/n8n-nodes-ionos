@@ -1272,10 +1272,18 @@ export class IonosCloudCompute implements INodeType {
 
 								// Handle image source based on selection
 								const imageSource = vol.imageSource as string || 'imageAlias';
-								if (imageSource === 'imageId' && vol.image) {
-									volumeProperties.image = vol.image;
-								} else if (imageSource === 'imageAlias' && vol.imageAlias) {
-									volumeProperties.imageAlias = vol.imageAlias;
+								if (imageSource === 'imageId') {
+									if (vol.image) {
+										volumeProperties.image = vol.image;
+									} else {
+										throw new NodeOperationError(this.getNode(), 'Image ID is required when "Image ID" is selected as Image Source', { itemIndex: i });
+									}
+								} else if (imageSource === 'imageAlias') {
+									if (vol.imageAlias) {
+										volumeProperties.imageAlias = vol.imageAlias;
+									} else {
+										throw new NodeOperationError(this.getNode(), 'Image Alias is required when "Image Alias" is selected as Image Source', { itemIndex: i });
+									}
 								} else if (imageSource === 'licenceType') {
 									volumeProperties.licenceType = vol.licenceType || 'LINUX';
 								}
