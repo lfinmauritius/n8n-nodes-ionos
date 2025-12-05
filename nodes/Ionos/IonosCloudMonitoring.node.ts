@@ -151,19 +151,13 @@ export class IonosCloudMonitoring implements INodeType {
 				},
 				options: [
 					{
-						name: 'Get',
-						value: 'get',
-						description: 'Get the current key for a pipeline',
-						action: 'Get key',
-					},
-					{
 						name: 'Regenerate',
 						value: 'regenerate',
-						description: 'Generate a new key (invalidates the old one)',
+						description: 'Generate a new key (invalidates the old one). Note: The key is only returned when creating a pipeline or regenerating.',
 						action: 'Regenerate key',
 					},
 				],
-				default: 'get',
+				default: 'regenerate',
 			},
 
 			// ====================
@@ -486,16 +480,7 @@ export class IonosCloudMonitoring implements INodeType {
 				else if (resource === 'key') {
 					const pipelineId = this.getNodeParameter('pipelineId', i) as string;
 
-					if (operation === 'get') {
-						responseData = await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'ionosCloud',
-							{
-								method: 'GET',
-								url: `${baseUrl}/pipelines/${pipelineId}/key`,
-							},
-						);
-					} else if (operation === 'regenerate') {
+					if (operation === 'regenerate') {
 						const body: IDataObject = {};
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
