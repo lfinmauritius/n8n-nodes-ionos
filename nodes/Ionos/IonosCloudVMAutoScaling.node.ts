@@ -154,8 +154,24 @@ export class IonosCloudVMAutoScaling implements INodeType {
 						name: 'Logrono (es/vit)',
 						value: 'es/vit',
 					},
+					{
+						name: 'London (gb/lhr)',
+						value: 'gb/lhr',
+					},
+					{
+						name: 'Las Vegas (us/las)',
+						value: 'us/las',
+					},
+					{
+						name: 'Newark (us/ewr)',
+						value: 'us/ewr',
+					},
+					{
+						name: 'Paris (fr/par)',
+						value: 'fr/par',
+					},
 				],
-				default: 'de/txl',
+				default: 'de/fra',
 				description: 'The datacenter location',
 			},
 			{
@@ -354,6 +370,27 @@ export class IonosCloudVMAutoScaling implements INodeType {
 				},
 				options: [
 					{
+						displayName: 'Availability Zone',
+						name: 'availabilityZone',
+						type: 'options',
+						options: [
+							{
+								name: 'Auto',
+								value: 'AUTO',
+							},
+							{
+								name: 'Zone 1',
+								value: 'ZONE_1',
+							},
+							{
+								name: 'Zone 2',
+								value: 'ZONE_2',
+							},
+						],
+						default: 'AUTO',
+						description: 'The availability zone for the VMs',
+					},
+					{
 						displayName: 'CPU Family',
 						name: 'cpuFamily',
 						type: 'options',
@@ -539,6 +576,23 @@ export class IonosCloudVMAutoScaling implements INodeType {
 								description: 'Storage type',
 							},
 							{
+								displayName: 'Bus',
+								name: 'bus',
+								type: 'options',
+								options: [
+									{
+										name: 'VIRTIO',
+										value: 'VIRTIO',
+									},
+									{
+										name: 'IDE',
+										value: 'IDE',
+									},
+								],
+								default: 'VIRTIO',
+								description: 'The bus type of the volume',
+							},
+							{
 								displayName: 'Boot Order',
 								name: 'bootOrder',
 								type: 'options',
@@ -575,6 +629,42 @@ export class IonosCloudVMAutoScaling implements INodeType {
 								default: '',
 								placeholder: 'ubuntu:latest',
 								description: 'Image alias (mutually exclusive with Image)',
+							},
+							{
+								displayName: 'Image Password',
+								name: 'imagePassword',
+								type: 'string',
+								typeOptions: {
+									password: true,
+								},
+								default: '',
+								description: 'Password for the image (required for some images)',
+							},
+							{
+								displayName: 'SSH Keys',
+								name: 'sshKeys',
+								type: 'string',
+								default: '',
+								placeholder: 'ssh-rsa AAAAB3...',
+								description: 'Comma-separated list of SSH public keys',
+							},
+							{
+								displayName: 'User Data (Cloud-Init)',
+								name: 'userData',
+								type: 'string',
+								typeOptions: {
+									rows: 4,
+								},
+								default: '',
+								description: 'Cloud-init user data for custom configuration (base64 encoded or plain text)',
+							},
+							{
+								displayName: 'Backup Unit ID',
+								name: 'backupunitId',
+								type: 'string',
+								default: '',
+								placeholder: '25f67f27-b398-4e64-87d0-a3a1e4c32b01',
+								description: 'The ID of the backup unit for this volume',
 							},
 						],
 					},
@@ -627,6 +717,60 @@ export class IonosCloudVMAutoScaling implements INodeType {
 								type: 'boolean',
 								default: true,
 								description: 'Enable DHCP',
+							},
+							{
+								displayName: 'Firewall Active',
+								name: 'firewallActive',
+								type: 'boolean',
+								default: false,
+								description: 'Whether the firewall is active on this NIC',
+							},
+							{
+								displayName: 'Firewall Type',
+								name: 'firewallType',
+								type: 'options',
+								options: [
+									{
+										name: 'Ingress',
+										value: 'INGRESS',
+									},
+									{
+										name: 'Egress',
+										value: 'EGRESS',
+									},
+									{
+										name: 'Bidirectional',
+										value: 'BIDIRECTIONAL',
+									},
+								],
+								default: 'INGRESS',
+								description: 'The type of firewall rules that will be allowed on the NIC',
+							},
+							{
+								displayName: 'Target Group',
+								name: 'targetGroup',
+								type: 'string',
+								default: '',
+								placeholder: '15c4fd5a-3c5f-11ed-b878-0242ac120002',
+								description: 'The ID of the target group for Application Load Balancer integration',
+							},
+							{
+								displayName: 'Target Group Port',
+								name: 'targetGroupPort',
+								type: 'number',
+								default: 80,
+								description: 'The port for the target group',
+							},
+							{
+								displayName: 'Target Group Weight',
+								name: 'targetGroupWeight',
+								type: 'number',
+								default: 1,
+								typeOptions: {
+									minValue: 1,
+									maxValue: 256,
+								},
+								description: 'The weight for traffic distribution (1-256)',
 							},
 						],
 					},
@@ -926,6 +1070,7 @@ export class IonosCloudVMAutoScaling implements INodeType {
 								replicaConfiguration: {
 									cores,
 									ram,
+									...(additionalOptions.availabilityZone && { availabilityZone: additionalOptions.availabilityZone }),
 									...(additionalOptions.cpuFamily && { cpuFamily: additionalOptions.cpuFamily }),
 								},
 							},
@@ -946,8 +1091,15 @@ export class IonosCloudVMAutoScaling implements INodeType {
 										type: vol.type,
 										bootOrder: vol.bootOrder,
 									};
+									if (vol.bus) volume.bus = vol.bus;
 									if (vol.image) volume.image = vol.image;
 									if (vol.imageAlias) volume.imageAlias = vol.imageAlias;
+									if (vol.imagePassword) volume.imagePassword = vol.imagePassword;
+									if (vol.sshKeys) {
+										volume.sshKeys = (vol.sshKeys as string).split(',').map((key) => key.trim());
+									}
+									if (vol.userData) volume.userData = vol.userData;
+									if (vol.backupunitId) volume.backupunitId = vol.backupunitId;
 									return volume;
 								},
 							);
@@ -956,11 +1108,24 @@ export class IonosCloudVMAutoScaling implements INodeType {
 						// Add NICs
 						if (nics.nicValues) {
 							const nicValues = nics.nicValues as IDataObject[];
-							((body.properties as IDataObject).replicaConfiguration as IDataObject).nics = nicValues.map((nic) => ({
-								name: nic.name,
-								lan: nic.lan,
-								dhcp: nic.dhcp !== undefined ? nic.dhcp : true,
-							}));
+							((body.properties as IDataObject).replicaConfiguration as IDataObject).nics = nicValues.map((nic) => {
+								const nicConfig: IDataObject = {
+									name: nic.name,
+									lan: nic.lan,
+									dhcp: nic.dhcp !== undefined ? nic.dhcp : true,
+								};
+								if (nic.firewallActive !== undefined) nicConfig.firewallActive = nic.firewallActive;
+								if (nic.firewallType) nicConfig.firewallType = nic.firewallType;
+								// Target Group configuration for ALB integration
+								if (nic.targetGroup) {
+									nicConfig.targetGroup = {
+										targetGroupId: nic.targetGroup,
+										port: nic.targetGroupPort || 80,
+										weight: nic.targetGroupWeight || 1,
+									};
+								}
+								return nicConfig;
+							});
 						}
 
 						const options: IHttpRequestOptions = {
