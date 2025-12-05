@@ -231,7 +231,7 @@ export class IonosCloudKubernetes implements INodeType {
 			// Cluster Fields
 			// ====================
 
-			// Cluster ID
+			// Cluster ID (for Cluster operations)
 			{
 				displayName: 'Cluster ID',
 				name: 'clusterId',
@@ -239,7 +239,7 @@ export class IonosCloudKubernetes implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['cluster', 'nodePool', 'node'],
+						resource: ['cluster'],
 						operation: ['get', 'update', 'delete', 'getKubeconfig'],
 					},
 				},
@@ -247,7 +247,7 @@ export class IonosCloudKubernetes implements INodeType {
 				description: 'The unique ID of the Kubernetes cluster',
 			},
 
-			// Cluster ID (for Node Pool and Node creation/listing)
+			// Cluster ID (for Node Pool operations - required for all operations)
 			{
 				displayName: 'Cluster ID',
 				name: 'clusterId',
@@ -255,8 +255,22 @@ export class IonosCloudKubernetes implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['nodePool', 'node'],
-						operation: ['create', 'getMany'],
+						resource: ['nodePool'],
+					},
+				},
+				default: '',
+				description: 'The unique ID of the Kubernetes cluster',
+			},
+
+			// Cluster ID (for Node operations - required for all operations)
+			{
+				displayName: 'Cluster ID',
+				name: 'clusterId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['node'],
 					},
 				},
 				default: '',
@@ -368,7 +382,7 @@ export class IonosCloudKubernetes implements INodeType {
 			// Node Pool Fields
 			// ====================
 
-			// Node Pool ID
+			// Node Pool ID (for Node Pool operations)
 			{
 				displayName: 'Node Pool ID',
 				name: 'nodePoolId',
@@ -376,7 +390,7 @@ export class IonosCloudKubernetes implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['nodePool', 'node'],
+						resource: ['nodePool'],
 						operation: ['get', 'update', 'delete'],
 					},
 				},
@@ -384,7 +398,7 @@ export class IonosCloudKubernetes implements INodeType {
 				description: 'The unique ID of the node pool',
 			},
 
-			// Node Pool ID (for Node operations)
+			// Node Pool ID (for Node operations - required for all operations)
 			{
 				displayName: 'Node Pool ID',
 				name: 'nodePoolId',
@@ -393,7 +407,6 @@ export class IonosCloudKubernetes implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['node'],
-						operation: ['getMany', 'replace'],
 					},
 				},
 				default: '',
