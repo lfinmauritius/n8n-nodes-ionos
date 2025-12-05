@@ -524,7 +524,7 @@ export class IonosCloudNetwork implements INodeType {
 				description: 'The unique ID of the server',
 			},
 
-			// NIC ID
+			// NIC ID (for NIC operations)
 			{
 				displayName: 'NIC ID',
 				name: 'nicId',
@@ -532,8 +532,23 @@ export class IonosCloudNetwork implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['nic', 'firewallRule'],
+						resource: ['nic'],
 						operation: ['get', 'update', 'delete'],
+					},
+				},
+				default: '',
+				description: 'The unique ID of the NIC',
+			},
+
+			// NIC ID (for Firewall Rule operations - required for all operations)
+			{
+				displayName: 'NIC ID',
+				name: 'nicId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['firewallRule'],
 					},
 				},
 				default: '',
@@ -923,7 +938,7 @@ export class IonosCloudNetwork implements INodeType {
 				description: 'The unique ID of the datacenter',
 			},
 
-			// NAT Gateway ID
+			// NAT Gateway ID (for NAT Gateway operations)
 			{
 				displayName: 'NAT Gateway ID',
 				name: 'natGatewayId',
@@ -931,8 +946,23 @@ export class IonosCloudNetwork implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['natGateway', 'natGatewayRule'],
+						resource: ['natGateway'],
 						operation: ['get', 'update', 'delete'],
+					},
+				},
+				default: '',
+				description: 'The unique ID of the NAT gateway',
+			},
+
+			// NAT Gateway ID (for NAT Gateway Rule operations - required for all operations)
+			{
+				displayName: 'NAT Gateway ID',
+				name: 'natGatewayId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['natGatewayRule'],
 					},
 				},
 				default: '',
