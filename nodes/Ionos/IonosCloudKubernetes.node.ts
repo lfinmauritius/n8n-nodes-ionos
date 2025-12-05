@@ -587,14 +587,14 @@ export class IonosCloudKubernetes implements INodeType {
 				options: [
 					{
 						name: 'Dedicated Core',
-						value: 'DEDICATEDCORE',
+						value: 'DedicatedCore',
 					},
 					{
 						name: 'VCPU',
 						value: 'VCPU',
 					},
 				],
-				default: 'DEDICATEDCORE',
+				default: 'DedicatedCore',
 				description: 'The server type for the nodes (Dedicated Core or VCPU)',
 			},
 
