@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-ionos",
-  "version": "1.19.40",
+  "version": "1.19.41",
   "description": "n8n nodes for IONOS DNS, Domain, SSL/Certificate management, Cloud AI, Cloud Infrastructure, Container Registry, Database as a Service, CDN, VPN Gateway, Activity Log, Billing, Logging, Monitoring, Object Storage Management, Network File Storage, Identity Management, and Reseller API",
   "keywords": [
     "n8n-community-node-package",
