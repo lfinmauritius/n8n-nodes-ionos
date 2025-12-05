@@ -1350,12 +1350,39 @@ export class IonosCloudVMAutoScaling implements INodeType {
 					}
 				}
 			} catch (error) {
+				// Extract detailed error message from API response
+				let errorMessage = error instanceof Error ? error.message : String(error);
+				const errorAny = error as IDataObject;
+
+				// Try to get more details from the error response
+				if (errorAny.response) {
+					const response = errorAny.response as IDataObject;
+					if (response.body) {
+						const body = response.body as IDataObject;
+						if (body.messages) {
+							const messages = body.messages as IDataObject[];
+							errorMessage = messages.map((m) => `${m.errorCode}: ${m.message}`).join('; ');
+						} else if (body.message) {
+							errorMessage = body.message as string;
+						} else {
+							errorMessage = JSON.stringify(body);
+						}
+					}
+				} else if (errorAny.cause) {
+					const cause = errorAny.cause as IDataObject;
+					if (cause.messages) {
+						const messages = cause.messages as IDataObject[];
+						errorMessage = messages.map((m) => `${m.errorCode}: ${m.message}`).join('; ');
+					} else if (cause.message) {
+						errorMessage = cause.message as string;
+					}
+				}
+
 				if (this.continueOnFail()) {
-					const errorMessage = error instanceof Error ? error.message : String(error);
 					returnData.push({ json: { error: errorMessage } });
 					continue;
 				}
-				throw new NodeOperationError(this.getNode(), error as Error, {
+				throw new NodeOperationError(this.getNode(), errorMessage, {
 					itemIndex: i,
 				});
 			}
