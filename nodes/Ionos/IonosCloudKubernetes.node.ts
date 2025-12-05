@@ -573,6 +573,31 @@ export class IonosCloudKubernetes implements INodeType {
 				description: 'The storage size per node in GB',
 			},
 
+			// Node Pool Server Type
+			{
+				displayName: 'Server Type',
+				name: 'serverType',
+				type: 'options',
+				displayOptions: {
+					show: {
+						resource: ['nodePool'],
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						name: 'Dedicated Core',
+						value: 'DEDICATEDCORE',
+					},
+					{
+						name: 'VCPU',
+						value: 'VCPU',
+					},
+				],
+				default: 'DEDICATEDCORE',
+				description: 'The server type for the nodes (Dedicated Core or VCPU)',
+			},
+
 			// Node Pool K8s Version
 			{
 				displayName: 'Kubernetes Version',
@@ -603,6 +628,21 @@ export class IonosCloudKubernetes implements INodeType {
 					},
 				},
 				options: [
+					{
+						displayName: 'Node Count',
+						name: 'nodeCount',
+						type: 'number',
+						default: 2,
+						description: 'The number of nodes in the node pool (for update operation)',
+					},
+					{
+						displayName: 'Kubernetes Version',
+						name: 'k8sVersion',
+						type: 'string',
+						default: '',
+						placeholder: '1.28.2',
+						description: 'The Kubernetes version to upgrade to (for update operation)',
+					},
 					{
 						displayName: 'Availability Zone',
 						name: 'availabilityZone',
@@ -636,7 +676,7 @@ export class IonosCloudKubernetes implements INodeType {
 						name: 'lans',
 						type: 'json',
 						default: '[{"id":1,"dhcp":true,"routes":[]}]',
-						description: 'Array of LAN configurations',
+						description: 'Array of LAN configurations with id, dhcp, and routes (containing network and gatewayIp)',
 					},
 					{
 						displayName: 'Labels',
@@ -918,6 +958,7 @@ export class IonosCloudKubernetes implements INodeType {
 						const ramSize = this.getNodeParameter('ramSize', i) as number;
 						const storageType = this.getNodeParameter('storageType', i) as string;
 						const storageSize = this.getNodeParameter('storageSize', i) as number;
+						const serverType = this.getNodeParameter('serverType', i) as string;
 						const k8sVersion = this.getNodeParameter('k8sVersion', i) as string;
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 
@@ -931,6 +972,7 @@ export class IonosCloudKubernetes implements INodeType {
 								ramSize,
 								storageType,
 								storageSize,
+								serverType,
 								...(k8sVersion && { k8sVersion }),
 								...(additionalFields.availabilityZone && {
 									availabilityZone: additionalFields.availabilityZone,
@@ -1008,6 +1050,20 @@ export class IonosCloudKubernetes implements INodeType {
 
 						const body: IDataObject = {
 							properties: {
+								...(additionalFields.nodeCount !== undefined && {
+									nodeCount: additionalFields.nodeCount,
+								}),
+								...(additionalFields.k8sVersion && {
+									k8sVersion: additionalFields.k8sVersion,
+								}),
+								...(additionalFields.publicIps && {
+									publicIps: (additionalFields.publicIps as string)
+										.split(',')
+										.map((ip) => ip.trim()),
+								}),
+								...(additionalFields.lans && {
+									lans: JSON.parse(additionalFields.lans as string),
+								}),
 								...(additionalFields.labels && {
 									labels: JSON.parse(additionalFields.labels as string),
 								}),
