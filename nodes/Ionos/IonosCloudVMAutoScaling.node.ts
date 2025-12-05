@@ -1051,6 +1051,7 @@ export class IonosCloudVMAutoScaling implements INodeType {
 								minReplicaCount,
 								policy: {
 									metric,
+									range: additionalOptions.range || '120s',
 									scaleOutThreshold,
 									scaleInThreshold,
 									unit: additionalOptions.policyUnit || 'TOTAL',
@@ -1075,10 +1076,6 @@ export class IonosCloudVMAutoScaling implements INodeType {
 								},
 							},
 						};
-
-						if (additionalOptions.range) {
-							((body.properties as IDataObject).policy as IDataObject).range = additionalOptions.range;
-						}
 
 						// Add volumes
 						if (volumes.volumeValues) {
