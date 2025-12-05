@@ -1621,24 +1621,22 @@ export class IonosCloudNetwork implements INodeType {
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 
 						const body: IDataObject = {
-							properties: {
-								...(additionalFields.dhcp !== undefined && { dhcp: additionalFields.dhcp }),
-								...(additionalFields.firewallActive !== undefined && {
-									firewallActive: additionalFields.firewallActive,
-								}),
-								...(additionalFields.firewallType && {
-									firewallType: additionalFields.firewallType,
-								}),
-								...(additionalFields.ips && {
-									ips: (additionalFields.ips as string).split(',').map((ip) => ip.trim()),
-								}),
-								...(additionalFields.ipv6CidrBlock && {
-									ipv6CidrBlock: additionalFields.ipv6CidrBlock,
-								}),
-								...(additionalFields.ipv6Ips && {
-									ipv6Ips: (additionalFields.ipv6Ips as string).split(',').map((ip) => ip.trim()),
-								}),
-							},
+							...(additionalFields.dhcp !== undefined && { dhcp: additionalFields.dhcp }),
+							...(additionalFields.firewallActive !== undefined && {
+								firewallActive: additionalFields.firewallActive,
+							}),
+							...(additionalFields.firewallType && {
+								firewallType: additionalFields.firewallType,
+							}),
+							...(additionalFields.ips && {
+								ips: (additionalFields.ips as string).split(',').map((ip) => ip.trim()),
+							}),
+							...(additionalFields.ipv6CidrBlock && {
+								ipv6CidrBlock: additionalFields.ipv6CidrBlock,
+							}),
+							...(additionalFields.ipv6Ips && {
+								ipv6Ips: (additionalFields.ipv6Ips as string).split(',').map((ip) => ip.trim()),
+							}),
 						};
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -1752,24 +1750,22 @@ export class IonosCloudNetwork implements INodeType {
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 
 						const body: IDataObject = {
-							properties: {
-								...(additionalFields.sourceMac && { sourceMac: additionalFields.sourceMac }),
-								...(additionalFields.sourceIp && { sourceIp: additionalFields.sourceIp }),
-								...(additionalFields.targetIp && { targetIp: additionalFields.targetIp }),
-								...(additionalFields.portRangeStart && {
-									portRangeStart: additionalFields.portRangeStart,
-								}),
-								...(additionalFields.portRangeEnd && {
-									portRangeEnd: additionalFields.portRangeEnd,
-								}),
-								...(additionalFields.icmpType !== undefined && {
-									icmpType: additionalFields.icmpType,
-								}),
-								...(additionalFields.icmpCode !== undefined && {
-									icmpCode: additionalFields.icmpCode,
-								}),
-								...(additionalFields.type && { type: additionalFields.type }),
-							},
+							...(additionalFields.sourceMac && { sourceMac: additionalFields.sourceMac }),
+							...(additionalFields.sourceIp && { sourceIp: additionalFields.sourceIp }),
+							...(additionalFields.targetIp && { targetIp: additionalFields.targetIp }),
+							...(additionalFields.portRangeStart && {
+								portRangeStart: additionalFields.portRangeStart,
+							}),
+							...(additionalFields.portRangeEnd && {
+								portRangeEnd: additionalFields.portRangeEnd,
+							}),
+							...(additionalFields.icmpType !== undefined && {
+								icmpType: additionalFields.icmpType,
+							}),
+							...(additionalFields.icmpCode !== undefined && {
+								icmpCode: additionalFields.icmpCode,
+							}),
+							...(additionalFields.type && { type: additionalFields.type }),
 						};
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -1946,7 +1942,7 @@ export class IonosCloudNetwork implements INodeType {
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 
 						const body: IDataObject = {
-							properties: additionalFields,
+							...additionalFields,
 						};
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -2055,18 +2051,16 @@ export class IonosCloudNetwork implements INodeType {
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 
 						const body: IDataObject = {
-							properties: {
-								...(additionalFields.protocol && { protocol: additionalFields.protocol }),
-								...(additionalFields.targetSubnet && { targetSubnet: additionalFields.targetSubnet }),
-								...(additionalFields.targetPortRangeStart && {
-									targetPortRange: {
-										start: additionalFields.targetPortRangeStart,
-										...(additionalFields.targetPortRangeEnd && {
-											end: additionalFields.targetPortRangeEnd,
-										}),
-									},
-								}),
-							},
+							...(additionalFields.protocol && { protocol: additionalFields.protocol }),
+							...(additionalFields.targetSubnet && { targetSubnet: additionalFields.targetSubnet }),
+							...(additionalFields.targetPortRangeStart && {
+								targetPortRange: {
+									start: additionalFields.targetPortRangeStart,
+									...(additionalFields.targetPortRangeEnd && {
+										end: additionalFields.targetPortRangeEnd,
+									}),
+								},
+							}),
 						};
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -2176,7 +2170,7 @@ export class IonosCloudNetwork implements INodeType {
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 
 						const body: IDataObject = {
-							properties: additionalFields,
+							...additionalFields,
 						};
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
