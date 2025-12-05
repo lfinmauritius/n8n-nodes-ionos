@@ -138,7 +138,7 @@ export class IonosCloudMonitoring implements INodeType {
 				default: 'create',
 			},
 
-			// Key operation (only regenerate)
+			// Key operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -151,13 +151,19 @@ export class IonosCloudMonitoring implements INodeType {
 				},
 				options: [
 					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get the current key for a pipeline',
+						action: 'Get key',
+					},
+					{
 						name: 'Regenerate',
 						value: 'regenerate',
 						description: 'Generate a new key (invalidates the old one)',
 						action: 'Regenerate key',
 					},
 				],
-				default: 'regenerate',
+				default: 'get',
 			},
 
 			// ====================
@@ -172,8 +178,23 @@ export class IonosCloudMonitoring implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['pipeline', 'key'],
-						operation: ['get', 'update', 'delete', 'regenerate'],
+						resource: ['pipeline'],
+						operation: ['get', 'update', 'delete'],
+					},
+				},
+				default: '',
+				description: 'The ID (UUID) of the Pipeline',
+			},
+
+			// Pipeline ID (for Key operations)
+			{
+				displayName: 'Pipeline ID',
+				name: 'pipelineId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['key'],
 					},
 				},
 				default: '',
@@ -210,11 +231,27 @@ export class IonosCloudMonitoring implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['centralMonitoring'],
-						operation: ['get', 'update'],
+						operation: ['get', 'update', 'delete'],
 					},
 				},
 				default: '',
 				description: 'The ID (UUID) of the Central Monitoring configuration',
+			},
+
+			// Central Monitoring Name (for create)
+			{
+				displayName: 'Name',
+				name: 'centralName',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['centralMonitoring'],
+						operation: ['create'],
+					},
+				},
+				default: '',
+				description: 'The name of the Central Monitoring configuration',
 			},
 
 			// Central Monitoring Enabled
@@ -447,9 +484,18 @@ export class IonosCloudMonitoring implements INodeType {
 				// ====================
 
 				else if (resource === 'key') {
-					if (operation === 'regenerate') {
-						const pipelineId = this.getNodeParameter('pipelineId', i) as string;
+					const pipelineId = this.getNodeParameter('pipelineId', i) as string;
 
+					if (operation === 'get') {
+						responseData = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'ionosCloud',
+							{
+								method: 'GET',
+								url: `${baseUrl}/pipelines/${pipelineId}/key`,
+							},
+						);
+					} else if (operation === 'regenerate') {
 						const body: IDataObject = {};
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -470,7 +516,26 @@ export class IonosCloudMonitoring implements INodeType {
 				// ====================
 
 				else if (resource === 'centralMonitoring') {
-					if (operation === 'get') {
+					if (operation === 'create') {
+						const name = this.getNodeParameter('centralName', i) as string;
+
+						const body: IDataObject = {
+							properties: {
+								name,
+							},
+						};
+
+						responseData = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'ionosCloud',
+							{
+								method: 'POST',
+								url: `${baseUrl}/central`,
+								body,
+								headers: { 'Content-Type': 'application/json' },
+							},
+						);
+					} else if (operation === 'get') {
 						const centralId = this.getNodeParameter('centralId', i) as string;
 
 						responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -512,6 +577,19 @@ export class IonosCloudMonitoring implements INodeType {
 								headers: { 'Content-Type': 'application/json' },
 							},
 						);
+					} else if (operation === 'delete') {
+						const centralId = this.getNodeParameter('centralId', i) as string;
+
+						await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'ionosCloud',
+							{
+								method: 'DELETE',
+								url: `${baseUrl}/central/${centralId}`,
+							},
+						);
+
+						responseData = { success: true };
 					}
 				}
 
