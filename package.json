@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-ionos",
   "version": "1.19.48",
-  "description": "n8n nodes for IONOS DNS, Domain, SSL/Certificate management, Cloud AI, Cloud Infrastructure, Container Registry, Database as a Service, CDN, VPN Gateway, Activity Log, Billing, Logging, Monitoring, Object Storage Management, Network File Storage, Identity Management, and Reseller API",
+  "description": "n8n nodes for IONOS DNS, Domain, SSL/Certificate management, Cloud AI, Cloud Infrastructure, Container Registry, Database as a Service, CDN, VPN Gateway, Activity Log, Billing, Logging, Monitoring, Object Storage Management, Network File Storage, and Identity Management",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
@@ -98,11 +98,7 @@
     "file-sharing",
     "iam",
     "identity",
-    "password-policy",
-    "reseller",
-    "partner",
-    "multi-tenant",
-    "contract-management"
+    "password-policy"
   ],
   "license": "MIT",
   "homepage": "https://github.com/lfinmauritius/n8n-nodes-ionos",
@@ -161,8 +157,7 @@
       "dist/nodes/Ionos/IonosCloudMonitoring.node.js",
       "dist/nodes/Ionos/IonosCloudObjectStorageManagement.node.js",
       "dist/nodes/Ionos/IonosCloudIdentity.node.js",
-      "dist/nodes/Ionos/IonosCloudNetworkFileStorage.node.js",
-      "dist/nodes/Ionos/IonosCloudReseller.node.js"
+      "dist/nodes/Ionos/IonosCloudNetworkFileStorage.node.js"
     ]
   },
   "devDependencies": {
