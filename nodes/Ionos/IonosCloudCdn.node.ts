@@ -418,27 +418,36 @@ export class IonosCloudCdn implements INodeType {
 									},
 								};
 
-								// Add geo restrictions if provided
+								// Add geo restrictions if provided (allowList OR blockList, not both - API uses oneOf)
 								if (rule.upstreamGeoRestrictions) {
 									const geoRestrictions = rule.upstreamGeoRestrictions as IDataObject;
 									if (geoRestrictions.restrictionValues) {
 										const restrictions = geoRestrictions.restrictionValues as IDataObject;
-										const geoRestrictionsObj: IDataObject = {};
 
-										if (restrictions.allowList) {
-											geoRestrictionsObj.allowList = (restrictions.allowList as string)
-												.split(',')
-												.map((c) => c.trim());
-										}
-										if (restrictions.blockList) {
-											geoRestrictionsObj.blockList = (restrictions.blockList as string)
-												.split(',')
-												.map((c) => c.trim());
-										}
+										// Parse and filter allowList
+										const allowListRaw = restrictions.allowList as string | undefined;
+										const allowListValues = allowListRaw && allowListRaw.trim()
+											? allowListRaw.split(',').map((c) => c.trim()).filter((c) => c.length > 0)
+											: [];
 
-										if (Object.keys(geoRestrictionsObj).length > 0) {
-											(routingRule.upstream as IDataObject).geoRestrictions = geoRestrictionsObj;
+										// Parse and filter blockList
+										const blockListRaw = restrictions.blockList as string | undefined;
+										const blockListValues = blockListRaw && blockListRaw.trim()
+											? blockListRaw.split(',').map((c) => c.trim()).filter((c) => c.length > 0)
+											: [];
+
+										// API requires oneOf: either allowList OR blockList, not both
+										// Priority: allowList takes precedence if both are provided
+										if (allowListValues.length > 0) {
+											(routingRule.upstream as IDataObject).geoRestrictions = {
+												allowList: allowListValues,
+											};
+										} else if (blockListValues.length > 0) {
+											(routingRule.upstream as IDataObject).geoRestrictions = {
+												blockList: blockListValues,
+											};
 										}
+										// If both are empty, don't add geoRestrictions at all
 									}
 								}
 
@@ -523,27 +532,36 @@ export class IonosCloudCdn implements INodeType {
 									},
 								};
 
-								// Add geo restrictions if provided
+								// Add geo restrictions if provided (allowList OR blockList, not both - API uses oneOf)
 								if (rule.upstreamGeoRestrictions) {
 									const geoRestrictions = rule.upstreamGeoRestrictions as IDataObject;
 									if (geoRestrictions.restrictionValues) {
 										const restrictions = geoRestrictions.restrictionValues as IDataObject;
-										const geoRestrictionsObj: IDataObject = {};
 
-										if (restrictions.allowList) {
-											geoRestrictionsObj.allowList = (restrictions.allowList as string)
-												.split(',')
-												.map((c) => c.trim());
-										}
-										if (restrictions.blockList) {
-											geoRestrictionsObj.blockList = (restrictions.blockList as string)
-												.split(',')
-												.map((c) => c.trim());
-										}
+										// Parse and filter allowList
+										const allowListRaw = restrictions.allowList as string | undefined;
+										const allowListValues = allowListRaw && allowListRaw.trim()
+											? allowListRaw.split(',').map((c) => c.trim()).filter((c) => c.length > 0)
+											: [];
 
-										if (Object.keys(geoRestrictionsObj).length > 0) {
-											(routingRule.upstream as IDataObject).geoRestrictions = geoRestrictionsObj;
+										// Parse and filter blockList
+										const blockListRaw = restrictions.blockList as string | undefined;
+										const blockListValues = blockListRaw && blockListRaw.trim()
+											? blockListRaw.split(',').map((c) => c.trim()).filter((c) => c.length > 0)
+											: [];
+
+										// API requires oneOf: either allowList OR blockList, not both
+										// Priority: allowList takes precedence if both are provided
+										if (allowListValues.length > 0) {
+											(routingRule.upstream as IDataObject).geoRestrictions = {
+												allowList: allowListValues,
+											};
+										} else if (blockListValues.length > 0) {
+											(routingRule.upstream as IDataObject).geoRestrictions = {
+												blockList: blockListValues,
+											};
 										}
+										// If both are empty, don't add geoRestrictions at all
 									}
 								}
 
