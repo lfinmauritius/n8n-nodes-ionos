@@ -224,7 +224,7 @@ We would like to express our gratitude to:
 
 <p align="center">
   <strong>Developed with passion by <a href="https://ascenzia.fr">Ascenzia</a></strong><br>
-  Digital Innovation Agency - Mauritius
+  Digital Innovation Agency - France
 </p>
 
 <p align="center">
