@@ -244,6 +244,49 @@ export class IonosCloudCdn implements INodeType {
 								description: 'Whether to enable caching for this routing rule',
 							},
 							{
+								displayName: 'WAF Enabled',
+								name: 'wafEnabled',
+								type: 'boolean',
+								default: true,
+								description: 'Whether to enable Web Application Firewall protection',
+							},
+							{
+								displayName: 'SNI Mode',
+								name: 'sniMode',
+								type: 'options',
+								options: [
+									{
+										name: 'Distribution',
+										value: 'distribution',
+										description: 'CDN requires upstream to present a certificate matching the CDN distribution domain',
+									},
+									{
+										name: 'Origin',
+										value: 'origin',
+										description: 'CDN requires upstream to present a certificate matching the upstream host',
+									},
+								],
+								default: 'distribution',
+								description: 'The SNI (Server Name Indication) mode for upstream connections',
+							},
+							{
+								displayName: 'Rate Limit Class',
+								name: 'rateLimitClass',
+								type: 'options',
+								options: [
+									{ name: 'R1 (1 req/s)', value: 'R1' },
+									{ name: 'R5 (5 req/s)', value: 'R5' },
+									{ name: 'R10 (10 req/s)', value: 'R10' },
+									{ name: 'R25 (25 req/s)', value: 'R25' },
+									{ name: 'R50 (50 req/s)', value: 'R50' },
+									{ name: 'R100 (100 req/s)', value: 'R100' },
+									{ name: 'R250 (250 req/s)', value: 'R250' },
+									{ name: 'R500 (500 req/s)', value: 'R500' },
+								],
+								default: 'R500',
+								description: 'Rate limit class to limit incoming requests from specific IP addresses',
+							},
+							{
 								displayName: 'Upstream Geo Restrictions',
 								name: 'upstreamGeoRestrictions',
 								type: 'fixedCollection',
@@ -418,12 +461,19 @@ export class IonosCloudCdn implements INodeType {
 						if (routingRules.ruleValues && Array.isArray(routingRules.ruleValues)) {
 							for (const rule of routingRules.ruleValues as IDataObject[]) {
 								const cachingEnabled = rule.cachingEnabled !== false; // Default to true
+								const wafEnabled = rule.wafEnabled !== false; // Default to true
+								const sniMode = (rule.sniMode as string) || 'distribution';
+								const rateLimitClass = (rule.rateLimitClass as string) || 'R500';
+
 								const routingRule: IDataObject = {
 									scheme: rule.scheme,
 									prefix: rule.prefix,
 									upstream: {
 										host: rule.upstreamHost,
 										caching: cachingEnabled,
+										waf: wafEnabled,
+										sniMode: sniMode,
+										rateLimitClass: rateLimitClass,
 									},
 								};
 
@@ -534,12 +584,19 @@ export class IonosCloudCdn implements INodeType {
 						if (routingRules.ruleValues && Array.isArray(routingRules.ruleValues)) {
 							for (const rule of routingRules.ruleValues as IDataObject[]) {
 								const cachingEnabled = rule.cachingEnabled !== false; // Default to true
+								const wafEnabled = rule.wafEnabled !== false; // Default to true
+								const sniMode = (rule.sniMode as string) || 'distribution';
+								const rateLimitClass = (rule.rateLimitClass as string) || 'R500';
+
 								const routingRule: IDataObject = {
 									scheme: rule.scheme,
 									prefix: rule.prefix,
 									upstream: {
 										host: rule.upstreamHost,
 										caching: cachingEnabled,
+										waf: wafEnabled,
+										sniMode: sniMode,
+										rateLimitClass: rateLimitClass,
 									},
 								};
 
