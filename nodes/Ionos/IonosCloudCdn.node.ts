@@ -237,6 +237,13 @@ export class IonosCloudCdn implements INodeType {
 								description: 'The upstream/origin server hostname',
 							},
 							{
+								displayName: 'Caching Enabled',
+								name: 'cachingEnabled',
+								type: 'boolean',
+								default: true,
+								description: 'Whether to enable caching for this routing rule',
+							},
+							{
 								displayName: 'Upstream Geo Restrictions',
 								name: 'upstreamGeoRestrictions',
 								type: 'fixedCollection',
@@ -410,11 +417,13 @@ export class IonosCloudCdn implements INodeType {
 						const rules: IDataObject[] = [];
 						if (routingRules.ruleValues && Array.isArray(routingRules.ruleValues)) {
 							for (const rule of routingRules.ruleValues as IDataObject[]) {
+								const cachingEnabled = rule.cachingEnabled !== false; // Default to true
 								const routingRule: IDataObject = {
 									scheme: rule.scheme,
 									prefix: rule.prefix,
 									upstream: {
 										host: rule.upstreamHost,
+										caching: cachingEnabled,
 									},
 								};
 
@@ -524,11 +533,13 @@ export class IonosCloudCdn implements INodeType {
 						const rules: IDataObject[] = [];
 						if (routingRules.ruleValues && Array.isArray(routingRules.ruleValues)) {
 							for (const rule of routingRules.ruleValues as IDataObject[]) {
+								const cachingEnabled = rule.cachingEnabled !== false; // Default to true
 								const routingRule: IDataObject = {
 									scheme: rule.scheme,
 									prefix: rule.prefix,
 									upstream: {
 										host: rule.upstreamHost,
+										caching: cachingEnabled,
 									},
 								};
 
