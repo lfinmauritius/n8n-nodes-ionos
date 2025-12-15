@@ -5,7 +5,7 @@
 
 A comprehensive n8n community package providing nodes for **IONOS Cloud** services integration. This package enables you to automate and orchestrate your IONOS infrastructure, domains, DNS, AI services, Kubernetes clusters, and more directly from n8n workflows.
 
-**Developed by [Ascenzia](https://ascenzia.fr)** - Digital Innovation Agency
+**Developed by [Ascenzia](https://ascenzia.fr)** - AI Agents & Infrastructure Specialists
 
 ## Features
 
@@ -224,7 +224,7 @@ We would like to express our gratitude to:
 
 <p align="center">
   <strong>Developed with passion by <a href="https://ascenzia.fr">Ascenzia</a></strong><br>
-  Digital Innovation Agency - France
+  AI Agents & Infrastructure Specialists - France
 </p>
 
 <p align="center">
