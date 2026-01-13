@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-ionos",
-  "version": "1.20.2",
+  "version": "1.21.0",
   "description": "n8n nodes for IONOS DNS, Domain, SSL/Certificate management, Cloud AI, Cloud Infrastructure, Container Registry, Database as a Service, CDN, VPN Gateway, Activity Log, Billing, Logging, Monitoring, Object Storage Management, Network File Storage, and Identity Management",
   "keywords": [
     "n8n-community-node-package",
@@ -157,8 +157,12 @@
       "dist/nodes/Ionos/IonosCloudMonitoring.node.js",
       "dist/nodes/Ionos/IonosCloudObjectStorageManagement.node.js",
       "dist/nodes/Ionos/IonosCloudIdentity.node.js",
-      "dist/nodes/Ionos/IonosCloudNetworkFileStorage.node.js"
+      "dist/nodes/Ionos/IonosCloudNetworkFileStorage.node.js",
+      "dist/nodes/Ionos/LmChatIonos.node.js"
     ]
+  },
+  "dependencies": {
+    "@langchain/openai": "^0.3.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.46.3",

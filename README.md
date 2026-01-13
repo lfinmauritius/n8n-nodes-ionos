@@ -9,12 +9,12 @@ A comprehensive n8n community package providing nodes for **IONOS Cloud** servic
 
 ## Features
 
-This package provides **24 powerful nodes** covering the entire IONOS ecosystem:
+This package provides **25 powerful nodes** covering the entire IONOS ecosystem:
 
 | Category | Nodes | Description |
 |----------|-------|-------------|
 | **DNS & Domains** | DNS, Domain, SSL | Manage DNS zones, records, domains, and SSL certificates |
-| **AI/ML Services** | Cloud AI | Chat completions, embeddings, audio processing (OpenAI-compatible) |
+| **AI/ML Services** | Cloud AI, Chat Model | Chat completions, embeddings, audio processing, **LangChain AI Agent integration** |
 | **Cloud Infrastructure** | Datacenter, Compute | Servers, volumes, images, snapshots |
 | **Networking** | Network, Load Balancing | LANs, NICs, firewalls, NAT gateways, load balancers |
 | **Kubernetes** | Kubernetes | Managed K8s clusters with auto-scaling node pools |
@@ -63,6 +63,7 @@ RUN cd /usr/local/lib/node_modules/n8n && npm install n8n-nodes-ionos
 | Node | Description | Key Operations |
 |------|-------------|----------------|
 | **IONOS Cloud AI** | AI Model Hub integration | Chat completions, embeddings, audio transcription (OpenAI-compatible API) |
+| **IONOS Chat Model** | LangChain Chat Model | Native integration with n8n AI Agent node for building AI workflows |
 
 ### Cloud Infrastructure
 
@@ -148,6 +149,14 @@ Manual Trigger → IONOS Cloud Kubernetes (Create Cluster) → Wait → IONOS Cl
 ```
 New Document → IONOS Cloud AI (Generate Embedding) → Store in Vector DB → IONOS Cloud AI (Generate Summary) → Send Email
 ```
+
+### AI Agent with IONOS Chat Model
+
+```
+Manual Trigger → AI Agent (+ IONOS Chat Model) → Respond to User
+```
+
+Use the **IONOS Chat Model** node as the Language Model for the **AI Agent** node to build intelligent automation workflows powered by IONOS AI Model Hub.
 
 ### Automated Backup
 

@@ -1,8 +1,177 @@
 # Exemples d'Utilisation - IONOS Nodes
 
 ## Table des Matières
+- [Exemples AI Agent avec IONOS Chat Model](#exemples-ai-agent)
 - [Exemples DNS](#exemples-dns)
 - [Exemples Domain](#exemples-domain)
+
+---
+
+# Exemples AI Agent avec IONOS Chat Model {#exemples-ai-agent}
+
+Le node **IONOS Chat Model** permet d'utiliser les modèles de l'IONOS AI Model Hub avec le node **AI Agent** de n8n pour créer des workflows d'automatisation intelligents.
+
+## Scénario AI-1: Agent conversationnel simple
+
+### Workflow n8n
+
+1. **Nœud 1: Manual Trigger**
+   ```
+   Cliquez pour déclencher manuellement
+   ```
+
+2. **Nœud 2: AI Agent**
+   ```
+   Prompt: Vous êtes un assistant IA utile et concis.
+   Chat Model: IONOS Chat Model (connecté)
+   ```
+
+3. **Nœud 3: IONOS Chat Model** (connecté au AI Agent)
+   ```
+   Region: Berlin, Germany (de-txl)
+   Model: meta-llama/Llama-3.3-70B-Instruct
+   Options:
+     - Temperature: 0.7
+     - Max Tokens: 1024
+   ```
+
+## Scénario AI-2: Agent avec outils (Tool Calling)
+
+### Workflow n8n
+
+1. **Nœud 1: Chat Trigger**
+   ```
+   Type: Webhook
+   Path: /chat
+   ```
+
+2. **Nœud 2: AI Agent**
+   ```
+   Prompt: Vous êtes un assistant qui peut rechercher des informations et effectuer des calculs.
+   Chat Model: IONOS Chat Model (connecté)
+   Tools: Calculator, Wikipedia (connectés)
+   ```
+
+3. **Nœud 3: IONOS Chat Model** (connecté au AI Agent)
+   ```
+   Region: Berlin, Germany (de-txl)
+   Model: meta-llama/Llama-3.3-70B-Instruct
+   Options:
+     - Temperature: 0.3
+     - Max Tokens: 2048
+   ```
+
+4. **Nœud 4: Calculator Tool** (connecté au AI Agent)
+   ```
+   Tool pour effectuer des calculs mathématiques
+   ```
+
+5. **Nœud 5: Wikipedia Tool** (connecté au AI Agent)
+   ```
+   Tool pour rechercher sur Wikipedia
+   ```
+
+## Scénario AI-3: Agent de support technique
+
+### Workflow n8n
+
+1. **Nœud 1: Webhook**
+   ```
+   HTTP Method: POST
+   Path: /support
+   ```
+
+2. **Nœud 2: AI Agent**
+   ```
+   Prompt: |
+     Vous êtes un agent de support technique pour une entreprise de cloud computing.
+     Vous aidez les utilisateurs avec des questions sur l'infrastructure cloud,
+     les serveurs, le réseau et la sécurité.
+     Répondez de manière professionnelle et technique.
+   Chat Model: IONOS Chat Model (connecté)
+   Memory: Window Buffer Memory (connecté)
+   ```
+
+3. **Nœud 3: IONOS Chat Model** (connecté au AI Agent)
+   ```
+   Region: Frankfurt, Germany (de-fra)
+   Model: mistralai/Mistral-Large-Instruct-2411
+   Options:
+     - Temperature: 0.5
+     - Max Tokens: 4096
+   ```
+
+4. **Nœud 4: Window Buffer Memory** (connecté au AI Agent)
+   ```
+   Window Size: 10
+   ```
+
+5. **Nœud 5: Respond to Webhook**
+   ```
+   Response Mode: When Last Node Finishes
+   Response Data: {{ $json.output }}
+   ```
+
+## Scénario AI-4: Analyse de documents avec RAG
+
+### Workflow n8n
+
+1. **Nœud 1: When Clicking Execute Workflow**
+   ```
+   Manual Trigger
+   ```
+
+2. **Nœud 2: Read PDF**
+   ```
+   File Path: /path/to/document.pdf
+   ```
+
+3. **Nœud 3: Recursive Character Text Splitter**
+   ```
+   Chunk Size: 1000
+   Chunk Overlap: 200
+   ```
+
+4. **Nœud 4: AI Agent**
+   ```
+   Prompt: |
+     Analysez le document fourni et répondez aux questions de l'utilisateur
+     en vous basant uniquement sur le contenu du document.
+   Chat Model: IONOS Chat Model (connecté)
+   Retriever: Vector Store Retriever (connecté)
+   ```
+
+5. **Nœud 5: IONOS Chat Model** (connecté au AI Agent)
+   ```
+   Region: Berlin, Germany (de-txl)
+   Model: meta-llama/Llama-3.3-70B-Instruct
+   Options:
+     - Temperature: 0.2
+     - Max Tokens: 2048
+   ```
+
+## Configuration des Credentials
+
+Pour utiliser le **IONOS Chat Model**, vous devez configurer les credentials **IONOS Cloud**:
+
+1. Accédez à [IONOS Data Center Designer (DCD)](https://dcd.ionos.com)
+2. Naviguez vers **Management** > **Token Manager**
+3. Générez un nouveau token JWT
+4. Dans n8n, créez des credentials **IONOS Cloud** avec ce token
+
+## Paramètres recommandés par cas d'usage
+
+| Cas d'usage | Modèle | Temperature | Max Tokens |
+|-------------|--------|-------------|------------|
+| Chat général | Llama-3.3-70B-Instruct | 0.7 | 1024 |
+| Code generation | Llama-3.3-70B-Instruct | 0.2 | 2048 |
+| Analyse de texte | Mistral-Large-Instruct | 0.3 | 4096 |
+| Créativité | Llama-3.3-70B-Instruct | 0.9 | 1024 |
+| Support technique | Mistral-Large-Instruct | 0.5 | 2048 |
+
+---
+
+# Exemples DNS
 
 ## Scénario 1: Créer une zone DNS et ajouter des enregistrements
 
